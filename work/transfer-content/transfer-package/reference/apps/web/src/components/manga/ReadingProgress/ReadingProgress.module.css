@@ -1,0 +1,46 @@
+.progressBlock {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.labelRow {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mz-space-2);
+  color: var(--mz-text-muted);
+  font-size: var(--mz-text-xs);
+}
+
+.labelRow span:last-child {
+  color: var(--mz-text-secondary);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.progressBlock progress {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  appearance: none;
+  border: 0;
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-surface-secondary);
+}
+
+.progressBlock progress::-webkit-progress-bar {
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-surface-secondary);
+}
+
+.progressBlock progress::-webkit-progress-value {
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-red);
+}
+
+.progressBlock progress::-moz-progress-bar {
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-red);
+}

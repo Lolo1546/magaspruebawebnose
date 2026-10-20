@@ -1,0 +1,42 @@
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mz-space-2);
+  color: var(--mz-text-secondary);
+}
+
+.spinner {
+  flex: 0 0 auto;
+  border: 3px solid var(--mz-border-strong);
+  border-top-color: var(--mz-red);
+  border-radius: var(--mz-radius-full);
+  animation: loading-spin 800ms linear infinite;
+}
+
+.sm .spinner {
+  width: 18px;
+  height: 18px;
+}
+
+.md .spinner {
+  width: 28px;
+  height: 28px;
+}
+
+.label {
+  font-size: var(--mz-text-sm);
+  font-weight: 650;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-right-color: var(--mz-red);
+  }
+}

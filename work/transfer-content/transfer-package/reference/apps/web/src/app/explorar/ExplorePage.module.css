@@ -1,0 +1,20 @@
+.page {
+  padding-block: var(--mz-space-6) var(--mz-space-8);
+}
+
+.heroIcon {
+  position: absolute;
+  top: 50%;
+  right: clamp(var(--mz-space-5), 5vw, var(--mz-space-7));
+  width: clamp(130px, 18vw, 250px);
+  height: auto;
+  color: var(--mz-red);
+  opacity: 0.16;
+  transform: translateY(-50%) rotate(-8deg);
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding-top: var(--mz-space-4);
+  }
+}

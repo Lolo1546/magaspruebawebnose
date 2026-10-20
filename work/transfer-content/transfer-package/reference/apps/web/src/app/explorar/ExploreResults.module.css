@@ -1,0 +1,222 @@
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--mz-space-4);
+  margin-top: var(--mz-space-2);
+}
+
+.heading h2 {
+  margin: 2px 0 0;
+  color: var(--mz-text-primary);
+  font-family: var(--mz-font-display);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.heading > span,
+.eyebrow {
+  color: var(--mz-text-muted);
+  font-size: var(--mz-text-xs);
+  font-weight: 650;
+}
+
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  gap: var(--mz-space-3);
+  margin-top: var(--mz-space-4);
+}
+
+.listCard {
+  overflow: hidden;
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-lg);
+  background: var(--mz-card);
+  transition:
+    border-color var(--mz-transition-normal),
+    background-color var(--mz-transition-normal),
+    transform var(--mz-transition-normal);
+}
+
+.listLink {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  min-height: 142px;
+}
+
+.cover {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--mz-surface-secondary);
+}
+
+.cover img {
+  object-fit: cover;
+}
+
+.listBody {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--mz-space-4);
+}
+
+.listTopline,
+.listMeta,
+.score {
+  display: flex;
+  align-items: center;
+}
+
+.listTopline {
+  justify-content: space-between;
+  gap: var(--mz-space-3);
+}
+
+.score {
+  gap: 4px;
+  color: var(--mz-gold);
+  font-size: var(--mz-text-xs);
+  font-weight: 750;
+}
+
+.listTitle {
+  margin-top: var(--mz-space-2);
+  overflow: hidden;
+  color: var(--mz-text-primary);
+  font-size: var(--mz-text-lg);
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.genres {
+  margin-top: 3px;
+  color: var(--mz-text-muted);
+  font-size: var(--mz-text-xs);
+}
+
+.listMeta {
+  flex-wrap: wrap;
+  gap: var(--mz-space-3);
+  margin-top: var(--mz-space-3);
+  color: var(--mz-text-secondary);
+  font-size: var(--mz-text-xs);
+}
+
+.listMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--mz-space-2);
+  margin-top: var(--mz-space-6);
+}
+
+.pagination a {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-surface);
+  color: var(--mz-text-secondary);
+  font-size: var(--mz-text-sm);
+  font-weight: 750;
+}
+
+.pagination a[aria-current="page"] {
+  border-color: var(--mz-red);
+  background: var(--mz-red);
+  color: var(--mz-text-on-accent);
+}
+
+.noResults {
+  margin-top: var(--mz-space-5);
+}
+
+.clearLink {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--mz-space-5);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-red);
+  color: var(--mz-text-on-accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .listCard:hover {
+    border-color: color-mix(in srgb, var(--mz-red) 34%, transparent);
+    background: var(--mz-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .pagination a:hover:not([aria-current="page"]) {
+    border-color: var(--mz-border-strong);
+    color: var(--mz-text-primary);
+  }
+
+  .clearLink:hover {
+    background: var(--mz-red-hover);
+  }
+}
+
+@media (max-width: 540px) {
+  .heading {
+    align-items: flex-start;
+  }
+
+  .listLink {
+    grid-template-columns: 74px minmax(0, 1fr);
+    min-height: 118px;
+  }
+
+  .listBody {
+    padding: var(--mz-space-3);
+  }
+
+  .listTitle {
+    font-size: var(--mz-text-md);
+  }
+
+  .listMeta {
+    gap: var(--mz-space-2);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .pagination a,
+  .clearLink {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

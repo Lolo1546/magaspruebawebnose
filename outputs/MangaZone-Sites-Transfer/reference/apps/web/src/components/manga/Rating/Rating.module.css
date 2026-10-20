@@ -1,0 +1,18 @@
+.rating {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--mz-gold);
+}
+
+.rating strong {
+  font-size: var(--mz-text-xl);
+  line-height: 1;
+}
+
+.rating span {
+  flex-basis: 100%;
+  color: var(--mz-text-muted);
+  font-size: var(--mz-text-xs);
+}

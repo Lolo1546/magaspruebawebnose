@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title description">
+  <title id="title">Patrón social abstracto de demostración</title>
+  <desc id="description">Composición geométrica oscura con nodos conectados para los directorios sociales de MangaZone.</desc>
+  <defs>
+    <linearGradient id="base" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset=".58" stop-color="#20202a"/>
+      <stop offset="1" stop-color="#4d101c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="26%" r="58%">
+      <stop offset="0" stop-color="#e8192c" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#e8192c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#base)"/>
+  <rect width="1200" height="600" fill="url(#glow)"/>
+  <g fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="8">
+    <path d="M630 420 790 218l190 115 140-183"/>
+    <path d="m790 218-65-126m255 241 76 154"/>
+  </g>
+  <g fill="#fff" fill-opacity=".22">
+    <circle cx="630" cy="420" r="34"/><circle cx="790" cy="218" r="46"/>
+    <circle cx="980" cy="333" r="38"/><circle cx="1120" cy="150" r="28"/>
+    <circle cx="725" cy="92" r="24"/><circle cx="1056" cy="487" r="30"/>
+  </g>
+</svg>

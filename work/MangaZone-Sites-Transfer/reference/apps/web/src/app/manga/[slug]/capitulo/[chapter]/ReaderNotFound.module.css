@@ -1,0 +1,30 @@
+.page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding:
+    max(var(--mz-space-5), env(safe-area-inset-top))
+    max(var(--mz-space-4), env(safe-area-inset-right))
+    max(var(--mz-space-5), env(safe-area-inset-bottom))
+    max(var(--mz-space-4), env(safe-area-inset-left));
+  background: var(--mz-bg);
+}
+
+.action {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--mz-space-5);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-red);
+  color: var(--mz-text-on-accent);
+  font-size: var(--mz-text-sm);
+  font-weight: 750;
+}
+
+@media (hover: hover) {
+  .action:hover {
+    background: var(--mz-red-hover);
+  }
+}

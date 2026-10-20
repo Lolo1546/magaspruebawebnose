@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MangaZone — Ficha de Manga</title>
+<style>
+:root{--bg:#08080b;--s:#121219;--s2:#191922;--b:#292934;--t:#f5f5f7;--t2:#b9b9c5;--m:#818190;--r:#e63946;--rs:rgba(230,57,70,.15);--g:#f1c75b;--ok:#46cc7d;--h:64px;--side:72px;font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 16% 0%,rgba(230,57,70,.09),transparent 25%),#08080b;color:var(--t)}button,input,select{font:inherit;color:inherit}a{color:inherit;text-decoration:none}img{display:block;width:100%}:focus-visible{outline:2px solid #ff6570;outline-offset:3px}
+header{position:fixed;inset:0 0 auto;height:var(--h);z-index:50;display:flex;align-items:center;gap:18px;padding:0 22px;background:rgba(9,9,13,.82);backdrop-filter:blur(18px);border-bottom:1px solid #ffffff0e}.brand{display:flex;align-items:center;gap:10px;font:26px Impact}.brand i{font-style:normal;color:var(--r)}.mark{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,var(--r),#851d2a);font:900 13px Inter}.nav{display:flex;gap:4px}.nav a{padding:10px 12px;border-radius:10px;color:var(--t2);font-size:14px}.nav a:hover,.nav a.active{background:#ffffff0d;color:white}.search{flex:1;max-width:520px;margin-left:auto}.search input{width:100%;height:42px;border:1px solid var(--b);border-radius:13px;background:var(--s);padding:0 14px}.actions{display:flex;gap:8px}.icon,.login{height:40px;border:1px solid var(--b);border-radius:11px;background:var(--s);cursor:pointer}.icon{width:40px}.login{padding:0 15px;font-weight:800}
+aside.side{position:fixed;left:0;top:var(--h);bottom:0;width:var(--side);padding:14px 10px;background:#0a0a0ee8;border-right:1px solid #ffffff0e;z-index:40}.side a{width:50px;height:48px;display:grid;place-items:center;border-radius:13px;color:var(--m);margin-bottom:8px}.side a:hover,.side a.active{background:var(--rs);color:white}
+main{margin-left:var(--side);padding-top:var(--h)}.hero{position:relative;min-height:600px;overflow:hidden;border-bottom:1px solid #ffffff0e}.back{position:absolute;inset:0;background:linear-gradient(90deg,#08080bf7,#08080be8 37%,#08080b9e 67%,#08080be8),radial-gradient(circle at 80% 32%,#b622306f,transparent 23%),linear-gradient(135deg,#1a0d13,#12131b 56%,#2b1118)}.hero-in{position:relative;z-index:2;display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:30px;align-items:end;padding:46px 34px 38px}.cover{aspect-ratio:2/3;border-radius:20px;overflow:hidden;border:1px solid #ffffff18;box-shadow:0 25px 60px #0008}.cover-actions{display:grid;grid-template-columns:1fr 44px;gap:10px;margin-top:12px}.btn{height:46px;border-radius:12px;border:1px solid var(--b);background:var(--s);font-weight:850;cursor:pointer}.btn.red{border:0;background:linear-gradient(135deg,var(--r),#b62334)}.eyebrow{color:#ff818b;text-transform:uppercase;font-size:12px;font-weight:900;letter-spacing:.14em}h1{margin:8px 0;font:clamp(44px,6vw,80px)/.95 Impact;text-transform:uppercase}.original{color:var(--t2);margin-bottom:14px}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{padding:7px 9px;border-radius:999px;border:1px solid #ffffff18;background:#ffffff0b;color:var(--t2);font-size:12px}.chip.red{background:var(--rs);color:white}.chip.ok{color:var(--ok)}.desc{color:var(--t2);line-height:1.7;max-width:760px}.linkbtn{border:0;background:none;color:#ff818b;font-weight:800;padding:0;cursor:pointer}.hero-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.hero-btns .btn{padding:0 17px}.stats{border:1px solid #ffffff17;background:#101016c9;backdrop-filter:blur(16px);border-radius:18px;padding:18px}.score{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--b)}.score strong{font-size:42px;color:var(--g)}.stars{color:var(--g)}.grid4{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.stat{background:#ffffff08;border-radius:12px;padding:10px}.stat b{display:block}.stat small{color:var(--m)}.facts{display:grid;gap:10px;margin-top:15px}.fact{display:flex;justify-content:space-between;font-size:12px}.fact span:first-child{color:var(--m)}.fact span:last-child{color:var(--t2);text-align:right}
+.tabs{position:sticky;top:var(--h);z-index:30;display:flex;gap:4px;overflow-x:auto;padding:0 28px;background:#08080be9;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff0e}.tab{position:relative;min-width:max-content;padding:18px 16px;border:0;background:none;color:var(--m);font-weight:850;cursor:pointer}.tab.active{color:white}.tab.active:after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:3px;background:var(--r)}
+.content{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:24px;padding:28px 28px 100px}.section{margin-bottom:28px}.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px}.head h2{margin:0;font-size:22px}.head h2:before{content:"";display:inline-block;width:4px;height:22px;background:var(--r);border-radius:3px;margin-right:10px;vertical-align:-4px}.sub{color:var(--m);font-size:12px;margin-top:4px}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:9px;margin-bottom:12px}.field{height:43px;border:1px solid var(--b);border-radius:12px;background:var(--s);padding:0 12px}.list{border:1px solid var(--b);border-radius:17px;overflow:hidden;background:#121219cc}
+.chapter{padding:11px 13px;border-top:1px solid #ffffff0c}.chapter:first-child{border-top:0}.chapter:hover{background:#ffffff05}
+.chapter-main{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:12px;align-items:center}
+.chapter-thumb{width:76px;height:55px;border-radius:10px;overflow:hidden;border:1px solid #ffffff18;background:#0f0f15;position:relative}
+.chapter-thumb img{width:100%;height:100%;object-fit:cover}.chapter-thumb.fallback img{object-position:center 24%}
+.thumb-fallback{position:absolute;left:4px;bottom:4px;padding:2px 4px;border-radius:6px;background:#08080bda;border:1px solid #ffffff18;color:#d0d0d8;font-size:8px;font-weight:800}
+.chapter-copy{min-width:0}.chapter-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.ctitle{font-weight:850;line-height:1.3}
+.cmeta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:var(--m);font-size:11px;margin-top:5px}
+.primary-publication{color:var(--t2);font-weight:800}.pill{padding:4px 6px;border:1px solid var(--b);border-radius:999px;background:#0f0f15}
+.chapter-actions{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.read{height:34px;padding:0 11px;border:1px solid #e6394670;border-radius:9px;background:var(--rs);font-weight:850;cursor:pointer;white-space:nowrap;font-size:11px}
+.read.continue{border-color:#f1c75b55;background:#f1c75b12;color:#f4d77f}
+.read.read-complete{border-color:#46cc7d55;background:#46cc7d12;color:#80dda5}
+.toggle-publications{min-width:42px;height:34px;padding:0 7px;border:1px solid var(--b);border-radius:9px;background:#101016;color:var(--t2);display:inline-flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:.15s;font-size:10px;font-weight:850}
+.toggle-publications:hover{background:#ffffff0b;color:white;border-color:#3a3a47}.toggle-publications[aria-expanded="true"]{background:var(--rs);color:white;border-color:#e6394670}.layers-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}.layers-count{line-height:1;min-width:8px;text-align:center}
+.chapter-publications{display:none;margin:9px 0 0 88px;padding-top:7px;border-top:1px solid #ffffff0c}
+.chapter-publications.open{display:block}.publication-label{padding:2px 0 6px;color:var(--m);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+.publication-row{display:grid;grid-template-columns:minmax(120px,1fr) 80px 92px auto;gap:9px;align-items:center;min-height:38px;padding:6px 0;border-top:1px solid #ffffff0a}.publication-row:first-of-type{border-top:0}
+.publication-group{font-size:11px;font-weight:850}.publication-language,.publication-date{color:var(--m);font-size:10px}.publication-actions{display:flex;justify-content:flex-end}
+.single-publication .chapter-publications{display:none!important}
+.card{border:1px solid var(--b);border-radius:17px;background:#121219d8;padding:15px}.groups .card{display:grid;grid-template-columns:55px 1fr auto;gap:13px;align-items:center;margin-bottom:10px}.logo{width:55px;height:55px;border-radius:13px;background:linear-gradient(135deg,#20202b,#551e29);display:grid;place-items:center;font-weight:900}.verified{color:#61a8ff;font-size:11px}.warn{padding:12px;border:1px solid #f4bd5250;background:#f4bd5212;border-radius:13px;color:#e7d59e;font-size:11px;line-height:1.5}.reviews{display:grid;grid-template-columns:1fr 1fr;gap:12px}.review-top{display:flex;justify-content:space-between}.avatar{width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#252530;font-weight:900}.user{display:flex;gap:9px}.review h3{font-size:14px}.review p{color:var(--t2);font-size:13px;line-height:1.55}.review-foot{display:flex;justify-content:space-between;color:var(--m);font-size:11px}.helpful{border:1px solid var(--b);border-radius:8px;background:#101016;padding:6px 8px;cursor:pointer}
+/* Comentarios / comunidad */
+.comments-community{grid-column:1/-1;margin-top:4px}
+.comments-shell{display:grid;gap:12px}
+.comments-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.comments-head h2{margin:0;font-size:22px}.comments-head h2:before{content:"";display:inline-block;width:4px;height:22px;background:var(--r);border-radius:3px;margin-right:10px;vertical-align:-4px}
+.comments-order{display:flex;align-items:center;gap:8px;color:var(--m);font-size:11px}.comments-order select{height:37px;border:1px solid var(--b);border-radius:10px;background:var(--s);padding:0 9px}
+.composer{border:1px solid var(--b);border-radius:16px;background:#121219d8;padding:13px;position:relative}
+.composer-user{display:flex;align-items:center;gap:9px;margin-bottom:9px}.comment-avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2b2b39,#762838);font-size:11px;font-weight:900;flex:0 0 auto}
+.composer-user b{font-size:12px}.composer-user span{display:block;color:var(--m);font-size:10px;margin-top:2px}
+.quote-preview{display:none;margin:0 0 9px;padding:8px 10px;border-left:3px solid var(--r);border-radius:0 9px 9px 0;background:#0e0e14;color:var(--t2);font-size:11px;line-height:1.45}.quote-preview.show{display:block}.quote-preview b{color:white}
+.replying{display:none;margin:0 0 8px;color:#ff9ba3;font-size:10px}.replying.show{display:flex;align-items:center;gap:6px}
+.comment-input{width:100%;min-height:96px;border:1px solid #30303c;border-radius:12px;background:#0d0d12;color:var(--t);padding:11px;resize:vertical;font:12px/1.55 Inter,system-ui,sans-serif;outline:0}.comment-input:focus{border-color:#e6394670;box-shadow:0 0 0 3px #e6394612}
+.attachment-preview{display:none;margin-top:9px;position:relative;width:132px;max-width:45%;border:1px solid var(--b);border-radius:10px;overflow:hidden;background:#0d0d12}.attachment-preview.show{display:block}.attachment-preview img{width:100%;aspect-ratio:4/3;object-fit:cover}.remove-attachment{position:absolute;right:5px;top:5px;width:26px;height:26px;border:1px solid #ffffff24;border-radius:8px;background:#08080bd9;color:white;cursor:pointer}
+.composer-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:9px}.composer-tools{display:flex;gap:5px;flex-wrap:wrap}.tool-btn{height:34px;padding:0 9px;border:1px solid var(--b);border-radius:9px;background:#101016;color:var(--t2);font-size:11px;font-weight:750;cursor:pointer}.tool-btn.active{border-color:#e6394670;background:var(--rs);color:white}.publish-comment{height:36px;padding:0 13px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--r),#b62334);font-weight:850;cursor:pointer}
+.emoji-pop{display:none;position:absolute;left:13px;bottom:59px;z-index:8;padding:7px;border:1px solid var(--b);border-radius:11px;background:#181820;box-shadow:0 14px 35px #0008}.emoji-pop.show{display:flex;gap:4px}.emoji-pop button{width:32px;height:32px;border:0;border-radius:8px;background:#101016;font-size:17px;cursor:pointer}
+.comment-list{display:grid;gap:10px}.comment-card{border:1px solid var(--b);border-radius:15px;background:#121219d8;padding:13px}.comment-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.comment-user{display:flex;gap:9px;min-width:0}.comment-user-copy{min-width:0}.comment-user-line{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.comment-name{font-size:12px;font-weight:850}.comment-username,.comment-time{color:var(--m);font-size:10px}.comment-badge{padding:3px 6px;border:1px solid #ffffff18;border-radius:999px;color:#bfc1cc;font-size:9px}.comment-menu-wrap{position:relative}.menu-btn{width:32px;height:32px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--m);cursor:pointer;font-weight:900}.menu-btn:hover{border-color:var(--b);background:#ffffff08;color:white}.comment-menu{display:none;position:absolute;right:0;top:34px;z-index:6;min-width:140px;border:1px solid var(--b);border-radius:10px;background:#181820;box-shadow:0 12px 30px #0008;padding:5px}.comment-menu.show{display:grid}.comment-menu button{height:34px;border:0;border-radius:7px;background:transparent;color:var(--t2);text-align:left;padding:0 9px;font-size:11px;cursor:pointer}.comment-menu button:hover{background:#ffffff09;color:white}
+.comment-body{margin:9px 0 0;color:var(--t2);font-size:12px;line-height:1.6}.comment-image{display:block;margin-top:9px;width:190px;max-width:100%;border:1px solid var(--b);border-radius:11px;overflow:hidden;cursor:pointer}.comment-image img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.spoiler-box{margin-top:9px;padding:11px;border:1px solid #f1c75b38;border-radius:11px;background:#f1c75b0a}.spoiler-warning{color:#e6cd86;font-size:11px;font-weight:800}.spoiler-content{display:none;margin-top:8px;color:var(--t2);font-size:12px;line-height:1.55}.spoiler-box.revealed .spoiler-content{display:block}.show-spoiler{margin-top:8px;height:31px;border:1px solid #f1c75b38;border-radius:8px;background:#f1c75b0d;color:#e9d397;font-size:10px;font-weight:800;cursor:pointer}
+.comment-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:10px}.comment-action{height:30px;padding:0 8px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--m);font-size:10px;font-weight:750;cursor:pointer}.comment-action:hover{border-color:var(--b);background:#ffffff07;color:white}.reaction{border-color:#ffffff12;background:#0f0f15;color:var(--t2)}
+.replies{margin:10px 0 0 44px;padding-left:11px;border-left:2px solid #ffffff0d;display:grid;gap:8px}.reply-card{padding:10px;border:1px solid #ffffff0d;border-radius:12px;background:#0e0e14}.quoted{margin:8px 0;padding:7px 9px;border-left:2px solid #777786;background:#0a0a0f;color:#9292a1;font-size:10px;line-height:1.45}.quoted b{color:#c7c7d0}
+.load-comments{height:40px;border:1px solid var(--b);border-radius:11px;background:#101016;color:var(--t2);font-weight:800;cursor:pointer}
+.comment-image-lightbox{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:#050508eF;padding:20px}.comment-image-lightbox.show{display:grid}.comment-image-lightbox img{width:min(760px,94vw);max-height:88vh;object-fit:contain;border-radius:12px;border:1px solid #ffffff20}.comment-image-lightbox button{position:fixed;right:18px;top:18px;width:40px;height:40px;border:1px solid #ffffff26;border-radius:10px;background:#111118;color:white;font-size:20px;cursor:pointer}
+
+.related{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.rel{border:1px solid var(--b);border-radius:15px;overflow:hidden;background:var(--s)}.rel img{aspect-ratio:2/3;object-fit:cover}.rel div{padding:10px}.rel b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}.rel small{color:var(--m)}.right{display:grid;gap:14px;align-content:start}.aliases{display:flex;gap:6px;flex-wrap:wrap}.alias{padding:6px 8px;border:1px solid var(--b);border-radius:999px;background:#0f0f15;color:var(--t2);font-size:11px}.hidden{display:none!important}.mobile{display:none}
+@media(max-width:1040px){:root{--side:0px}.side{display:none!important}.nav{display:none}.hero-in{grid-template-columns:220px 1fr}.stats{grid-column:1/-1}.content{grid-template-columns:1fr}.right{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){header{padding:0 14px}.search,.login{display:none}.hero{min-height:auto}.hero-in{display:block;padding:24px 17px}.cover-box{display:grid;grid-template-columns:135px 1fr;gap:14px}.cover-actions{grid-column:1/-1}.hero-copy{margin-top:20px}h1{font-size:46px}.stats{margin-top:18px}.content{padding:22px 15px 88px}.tabs{padding:0 6px}.toolbar{grid-template-columns:1fr 110px}.toolbar select:last-child{grid-column:1/-1}.chapter-main{grid-template-columns:66px minmax(0,1fr) auto;gap:10px}.chapter-thumb{width:66px;height:50px}.chapter-publications{margin-left:76px}.publication-row{grid-template-columns:minmax(0,1fr) auto;gap:5px 9px;padding:7px 0}.publication-language{grid-column:1}.publication-date{grid-column:1}.publication-actions{grid-column:2;grid-row:1/3;align-self:center}.chapter-actions{gap:5px}.read{height:33px;padding:0 9px}.toggle-publications{min-width:40px;height:33px;padding:0 6px}.reviews{grid-template-columns:1fr}.composer-toolbar{align-items:flex-end}.comments-order{width:100%;justify-content:flex-end}.replies{margin-left:28px}.related{grid-template-columns:repeat(2,1fr)}.right{grid-template-columns:1fr}.mobile{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:70;left:0;right:0;bottom:0;padding:7px 7px calc(7px + env(safe-area-inset-bottom));background:#0a0a0ef2;border-top:1px solid #ffffff14}.mobile a{display:grid;place-items:center;color:var(--m);font-size:10px;min-height:46px}.mobile a.active{color:white}}
+@media(max-width:430px){:root{--h:58px}.brand{font-size:22px}.cover-box{grid-template-columns:116px 1fr}h1{font-size:39px}.desc{font-size:13px}.toolbar{grid-template-columns:1fr}.toolbar select:last-child{grid-column:auto}.chapter{padding:10px}.chapter-main{grid-template-columns:56px minmax(0,1fr) auto;gap:8px}.chapter-thumb{width:56px;height:46px}.chapter-head{display:block}.cmeta{gap:5px;font-size:10px}.chapter-actions{gap:4px}.read{height:32px;padding:0 8px;font-size:10px}.toggle-publications{min-width:39px;height:32px;padding:0 5px}.chapter-publications{margin-left:0;margin-top:9px}.publication-label{padding-top:4px}.publication-row{grid-template-columns:minmax(0,1fr) 70px}.publication-language,.publication-date{font-size:10px}.publication-actions{grid-column:2;grid-row:1/3}.publication-actions .read{width:70px;padding:0 6px}.comments-head{align-items:flex-start}.comments-order{justify-content:flex-start}.composer-toolbar{display:block}.composer-tools{margin-bottom:8px}.publish-comment{width:100%}.attachment-preview{max-width:65%}.replies{margin-left:14px;padding-left:8px}.comment-actions{gap:3px}.tool-btn{padding:0 7px}.emoji-pop{left:10px;right:10px;bottom:100px;justify-content:center}.comment-image{width:160px}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="#"><span class="mark">MZ</span>Manga<i>Zone</i></a><nav class="nav"><a href="#">Inicio</a><a class="active" href="#">Explorar</a><a href="#">Fan-Art</a><a href="#">Clips</a><a href="#">Anime</a><a href="#">Comunidad</a></nav><div class="search"><input id="globalSearch" placeholder="Buscar manga…"></div><div class="actions"><button class="icon">✉</button><button class="icon">♢</button><button class="login">Acceder</button></div></header>
+<aside class="side"><a href="#">⌂</a><a class="active" href="#">⌕</a><a href="#">▤</a><a href="#">♛</a><a href="#">↗</a></aside>
+<main>
+<section class="hero"><div class="back"></div><div class="hero-in">
+<div class="cover-box"><div class="cover"><img id="cover" alt="Portada demo"></div><div class="cover-actions"><button id="readNow" class="btn red">Leer ahora</button><button id="fav" class="btn">♡</button></div></div>
+<div class="hero-copy"><div class="eyebrow">Manga · En curso</div><h1>Ashes of the Crown</h1><div class="original">灰の王冠 · Hai no Ōkan</div><div class="chips"><span class="chip red">Acción</span><span class="chip">Fantasía</span><span class="chip">Drama</span><span class="chip">Seinen</span><span class="chip ok">En curso</span></div><p class="desc">En un imperio donde la magia se alimenta de cenizas, Kael despierta con una corona marcada en la piel y un poder capaz de alterar el equilibrio entre los clanes.<span id="extra" class="hidden"> Su viaje lo llevará desde las ruinas del norte hasta la capital prohibida, donde cada alianza oculta una traición.</span></p><button id="expand" class="linkbtn">Leer descripción completa</button><div class="hero-btns"><button id="library" class="btn red">＋ Agregar a biblioteca</button><button id="listBtn" class="btn">Guardar en lista</button><button id="share" class="btn">Compartir</button></div></div>
+<aside class="stats"><div class="score"><div><strong>9.3</strong><div class="stars">★★★★★</div></div><small>12 846 valoraciones<br>Excelente</small></div><div class="grid4"><div class="stat"><b>48</b><small>Capítulos</small></div><div class="stat"><b>214K</b><small>Lectores</small></div><div class="stat"><b>#3</b><small>Ranking</small></div><div class="stat"><b>2024</b><small>Publicación</small></div></div><div class="facts"><div class="fact"><span>Autor</span><span>Riku Asano</span></div><div class="fact"><span>Artista</span><span>Mao Kirishima</span></div><div class="fact"><span>Idioma</span><span>Japonés</span></div></div></aside>
+</div></section>
+<nav class="tabs"><button class="tab active" data-tab="chapters">Capítulos</button><button class="tab" data-tab="groups">Grupos</button><button class="tab" data-tab="reviews">Reseñas</button><button class="tab" data-tab="related">Relacionados</button><button class="tab" data-tab="info">Información</button></nav>
+<div class="content"><div>
+<section id="panel-chapters" class="section panel"><div class="head"><div><h2>Capítulos</h2><div class="sub">Cada capítulo lógico reúne sus publicaciones disponibles. Elige con qué grupo leer.</div></div></div><div class="toolbar"><input id="chapterSearch" class="field" placeholder="Buscar capítulo…"><select id="releaseFilter" class="field"><option value="all">Todos los grupos</option><option>Crown Team</option><option>Red Moon</option><option>North Star</option></select><select id="order" class="field"><option value="desc">Más recientes</option><option value="asc">Más antiguos</option></select></div><div id="chapterList" class="list"></div></section>
+<section id="panel-groups" class="section panel groups hidden"><div class="head"><div><h2>Grupos vinculados</h2><div class="sub">Grupos con publicaciones disponibles para esta obra.</div></div></div><article class="card"><div class="logo">CT</div><div><b>Crown Team <span class="verified">● Verificado</span></b><div class="sub">Español · 36 proyectos</div></div><span class="pill">Principal</span></article><article class="card"><div class="logo">RM</div><div><b>Red Moon Scan <span class="verified">● Verificado</span></b><div class="sub">Español · Colaboración</div></div><span class="pill">Colaborador</span></article><article class="card"><div class="logo">NS</div><div><b>North Star <span class="verified">● Verificado</span></b><div class="sub">Español · Publicación disponible</div></div><span class="pill">Participante</span></article><div class="warn">“Grupo verificado por MangaZone” confirma identidad dentro de la plataforma. No implica licencia ni autorización editorial.</div></section>
+<section id="panel-reviews" class="section panel hidden"><div class="head"><div><h2>Reseñas destacadas</h2></div></div><div class="reviews"><article class="card review"><div class="review-top"><div class="user"><div class="avatar">LV</div><div><b>LunaV</b><div class="sub">Hace 2 días</div></div></div><b style="color:var(--g)">9/10</b></div><h3>Una fantasía oscura muy bien llevada</h3><p>La construcción del mundo y la tensión política funcionan muy bien. El protagonista tarda en despegar, pero luego la historia mejora muchísimo.</p><div class="review-foot"><span>Sin spoilers</span><button class="helpful">Útil · 128</button></div></article><article class="card review"><div class="review-top"><div class="user"><div class="avatar">KA</div><div><b>Kaito_89</b><div class="sub">Hace 5 días</div></div></div><b style="color:var(--g)">10/10</b></div><h3>Mi sorpresa del año</h3><p>El arte es espectacular y cada arco mejora el anterior. Los secundarios tienen suficiente peso.</p><div class="review-foot"><span style="color:var(--warning)">Contiene spoilers</span><button class="helpful">Útil · 94</button></div></article></div></section>
+<section id="panel-related" class="section panel hidden"><div class="head"><div><h2>Obras relacionadas</h2></div></div><div id="related" class="related"></div></section>
+<section id="panel-info" class="section panel hidden"><div class="head"><div><h2>Información completa</h2></div></div><div class="card facts"><div class="fact"><span>Título original</span><span>灰の王冠</span></div><div class="fact"><span>Romanización</span><span>Hai no Ōkan</span></div><div class="fact"><span>Tipo</span><span>Manga</span></div><div class="fact"><span>Clasificación</span><span>Mature</span></div></div></section>
+</div>
+<aside class="right"><section class="card"><h3>Alias</h3><div class="aliases"><span class="alias">Hai no Ōkan</span><span class="alias">Crown of Ashes</span><span class="alias">La corona de cenizas</span><span class="alias">灰の王冠</span></div></section><section class="card"><h3>Información rápida</h3><div class="facts"><div class="fact"><span>Tipo</span><span>Manga</span></div><div class="fact"><span>Estado</span><span style="color:var(--ok)">En curso</span></div><div class="fact"><span>Clasificación</span><span>Mature</span></div><div class="fact"><span>Actualización</span><span>Hace 2 h</span></div></div></section><section class="card"><h3>Historial del proyecto</h3><p><b>Crown Team</b><br><small class="sub">Capítulos 1–34 · 2024–2025</small></p><p><b>Crown Team + Red Moon</b><br><small class="sub">Capítulos 35–48 · Actualidad</small></p></section></aside>
+<section id="panel-comments" class="section panel comments-community">
+  <div class="comments-head">
+    <div><h2>Comentarios · 328</h2><div class="sub">Conversación de la comunidad sobre la obra. Las reseñas permanecen como opiniones estructuradas con puntuación.</div></div>
+    <div class="comments-order"><span>Ordenar por</span><select id="commentOrder"><option>Más recientes</option><option>Más valorados</option></select></div>
+  </div>
+
+  <div class="comments-shell">
+    <section class="composer" aria-label="Escribir comentario">
+      <div class="composer-user"><div class="comment-avatar">TU</div><div><b>@Usuario</b><span>Publicando como tu perfil</span></div></div>
+      <div id="replyingTo" class="replying"><span>↳ Respondiendo a <b id="replyingName">@usuario</b></span><button class="tool-btn" id="cancelReply" type="button">Cancelar</button></div>
+      <div id="quotePreview" class="quote-preview"><b id="quoteUser">@LunaV</b><br><span id="quoteText">Este arco está mejorando muchísimo...</span></div>
+      <textarea id="commentInput" class="comment-input" placeholder="Escribe un comentario…"></textarea>
+      <div id="attachmentPreview" class="attachment-preview"><img id="attachmentImage" alt="Vista previa de imagen adjunta"><button id="removeAttachment" class="remove-attachment" type="button" aria-label="Quitar imagen">×</button></div>
+      <div id="emojiPop" class="emoji-pop" aria-label="Emojis rápidos">
+        <button type="button" data-emoji="😊">😊</button><button type="button" data-emoji="😂">😂</button><button type="button" data-emoji="🔥">🔥</button><button type="button" data-emoji="❤️">❤️</button><button type="button" data-emoji="😮">😮</button>
+      </div>
+      <div class="composer-toolbar">
+        <div class="composer-tools">
+          <button id="emojiBtn" class="tool-btn" type="button">😊 Emoji</button>
+          <label class="tool-btn" for="commentImage" role="button">▧ Imagen</label>
+          <input id="commentImage" type="file" accept="image/*" hidden>
+          <button id="spoilerBtn" class="tool-btn" type="button">⚠ Spoiler</button>
+          <button id="quoteToolBtn" class="tool-btn" type="button">❝ Citar</button>
+        </div>
+        <button id="publishComment" class="publish-comment" type="button">Publicar</button>
+      </div>
+    </section>
+
+    <div class="comment-list" id="commentList">
+      <article class="comment-card">
+        <div class="comment-top">
+          <div class="comment-user"><div class="comment-avatar">LV</div><div class="comment-user-copy"><div class="comment-user-line"><span class="comment-name">LunaV</span><span class="comment-username">@lunav</span><span class="comment-badge">Lectora habitual</span></div><div class="comment-time">Hace 18 min</div></div></div>
+          <div class="comment-menu-wrap"><button class="menu-btn" type="button" aria-label="Opciones de comentario">•••</button><div class="comment-menu"><button type="button">Reportar</button><button type="button">Silenciar usuario</button></div></div>
+        </div>
+        <div class="comment-body">Este arco está mejorando muchísimo. La forma en que conectaron el conflicto de la capital con la historia de Kael me sorprendió.</div>
+        <div class="comment-actions">
+          <button class="comment-action reaction" type="button">♡ 24</button><button class="comment-action reaction" type="button">👍 18</button><button class="comment-action reaction" type="button">🔥 7</button>
+          <button class="comment-action reply-btn" data-user="@LunaV" type="button">Responder</button>
+          <button class="comment-action quote-btn" data-user="@LunaV" data-quote="Este arco está mejorando muchísimo..." type="button">Citar</button>
+        </div>
+        <div class="replies">
+          <article class="reply-card">
+            <div class="comment-top"><div class="comment-user"><div class="comment-avatar">AR</div><div><div class="comment-user-line"><span class="comment-name">Aria</span><span class="comment-username">@aria_reads</span></div><div class="comment-time">Hace 9 min</div></div></div><div class="comment-menu-wrap"><button class="menu-btn" type="button">•••</button><div class="comment-menu"><button type="button">Reportar</button><button type="button">Silenciar usuario</button></div></div></div>
+            <div class="quoted"><b>@LunaV</b><br>Este arco está mejorando muchísimo...</div>
+            <div class="comment-body">Sí, y el capítulo 48 por fin explica por qué la corona reaccionaba desde el primer arco.</div>
+            <div class="comment-actions"><button class="comment-action reaction" type="button">♡ 8</button><button class="comment-action reply-btn" data-user="@Aria" type="button">Responder</button><button class="comment-action quote-btn" data-user="@Aria" data-quote="Sí, y el capítulo 48 por fin explica por qué..." type="button">Citar</button></div>
+          </article>
+        </div>
+      </article>
+
+      <article class="comment-card">
+        <div class="comment-top">
+          <div class="comment-user"><div class="comment-avatar">KN</div><div class="comment-user-copy"><div class="comment-user-line"><span class="comment-name">KuroNeko</span><span class="comment-username">@kuroneko</span></div><div class="comment-time">Hace 43 min</div></div></div>
+          <div class="comment-menu-wrap"><button class="menu-btn" type="button" aria-label="Opciones de comentario">•••</button><div class="comment-menu"><button type="button">Reportar</button><button type="button">Silenciar usuario</button></div></div>
+        </div>
+        <div class="comment-body">El contraste entre la capital y las ruinas del norte está increíble.</div>
+        <button class="comment-image" type="button" aria-label="Ampliar imagen adjunta"><img class="demo-comment-image" alt="Imagen adjunta de comentario"></button>
+        <div class="comment-actions"><button class="comment-action reaction" type="button">♡ 16</button><button class="comment-action reaction" type="button">😂 4</button><button class="comment-action reply-btn" data-user="@KuroNeko" type="button">Responder</button><button class="comment-action quote-btn" data-user="@KuroNeko" data-quote="El contraste entre la capital y las ruinas del norte está increíble." type="button">Citar</button></div>
+      </article>
+
+      <article class="comment-card">
+        <div class="comment-top">
+          <div class="comment-user"><div class="comment-avatar">MI</div><div class="comment-user-copy"><div class="comment-user-line"><span class="comment-name">Mika</span><span class="comment-username">@mika_panels</span></div><div class="comment-time">Hace 1 h</div></div></div>
+          <div class="comment-menu-wrap"><button class="menu-btn" type="button" aria-label="Opciones de comentario">•••</button><div class="comment-menu"><button type="button">Reportar</button><button type="button">Silenciar usuario</button></div></div>
+        </div>
+        <div class="spoiler-box">
+          <div class="spoiler-warning">⚠ Este comentario contiene spoilers</div>
+          <button class="show-spoiler" type="button">Mostrar contenido</button>
+          <div class="spoiler-content">La revelación sobre el heredero cambia por completo la lectura de la escena del trono. No esperaba que conectaran ese símbolo con el capítulo 12.</div>
+        </div>
+        <div class="comment-actions"><button class="comment-action reaction" type="button">♡ 11</button><button class="comment-action reaction" type="button">🔥 5</button><button class="comment-action reply-btn" data-user="@Mika" type="button">Responder</button><button class="comment-action quote-btn" data-user="@Mika" data-quote="La revelación sobre el heredero cambia por completo..." type="button">Citar</button></div>
+      </article>
+
+      <article class="comment-card own-comment">
+        <div class="comment-top">
+          <div class="comment-user"><div class="comment-avatar">TU</div><div class="comment-user-copy"><div class="comment-user-line"><span class="comment-name">Usuario</span><span class="comment-username">@usuario</span><span class="comment-badge">Tú</span></div><div class="comment-time">Hace 2 h</div></div></div>
+          <div class="comment-menu-wrap"><button class="menu-btn" type="button" aria-label="Opciones de tu comentario">•••</button><div class="comment-menu"><button type="button">Editar</button><button type="button">Eliminar</button></div></div>
+        </div>
+        <div class="comment-body">La miniatura del capítulo 48 quedó muy bien con el tono del arco actual.</div>
+        <div class="comment-actions"><button class="comment-action reaction" type="button">♡ 3</button><button class="comment-action reply-btn" data-user="@Usuario" type="button">Responder</button><button class="comment-action quote-btn" data-user="@Usuario" data-quote="La miniatura del capítulo 48 quedó muy bien..." type="button">Citar</button></div>
+      </article>
+    </div>
+
+    <button class="load-comments" id="loadComments" type="button">Cargar más comentarios</button>
+  </div>
+</section>
+
+</div>
+</main>
+<div id="commentLightbox" class="comment-image-lightbox" aria-hidden="true"><button id="closeLightbox" type="button" aria-label="Cerrar imagen">×</button><img id="lightboxImage" alt="Imagen ampliada del comentario"></div>
+<nav class="mobile"><a href="#">⌂<span>Inicio</span></a><a class="active" href="#">⌕<span>Explorar</span></a><a href="#">▤<span>Biblioteca</span></a><a href="#">☆<span>Mi lista</span></a><a href="#">○<span>Perfil</span></a></nav>
+<script>
+const chapters=[
+{n:48,t:"La corona despierta",d:"Hace 2 h",x:1,thumb:"custom-red",publications:[
+  {g:"Crown Team",lang:"Español",d:"Hace 2 h",state:"Publicado",read:"unread"},
+  {g:"Red Moon",lang:"Español",d:"Hace 4 h",state:"Publicado",read:"read"},
+  {g:"North Star",lang:"Español",d:"Ayer",state:"Publicado",read:"unread"}
+]},
+{n:47,t:"El pacto del norte",d:"Ayer",thumb:null,publications:[
+  {g:"Crown Team",lang:"Español",d:"Ayer",state:"Publicado",read:"continue"},
+  {g:"Red Moon",lang:"Español",d:"Hace 1 día",state:"Publicado",read:"unread"}
+]},
+{n:46,t:"Cenizas en la capital",d:"Hace 3 días",thumb:"custom-blue",publications:[
+  {g:"Red Moon",lang:"Español",d:"Hace 3 días",state:"Publicado",read:"read"}
+]},
+{n:45,t:"La voz bajo el trono",d:"Hace 6 días",thumb:null,publications:[
+  {g:"Crown Team",lang:"Español",d:"Hace 6 días",state:"Publicado",read:"unread"},
+  {g:"Red Moon",lang:"Español",d:"Hace 1 semana",state:"Publicado",read:"continue"}
+]},
+{n:44,t:"El heredero sin nombre",d:"Hace 1 semana",thumb:"custom-gold",publications:[
+  {g:"Crown Team",lang:"Español",d:"Hace 1 semana",state:"Publicado",read:"read"}
+]},
+{n:43,t:"La torre de cristal",d:"Hace 2 semanas",thumb:null,publications:[
+  {g:"Red Moon",lang:"Español",d:"Hace 2 semanas",state:"Publicado",read:"unread"}
+]}
+];
+const rel=[["Paper Samurai","Manga","9.4","#9b2632"],["Tower of Glass","Manhua","8.5","#246472"],["Neon Exorcist","Manga","8.8","#851d31"],["Moonlit Contract","Manhwa","8.9","#6d3d87"]];
+function art(title,color,sub){let i=title.split(" ").slice(0,3).map(x=>x[0]).join("");let s=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900"><defs><linearGradient id="g"><stop stop-color="${color}"/><stop offset=".6" stop-color="#171722"/><stop offset="1" stop-color="#09090d"/></linearGradient></defs><rect width="600" height="900" fill="url(#g)"/><circle cx="430" cy="180" r="150" fill="none" stroke="#fff" stroke-opacity=".12"/><text x="50%" y="48%" text-anchor="middle" fill="#fff" font-size="116" font-family="Arial Black">${i}</text><text x="46" y="760" fill="#fff" font-size="38" font-family="Arial Black">${title}</text><text x="46" y="810" fill="#fff" fill-opacity=".55" font-size="22">${sub}</text></svg>`;return"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(s)}
+function chapterArt(n,title,variant){let colors={"custom-red":["#7e1f2d","#181820"],"custom-blue":["#244b62","#12151c"],"custom-gold":["#66532b","#17151a"]}[variant]||["#353542","#121218"];let s=`<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480"><defs><linearGradient id="cg" x2="1" y2="1"><stop stop-color="${colors[0]}"/><stop offset="1" stop-color="${colors[1]}"/></linearGradient></defs><rect width="720" height="480" fill="url(#cg)"/><circle cx="560" cy="90" r="150" fill="none" stroke="#fff" stroke-opacity=".12"/><path d="M0 390 L250 210 L390 350 L550 185 L720 315 L720 480 L0 480Z" fill="#fff" fill-opacity=".06"/><text x="38" y="78" fill="#fff" fill-opacity=".62" font-size="24" font-family="Arial">CAPÍTULO ${n}</text><text x="38" y="360" fill="#fff" font-size="42" font-family="Arial Black">${title}</text></svg>`;return"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(s)}
+cover.src=art("Ashes of the Crown","#a91f35","MANGAZONE DEMO");related.innerHTML=rel.map(x=>`<article class="rel"><img src="${art(x[0],x[3],x[1])}" alt=""><div><b>${x[0]}</b><small>${x[1]} · ★ ${x[2]}</small></div></article>`).join("");
+const openChapters=new Set();
+function readCTA(p){
+  if(p.read==="read")return {label:"✓ Leído",cls:"read-complete"};
+  if(p.read==="continue")return {label:"Continuar",cls:"continue"};
+  return {label:"Leer",cls:""};
+}
+function draw(){
+  let q=chapterSearch.value.toLowerCase();
+  let d=chapters.filter(c=>{
+    let searchable=`capítulo ${c.n} ${c.t} ${c.publications.map(p=>p.g+" "+p.lang).join(" ")}`.toLowerCase();
+    let groupOk=releaseFilter.value==="all"||c.publications.some(p=>p.g===releaseFilter.value);
+    return (!q||searchable.includes(q))&&groupOk;
+  });
+  d.sort((a,b)=>order.value==="desc"?b.n-a.n:a.n-b.n);
+
+  chapterList.innerHTML=d.map(c=>{
+    const primary=c.publications[0];
+    const alternatives=c.publications.slice(1);
+    const primaryCTA=readCTA(primary);
+    const thumb=c.thumb?chapterArt(c.n,c.t,c.thumb):cover.src;
+    const fallback=!c.thumb;
+    const isOpen=openChapters.has(c.n);
+
+    const altRows=alternatives.map(p=>{
+      const cta=readCTA(p);
+      return `<div class="publication-row">
+        <div class="publication-group">${p.g}</div>
+        <div class="publication-language">${p.lang}</div>
+        <div class="publication-date">${p.d}</div>
+        <div class="publication-actions"><button class="read ${cta.cls}" data-read-chapter="${c.n}" data-read-group="${p.g}">${cta.label}</button></div>
+      </div>`;
+    }).join("");
+
+    return `<article class="chapter ${alternatives.length?"":"single-publication"}">
+      <div class="chapter-main">
+        <div class="chapter-thumb ${fallback?"fallback":""}">
+          <img src="${thumb}" alt="${fallback?`Portada de Ashes of the Crown usada como respaldo del capítulo ${c.n}`:`Miniatura del capítulo ${c.n}`}">
+          ${fallback?'<span class="thumb-fallback">Portada</span>':""}
+        </div>
+        <div class="chapter-copy">
+          <div class="ctitle">Capítulo ${c.n}: ${c.t}</div>
+          <div class="cmeta">
+            <span class="primary-publication">${primary.g} · ${primary.lang}</span>
+            ${c.x?'<span class="pill" style="color:#ff818b">NUEVO</span>':""}
+            <span>${primary.d}</span>
+          </div>
+        </div>
+        <div class="chapter-actions">
+          <button class="read ${primaryCTA.cls}" data-read-chapter="${c.n}" data-read-group="${primary.g}">${primaryCTA.label}</button>
+          ${alternatives.length?`<button class="toggle-publications" data-toggle-chapter="${c.n}" type="button" aria-label="${isOpen?`Ocultar otras publicaciones del capítulo ${c.n}`:`Ver ${alternatives.length===1?"otra publicación":`otras ${alternatives.length} publicaciones`} del capítulo ${c.n}`}" aria-expanded="${isOpen}"><svg class="layers-icon lucide lucide-layers-3" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-9.17 4.17a2 2 0 0 1-1.66 0L2 12.5"/><path d="m22 17.5-9.17 4.17a2 2 0 0 1-1.66 0L2 17.5"/></svg><span class="layers-count" aria-hidden="true">${alternatives.length}</span></button>`:""}
+        </div>
+      </div>
+      ${alternatives.length?`<div class="chapter-publications ${isOpen?"open":""}">
+        <div class="publication-label">Otras publicaciones</div>
+        ${altRows}
+      </div>`:""}
+    </article>`;
+  }).join("")||'<div style="padding:35px;text-align:center;color:var(--m)">Sin resultados</div>';
+
+  document.querySelectorAll("[data-toggle-chapter]").forEach(b=>b.onclick=()=>{
+    const n=+b.dataset.toggleChapter;
+    openChapters.has(n)?openChapters.delete(n):openChapters.add(n);
+    draw();
+  });
+  document.querySelectorAll("[data-read-chapter]").forEach(b=>b.onclick=()=>alert(`Abrir Capítulo ${b.dataset.readChapter} · ${b.dataset.readGroup}`));
+}
+chapterSearch.oninput=draw;releaseFilter.onchange=draw;order.onchange=draw;draw();
+
+// Comentarios: interacción visual, sin persistencia ni backend.
+const demoCommentImage=art("Panel","#5b2b3c","COMUNIDAD");
+document.querySelectorAll(".demo-comment-image").forEach(img=>img.src=demoCommentImage);
+
+function closeCommentMenus(){document.querySelectorAll(".comment-menu.show").forEach(m=>m.classList.remove("show"))}
+document.querySelectorAll(".menu-btn").forEach(btn=>btn.onclick=e=>{
+  e.stopPropagation();
+  const menu=btn.nextElementSibling;
+  const wasOpen=menu.classList.contains("show");
+  closeCommentMenus();
+  if(!wasOpen)menu.classList.add("show");
+});
+document.addEventListener("click",closeCommentMenus);
+
+emojiBtn.onclick=e=>{e.stopPropagation();emojiPop.classList.toggle("show")};
+emojiPop.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-emoji]");
+  if(!btn)return;
+  commentInput.value+=btn.dataset.emoji;
+  emojiPop.classList.remove("show");
+  commentInput.focus();
+});
+document.addEventListener("click",e=>{if(!emojiPop.contains(e.target)&&e.target!==emojiBtn)emojiPop.classList.remove("show")});
+
+spoilerBtn.onclick=()=>spoilerBtn.classList.toggle("active");
+quoteToolBtn.onclick=()=>{
+  quoteUser.textContent="@LunaV";
+  quoteText.textContent="Este arco está mejorando muchísimo...";
+  quotePreview.classList.toggle("show");
+  commentInput.focus();
+};
+
+let attachmentUrl=null;
+commentImage.onchange=e=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  if(attachmentUrl)URL.revokeObjectURL(attachmentUrl);
+  attachmentUrl=URL.createObjectURL(file);
+  attachmentImage.src=attachmentUrl;
+  attachmentPreview.classList.add("show");
+};
+removeAttachment.onclick=()=>{
+  attachmentPreview.classList.remove("show");
+  commentImage.value="";
+  if(attachmentUrl){URL.revokeObjectURL(attachmentUrl);attachmentUrl=null}
+};
+
+document.querySelectorAll(".reply-btn").forEach(btn=>btn.onclick=()=>{
+  replyingName.textContent=btn.dataset.user;
+  replyingTo.classList.add("show");
+  commentInput.focus();
+});
+cancelReply.onclick=()=>replyingTo.classList.remove("show");
+
+document.querySelectorAll(".quote-btn").forEach(btn=>btn.onclick=()=>{
+  quoteUser.textContent=btn.dataset.user;
+  quoteText.textContent=btn.dataset.quote;
+  quotePreview.classList.add("show");
+  document.getElementById("panel-comments").scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(()=>commentInput.focus(),180);
+});
+
+document.querySelectorAll(".show-spoiler").forEach(btn=>btn.onclick=()=>{
+  const box=btn.closest(".spoiler-box");
+  box.classList.toggle("revealed");
+  btn.textContent=box.classList.contains("revealed")?"Ocultar contenido":"Mostrar contenido";
+});
+
+document.querySelectorAll(".comment-image").forEach(btn=>btn.onclick=()=>{
+  const img=btn.querySelector("img");
+  lightboxImage.src=img.src;
+  commentLightbox.classList.add("show");
+  commentLightbox.setAttribute("aria-hidden","false");
+});
+closeLightbox.onclick=()=>{commentLightbox.classList.remove("show");commentLightbox.setAttribute("aria-hidden","true")};
+commentLightbox.onclick=e=>{if(e.target===commentLightbox)closeLightbox.click()};
+
+publishComment.onclick=()=>{
+  if(!commentInput.value.trim()&&!attachmentPreview.classList.contains("show"))return;
+  const spoiler=spoilerBtn.classList.contains("active");
+  const card=document.createElement("article");
+  card.className="comment-card own-comment";
+  const safe=commentInput.value.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])).replace(/\n/g,"<br>");
+  const quote=quotePreview.classList.contains("show")?`<div class="quoted"><b>${quoteUser.textContent}</b><br>${quoteText.textContent}</div>`:"";
+  const body=spoiler?`<div class="spoiler-box revealed"><div class="spoiler-warning">⚠ Este comentario contiene spoilers</div><button class="show-spoiler" type="button">Ocultar contenido</button><div class="spoiler-content">${safe}</div></div>`:`<div class="comment-body">${safe}</div>`;
+  const image=attachmentPreview.classList.contains("show")?`<button class="comment-image" type="button"><img src="${attachmentImage.src}" alt="Imagen adjunta de comentario"></button>`:"";
+  card.innerHTML=`<div class="comment-top"><div class="comment-user"><div class="comment-avatar">TU</div><div><div class="comment-user-line"><span class="comment-name">Usuario</span><span class="comment-username">@usuario</span><span class="comment-badge">Tú</span></div><div class="comment-time">Ahora</div></div></div><div class="comment-menu-wrap"><button class="menu-btn" type="button">•••</button><div class="comment-menu"><button type="button">Editar</button><button type="button">Eliminar</button></div></div></div>${quote}${body}${image}<div class="comment-actions"><button class="comment-action reaction" type="button">♡ 0</button><button class="comment-action" type="button">Responder</button><button class="comment-action" type="button">Citar</button></div>`;
+  commentList.prepend(card);
+  commentInput.value="";
+  spoilerBtn.classList.remove("active");
+  quotePreview.classList.remove("show");
+  replyingTo.classList.remove("show");
+  attachmentPreview.classList.remove("show");
+  commentImage.value="";
+  if(attachmentUrl){URL.revokeObjectURL(attachmentUrl);attachmentUrl=null}
+  card.querySelector(".menu-btn").onclick=e=>{e.stopPropagation();closeCommentMenus();card.querySelector(".comment-menu").classList.toggle("show")};
+  card.querySelector(".show-spoiler")?.addEventListener("click",e=>{const box=e.target.closest(".spoiler-box");box.classList.toggle("revealed");e.target.textContent=box.classList.contains("revealed")?"Ocultar contenido":"Mostrar contenido"});
+  card.querySelector(".comment-image")?.addEventListener("click",e=>{lightboxImage.src=e.currentTarget.querySelector("img").src;commentLightbox.classList.add("show");commentLightbox.setAttribute("aria-hidden","false")});
+};
+
+loadComments.onclick=()=>{loadComments.textContent="No hay más comentarios en esta muestra";loadComments.disabled=true};
+
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".content>div>.panel").forEach(x=>x.classList.add("hidden"));t.classList.add("active");document.getElementById("panel-"+t.dataset.tab).classList.remove("hidden")});
+expand.onclick=()=>{extra.classList.toggle("hidden");expand.textContent=extra.classList.contains("hidden")?"Leer descripción completa":"Mostrar menos"};library.onclick=()=>{library.dataset.on=library.dataset.on? "": "1";library.textContent=library.dataset.on?"✓ En biblioteca":"＋ Agregar a biblioteca"};fav.onclick=()=>{fav.dataset.on=fav.dataset.on?"":"1";fav.textContent=fav.dataset.on?"♥":"♡";fav.style.color=fav.dataset.on?"#ff6570":""};listBtn.onclick=()=>alert("Demo visual: selector de listas.");share.onclick=()=>alert("Demo visual: compartir ficha.");readNow.onclick=()=>document.querySelector('[data-tab="chapters"]').click();document.querySelectorAll(".helpful").forEach(b=>b.onclick=()=>{if(b.dataset.on)return;b.dataset.on=1;b.textContent="Útil · "+(+b.textContent.match(/\d+/)[0]+1);b.style.background="var(--rs)"});document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();globalSearch.focus()}});
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+.sidebar {
+  position: fixed;
+  z-index: var(--mz-z-sidebar);
+  top: var(--mz-header-height);
+  bottom: 0;
+  left: 0;
+  width: var(--mz-sidebar-width);
+  overflow: hidden;
+  border-right: 1px solid var(--mz-border);
+  background: color-mix(in srgb, var(--mz-surface) 96%, transparent);
+  box-shadow: 12px 0 30px rgb(0 0 0 / 0%);
+  transition:
+    width var(--mz-transition-normal),
+    box-shadow var(--mz-transition-normal);
+}
+
+.sidebar:hover,
+.sidebar:focus-within {
+  width: var(--mz-sidebar-expanded-width);
+  box-shadow: 18px 0 36px rgb(0 0 0 / 34%);
+}
+
+.navigation {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: var(--mz-space-4) 10px;
+}
+
+.linkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mz-space-1);
+}
+
+.link {
+  display: flex;
+  min-width: calc(var(--mz-sidebar-expanded-width) - 20px);
+  min-height: 44px;
+  align-items: center;
+  gap: var(--mz-space-3);
+  padding-inline: 10px;
+  overflow: hidden;
+  border-radius: var(--mz-radius-md);
+  color: var(--mz-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 550;
+  white-space: nowrap;
+  transition:
+    color var(--mz-transition-fast),
+    background-color var(--mz-transition-fast);
+}
+
+.icon {
+  display: inline-flex;
+  width: 28px;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--mz-transition-fast),
+    transform var(--mz-transition-fast);
+}
+
+.sidebar:hover .label,
+.sidebar:focus-within .label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.active {
+  background: var(--mz-red-soft);
+  color: var(--mz-red-hover);
+}
+
+.separator {
+  width: 36px;
+  height: 1px;
+  flex: 0 0 auto;
+  margin: var(--mz-space-3) auto;
+  background: var(--mz-border);
+  transition: width var(--mz-transition-normal);
+}
+
+.sidebar:hover .separator,
+.sidebar:focus-within .separator {
+  width: calc(100% - 20px);
+}
+
+.bottomGroup {
+  margin-top: auto;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    background: var(--mz-glass-hover);
+    color: var(--mz-text-primary);
+  }
+
+  .link.active:hover {
+    background: var(--mz-red-soft);
+    color: var(--mz-red-hover);
+  }
+}
+
+@media (max-width: 979px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .label,
+  .separator {
+    transition: none;
+  }
+}

@@ -1,0 +1,86 @@
+.field {
+  display: grid;
+  min-width: 0;
+  gap: var(--mz-space-2);
+}
+
+.label {
+  color: var(--mz-text-secondary);
+  font-size: var(--mz-text-xs);
+  font-weight: 650;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: var(--mz-space-3);
+  color: var(--mz-text-muted);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--mz-space-3) 0 40px;
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-md);
+  outline: 0;
+  background: var(--mz-surface);
+  color: var(--mz-text-primary);
+  font-size: var(--mz-text-sm);
+  transition:
+    border-color var(--mz-transition-fast),
+    background-color var(--mz-transition-fast),
+    box-shadow var(--mz-transition-fast);
+}
+
+.input::placeholder {
+  color: var(--mz-text-muted);
+}
+
+.input:focus {
+  border-color: color-mix(in srgb, var(--mz-red) 48%, transparent);
+  background: var(--mz-surface-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mz-red) 10%, transparent);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--mz-red);
+}
+
+.field[data-disabled] {
+  opacity: 0.55;
+}
+
+.description,
+.error {
+  margin: 0;
+  font-size: var(--mz-text-xs);
+  line-height: 1.45;
+}
+
+.description {
+  color: var(--mz-text-muted);
+}
+
+.error {
+  color: var(--mz-red-hover);
+}

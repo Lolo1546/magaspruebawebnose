@@ -1,0 +1,17 @@
+.searchForm {
+  flex-wrap: wrap;
+}
+
+.field {
+  flex: 1 1 210px;
+}
+
+@media (max-width: 540px) {
+  .field {
+    flex-basis: 100%;
+  }
+
+  .searchForm > button[type="submit"] {
+    flex: 1 1 auto;
+  }
+}

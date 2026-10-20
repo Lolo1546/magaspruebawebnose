@@ -1,0 +1,22 @@
+.page {
+  padding-block: var(--mz-space-8);
+}
+
+.action {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--mz-space-5);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-red);
+  color: var(--mz-text-on-accent);
+  font-size: var(--mz-text-sm);
+  font-weight: 750;
+}
+
+@media (hover: hover) {
+  .action:hover {
+    background: var(--mz-red-hover);
+  }
+}

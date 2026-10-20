@@ -1,0 +1,28 @@
+.empty {
+  display: flex;
+  min-height: 104px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mz-space-3);
+  margin-top: var(--mz-space-4);
+  padding: var(--mz-space-5);
+  border: 1px dashed var(--mz-border-strong);
+  border-radius: var(--mz-radius-lg);
+  background: var(--mz-surface);
+  color: var(--mz-text-muted);
+  text-align: center;
+}
+
+.marker {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-red);
+  box-shadow: 0 0 10px var(--mz-red-glow);
+}
+
+.empty p {
+  font-size: var(--mz-text-sm);
+  line-height: 1.5;
+}

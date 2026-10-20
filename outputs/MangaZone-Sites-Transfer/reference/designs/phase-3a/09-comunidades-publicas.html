@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090d" />
+  <title>MangaZone — Comunidades públicas</title>
+  <meta name="description" content="Prototipo visual del directorio público de comunidades de MangaZone." />
+  <style>
+    :root{
+      --bg:#08080b;
+      --surface:#121219;
+      --surface-2:#181820;
+      --surface-3:#20202a;
+      --border:#292933;
+      --border-soft:#1d1d25;
+      --text:#f5f5f7;
+      --text-2:#b9b9c5;
+      --muted:#7f7f90;
+      --red:#e63946;
+      --red-2:#ff4e5b;
+      --red-soft:rgba(230,57,70,.15);
+      --blue:#5ea8ff;
+      --blue-soft:rgba(94,168,255,.12);
+      --green:#46c97c;
+      --yellow:#f4bd52;
+      --gold:#f1c75b;
+      --purple:#9b6dff;
+      --radius-sm:8px;
+      --radius-md:12px;
+      --radius-lg:18px;
+      --radius-xl:24px;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --header-h:64px;
+      --sidebar-w:72px;
+      --max:1480px;
+      --fast:150ms;
+      --normal:260ms;
+      --font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --display:"Arial Narrow",Impact,Haettenschweiler,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;min-height:100vh;color:var(--text);font-family:var(--font);
+      background:
+        radial-gradient(circle at 13% 0%,rgba(230,57,70,.08),transparent 25%),
+        radial-gradient(circle at 88% 8%,rgba(155,109,255,.05),transparent 22%),
+        linear-gradient(180deg,#09090d 0%,#08080b 58%,#0b0b10 100%);
+    }
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    :focus-visible{outline:2px solid var(--red-2);outline-offset:3px}
+    ::selection{background:var(--red);color:#fff}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-track{background:#0b0b0f}
+    ::-webkit-scrollbar-thumb{background:#2b2b35;border-radius:999px;border:2px solid #0b0b0f}
+
+    .topbar{
+      position:fixed;inset:0 0 auto;height:var(--header-h);z-index:60;
+      display:flex;align-items:center;gap:18px;padding:0 22px;
+      background:rgba(9,9,13,.8);backdrop-filter:blur(18px) saturate(140%);
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+    .brand-mark{
+      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--red),#861d2b);font-weight:900;
+      box-shadow:0 0 26px rgba(230,57,70,.3)
+    }
+    .brand-text{font-family:var(--display);font-size:26px;letter-spacing:.6px;line-height:1}
+    .brand-text span{color:var(--red)}
+    .topnav{display:flex;gap:6px;align-items:center}
+    .topnav a{padding:10px 12px;border-radius:10px;color:var(--text-2);font-size:14px}
+    .topnav a:hover,.topnav a.active{background:rgba(255,255,255,.055);color:#fff}
+    .header-search{flex:1;max-width:560px;margin-left:auto;position:relative}
+    .header-search input{
+      width:100%;height:42px;border-radius:13px;border:1px solid var(--border);
+      background:rgba(19,19,25,.9);padding:0 92px 0 42px;outline:none
+    }
+    .header-search input:focus{border-color:rgba(230,57,70,.7);box-shadow:0 0 0 4px var(--red-soft)}
+    .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .shortcut{
+      position:absolute;right:10px;top:50%;transform:translateY(-50%);
+      color:var(--muted);font-size:11px;border:1px solid var(--border);padding:4px 7px;border-radius:7px
+    }
+    .header-actions{display:flex;gap:8px}
+    .icon-btn,.login-btn{
+      height:40px;border:1px solid var(--border);background:var(--surface);
+      border-radius:11px;display:grid;place-items:center
+    }
+    .icon-btn{width:40px}.login-btn{padding:0 15px;font-weight:800}
+    .icon-btn:hover,.login-btn:hover{background:var(--surface-2)}
+
+    .sidebar{
+      position:fixed;left:0;top:var(--header-h);bottom:0;width:var(--sidebar-w);z-index:50;
+      background:rgba(10,10,14,.9);border-right:1px solid rgba(255,255,255,.06);
+      padding:14px 10px;display:flex;flex-direction:column;gap:8px
+    }
+    .side-link{
+      width:50px;height:48px;border-radius:13px;display:grid;place-items:center;color:var(--muted);
+      position:relative;transition:var(--fast)
+    }
+    .side-link:hover,.side-link.active{background:var(--red-soft);color:#fff}
+    .side-link.active::before{
+      content:"";position:absolute;left:-10px;width:3px;height:24px;border-radius:3px;background:var(--red)
+    }
+    .side-spacer{flex:1}
+
+    .app{
+      width:min(calc(100% - var(--sidebar-w)),var(--max));
+      margin-left:var(--sidebar-w);
+      padding:calc(var(--header-h) + 26px) 26px 110px;
+    }
+
+    .communities-hero{
+      position:relative;overflow:hidden;border:1px solid var(--border-soft);
+      border-radius:var(--radius-xl);padding:30px 34px;
+      background:
+        linear-gradient(90deg,rgba(8,8,11,.97),rgba(8,8,11,.76) 56%,rgba(8,8,11,.28)),
+        radial-gradient(circle at 84% 42%,rgba(155,109,255,.22),transparent 23%),
+        radial-gradient(circle at 74% 28%,rgba(230,57,70,.2),transparent 22%),
+        linear-gradient(135deg,#180e13,#11121a 56%,#251118);
+      box-shadow:var(--shadow)
+    }
+    .communities-hero::after{
+      content:"";position:absolute;inset:-70px -40px auto auto;width:360px;height:360px;
+      background:
+        linear-gradient(120deg,transparent 45%,rgba(255,255,255,.05) 46% 47%,transparent 48%),
+        linear-gradient(36deg,transparent 48%,rgba(155,109,255,.11) 49% 50%,transparent 51%);
+      opacity:.85
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;color:#b99cff;
+      font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase
+    }
+    .eyebrow::before{content:"";width:22px;height:2px;background:var(--purple)}
+    h1{
+      font-family:var(--display);font-size:clamp(42px,6vw,70px);line-height:.95;
+      margin:10px 0 8px;text-transform:uppercase;letter-spacing:.6px
+    }
+    .hero-copy{max-width:740px;color:var(--text-2);line-height:1.65;margin:0}
+    .hero-stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+    .hero-stat{
+      padding:10px 12px;min-width:125px;border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;background:rgba(255,255,255,.04)
+    }
+    .hero-stat strong{display:block;font-size:18px}
+    .hero-stat span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+
+    .toolbar{
+      display:grid;grid-template-columns:minmax(270px,1fr) auto auto auto;gap:10px;
+      margin:22px 0 18px
+    }
+    .search-box{position:relative}
+    .search-box input{
+      width:100%;height:44px;border:1px solid var(--border);border-radius:12px;
+      background:var(--surface);padding:0 14px 0 42px;outline:none
+    }
+    .search-box input:focus{border-color:rgba(230,57,70,.65);box-shadow:0 0 0 4px var(--red-soft)}
+    .search-box span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .select{
+      height:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:0 34px 0 12px
+    }
+    .view-toggle{
+      display:flex;padding:4px;height:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface)
+    }
+    .view-toggle button{
+      width:38px;border:0;border-radius:9px;background:transparent;color:var(--muted)
+    }
+    .view-toggle button.active{background:var(--red-soft);color:#fff}
+    .request-btn{
+      height:44px;padding:0 14px;border:0;border-radius:12px;
+      background:linear-gradient(135deg,var(--red),#b72435);font-weight:850
+    }
+
+    .featured{
+      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:24px
+    }
+    .featured-card{
+      position:relative;overflow:hidden;border:1px solid var(--border);border-radius:18px;
+      min-height:250px;background:var(--surface);box-shadow:0 15px 36px rgba(0,0,0,.2)
+    }
+    .featured-bg{
+      position:absolute;inset:0;
+      background:
+        linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.84)),
+        radial-gradient(circle at 72% 20%,rgba(255,255,255,.14),transparent 26%),
+        linear-gradient(135deg,var(--accent),#171722 62%,#09090d)
+    }
+    .featured-bg::after{
+      content:"";position:absolute;inset:0;
+      background:
+        linear-gradient(125deg,transparent 44%,rgba(255,255,255,.05) 45% 46%,transparent 47%),
+        linear-gradient(35deg,transparent 55%,rgba(255,255,255,.04) 56% 57%,transparent 58%)
+    }
+    .featured-content{
+      position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:18px
+    }
+    .featured-icon{
+      width:58px;height:58px;border-radius:15px;display:grid;place-items:center;
+      background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(10px);font-weight:950;font-size:22px;margin-bottom:14px
+    }
+    .featured-name{font-size:20px;font-weight:950}
+    .featured-meta{display:flex;gap:8px;flex-wrap:wrap;color:#ddd;font-size:11px;margin-top:7px}
+
+    .section-head{
+      display:flex;align-items:end;justify-content:space-between;gap:14px;margin:0 0 14px
+    }
+    .section-title{font-size:22px;font-weight:950;margin:0}
+    .section-title::before{
+      content:"";display:inline-block;width:4px;height:23px;background:var(--red);
+      border-radius:4px;margin-right:10px;vertical-align:-4px
+    }
+    .section-sub{color:var(--muted);font-size:12px;margin-top:4px}
+    .results-count{font-size:11px;color:var(--muted)}
+
+    .communities-grid{
+      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px
+    }
+    .community-card{
+      position:relative;border:1px solid var(--border);border-radius:18px;
+      background:rgba(18,18,24,.84);overflow:hidden;transition:var(--normal)
+    }
+    .community-card:hover{transform:translateY(-4px);border-color:#3d3d49}
+    .community-banner{
+      height:120px;position:relative;overflow:hidden;
+      background:
+        radial-gradient(circle at 76% 24%,rgba(255,255,255,.15),transparent 24%),
+        linear-gradient(135deg,var(--accent),#171722 68%,#09090d)
+    }
+    .community-banner::after{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.72))
+    }
+    .community-icon{
+      position:absolute;left:16px;top:82px;z-index:2;width:70px;height:70px;border-radius:18px;
+      display:grid;place-items:center;background:#101016;border:4px solid #121219;
+      font-size:24px;font-weight:950
+    }
+    .join-btn{
+      position:absolute;right:14px;top:132px;z-index:2;height:36px;padding:0 11px;
+      border-radius:10px;border:1px solid rgba(230,57,70,.45);background:var(--red-soft);font-weight:850
+    }
+    .join-btn.joined{background:var(--surface-2);border-color:var(--border);color:var(--text-2)}
+    .community-body{padding:38px 16px 16px}
+    .community-name{font-size:17px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .community-slug{color:var(--muted);font-size:11px;margin-top:4px}
+    .community-description{color:var(--text-2);font-size:12px;line-height:1.55;margin:13px 0;min-height:56px}
+    .tags{display:flex;gap:7px;flex-wrap:wrap}
+    .tag{
+      padding:6px 8px;border:1px solid var(--border);border-radius:999px;
+      background:#101016;color:var(--text-2);font-size:10px
+    }
+    .community-stats{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px
+    }
+    .mini-stat{
+      padding:9px;border-radius:11px;background:#101016;border:1px solid var(--border-soft);text-align:center
+    }
+    .mini-stat strong{display:block;font-size:13px}
+    .mini-stat span{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+    .community-footer{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      margin-top:14px;padding-top:13px;border-top:1px solid var(--border-soft)
+    }
+    .activity{
+      display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:10px
+    }
+    .activity::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green)}
+    .open-btn{
+      height:36px;padding:0 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);font-weight:800
+    }
+
+    .communities-grid.list-view{grid-template-columns:1fr;gap:10px}
+    .list-view .community-card{
+      display:grid;grid-template-columns:220px minmax(0,1fr) 240px;gap:0;align-items:center
+    }
+    .list-view .community-banner{height:100%}
+    .list-view .community-icon{left:16px;top:50%;transform:translateY(-50%)}
+    .list-view .join-btn{right:14px;top:14px}
+    .list-view .community-body{padding:18px}
+    .list-view .community-description{min-height:0}
+    .list-view .community-stats{margin:0 14px 0 0}
+    .list-view .community-footer{grid-column:2/-1;margin:0 14px 14px;padding-top:10px}
+
+    .empty{
+      border:1px dashed #343441;border-radius:18px;padding:58px 20px;text-align:center;
+      color:var(--muted);background:rgba(255,255,255,.02)
+    }
+    .empty strong{display:block;color:#fff;font-size:18px;margin-bottom:8px}
+
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.68);
+      backdrop-filter:blur(4px);display:none;place-items:center;padding:18px
+    }
+    .modal-backdrop.show{display:grid}
+    .modal{
+      width:min(100%,520px);border:1px solid var(--border);border-radius:18px;
+      background:#13131b;padding:20px;box-shadow:var(--shadow)
+    }
+    .modal h2{margin:0 0 8px}
+    .modal p{margin:0;color:var(--text-2);font-size:13px;line-height:1.55}
+    .form-grid{display:grid;gap:12px;margin-top:16px}
+    .field-label{display:grid;gap:7px;font-size:12px;color:var(--text-2);font-weight:800}
+    .field,.textarea{
+      width:100%;border:1px solid var(--border);border-radius:11px;
+      background:var(--surface);padding:0 12px;outline:none
+    }
+    .field{height:42px}
+    .textarea{min-height:90px;padding-top:10px;resize:vertical}
+    .field:focus,.textarea:focus{border-color:rgba(230,57,70,.65);box-shadow:0 0 0 4px var(--red-soft)}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+    .modal-actions button{
+      height:42px;padding:0 14px;border-radius:11px;border:1px solid var(--border);background:var(--surface-2)
+    }
+    .modal-actions .confirm{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+
+    .toast{
+      position:fixed;left:50%;bottom:28px;z-index:120;transform:translate(-50%,20px);
+      opacity:0;pointer-events:none;transition:var(--normal);
+      background:#15151e;border:1px solid var(--border);border-radius:12px;
+      padding:11px 14px;box-shadow:var(--shadow);font-size:12px
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .mobile-nav{display:none}
+
+    @media(max-width:1240px){
+      .communities-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .featured{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .topnav a:nth-last-child(-n+2){display:none}
+      .list-view .community-card{grid-template-columns:180px minmax(0,1fr)}
+      .list-view .community-stats{grid-column:2;padding:0 18px 14px;margin:0}
+      .list-view .community-footer{grid-column:1/-1}
+    }
+    @media(max-width:980px){
+      :root{--sidebar-w:0px}
+      .sidebar{display:none}
+      .app{width:100%;margin-left:0}
+      .topnav{display:none}
+    }
+    @media(max-width:820px){
+      .header-search{display:none}
+      .login-btn{display:none}
+      .topbar{padding:0 14px}
+      .app{padding-left:16px;padding-right:16px}
+      .toolbar{grid-template-columns:1fr 1fr}
+      .search-box{grid-column:1/-1}
+      .featured{grid-template-columns:1fr}
+      .communities-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:640px){
+      :root{--header-h:58px}
+      .brand-text{font-size:22px}.brand-mark{width:31px;height:31px}
+      .header-actions .icon-btn:first-child{display:none}
+      .app{padding-top:calc(var(--header-h) + 16px);padding-bottom:92px}
+      .communities-hero{padding:24px 21px}
+      h1{font-size:44px}
+      .hero-copy{font-size:13px}
+      .toolbar{grid-template-columns:1fr}
+      .search-box{grid-column:auto}
+      .list-view .community-card{display:block}
+      .list-view .community-banner{height:120px}
+      .list-view .community-icon{top:82px;transform:none}
+      .list-view .join-btn{top:132px}
+      .list-view .community-body{padding:38px 16px 16px}
+      .list-view .community-stats{padding:0 16px 14px}
+      .list-view .community-footer{margin:0 16px 16px}
+      .mobile-nav{
+        display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:70;
+        left:0;right:0;bottom:0;padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+        background:rgba(10,10,14,.94);backdrop-filter:blur(18px);
+        border-top:1px solid rgba(255,255,255,.08)
+      }
+      .mobile-nav a{display:grid;place-items:center;gap:3px;color:var(--muted);font-size:10px;min-height:48px}
+      .mobile-nav a.active{color:#fff}
+      .mobile-nav svg{width:20px;height:20px}
+      .toast{bottom:82px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-mark">MZ</span>
+      <span class="brand-text">Manga<span>Zone</span></span>
+    </a>
+
+    <nav class="topnav">
+      <a href="#">Inicio</a>
+      <a href="#">Explorar</a>
+      <a href="#">Fan-Art</a>
+      <a href="#">Clips</a>
+      <a href="#">Anime</a>
+      <a href="#" class="active">Comunidad</a>
+    </nav>
+
+    <div class="header-search">
+      <span class="search-icon">⌕</span>
+      <input id="globalSearch" placeholder="Buscar manga…" />
+      <span class="shortcut">Ctrl K</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn">✉</button>
+      <button class="icon-btn">♢</button>
+      <button class="login-btn">Acceder</button>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <a class="side-link" href="#">⌂</a>
+    <a class="side-link" href="#">⌕</a>
+    <a class="side-link" href="#">▤</a>
+    <a class="side-link" href="#">♛</a>
+    <a class="side-link active" href="#">◎</a>
+    <div class="side-spacer"></div>
+    <a class="side-link" href="#">⚙</a>
+  </aside>
+
+  <main class="app">
+    <section class="communities-hero">
+      <span class="eyebrow">Espacios para compartir</span>
+      <h1>Comunidades públicas</h1>
+      <p class="hero-copy">
+        Encuentra espacios dedicados a géneros, obras y temas específicos. Participa en publicaciones, debates y recomendaciones.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong id="communityStat">12</strong><span>Comunidades visibles</span></div>
+        <div class="hero-stat"><strong>28 430</strong><span>Miembros totales</span></div>
+        <div class="hero-stat"><strong>4 918</strong><span>Publicaciones este mes</span></div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="search-box">
+        <span>⌕</span>
+        <input id="communitySearch" type="search" placeholder="Buscar comunidad, tema o manga…" />
+      </div>
+
+      <select id="categoryFilter" class="select">
+        <option value="all">Todas las categorías</option>
+        <option value="Género">Género</option>
+        <option value="Obra">Obra</option>
+        <option value="General">General</option>
+        <option value="Arte">Arte</option>
+      </select>
+
+      <select id="activityFilter" class="select">
+        <option value="all">Toda actividad</option>
+        <option value="Muy activa">Muy activas</option>
+        <option value="Activa">Activas</option>
+        <option value="Moderada">Moderadas</option>
+      </select>
+
+      <div class="view-toggle">
+        <button id="gridBtn" class="active">▦</button>
+        <button id="listBtn">☷</button>
+      </div>
+
+      <button id="requestBtn" class="request-btn">Solicitar comunidad</button>
+    </section>
+
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Destacadas</h2>
+        <div class="section-sub">Comunidades con conversación constante y contenido reciente.</div>
+      </div>
+    </div>
+
+    <section id="featuredGrid" class="featured"></section>
+
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Todas las comunidades</h2>
+        <div class="section-sub">Explora perfiles públicos, publicaciones y miembros.</div>
+      </div>
+      <div id="resultsCount" class="results-count">12 resultados</div>
+    </div>
+
+    <section id="communitiesGrid" class="communities-grid"></section>
+
+    <div id="emptyState" class="empty" hidden>
+      <strong>No encontramos comunidades</strong>
+      Prueba con otros filtros o busca por un tema distinto.
+    </div>
+  </main>
+
+  <div id="requestModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Solicitar creación de comunidad</h2>
+      <p>Este formulario es solo una simulación visual. La solicitud real pasará por revisión.</p>
+      <div class="form-grid">
+        <label class="field-label">Nombre propuesto
+          <input id="requestName" class="field" placeholder="Ej. Club de fantasía oscura">
+        </label>
+        <label class="field-label">Categoría
+          <select id="requestCategory" class="field">
+            <option>Género</option>
+            <option>Obra</option>
+            <option>General</option>
+            <option>Arte</option>
+          </select>
+        </label>
+        <label class="field-label">Descripción
+          <textarea id="requestDescription" class="textarea" placeholder="Explica el propósito de la comunidad…"></textarea>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button id="cancelRequest">Cancelar</button>
+        <button id="submitRequest" class="confirm">Enviar solicitud</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <nav class="mobile-nav">
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11 12 3l9 8v9H3z" stroke="currentColor" stroke-width="2"/></svg>Inicio</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.7-3.7" stroke="currentColor" stroke-width="2"/></svg>Explorar</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4zM8 5v14" stroke="currentColor" stroke-width="2"/></svg>Biblioteca</a>
+    <a class="active" href="#"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="9" r="3" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="9" r="3" stroke="currentColor" stroke-width="2"/><path d="M2 20c1-3 3-5 6-5s5 2 6 5M10 20c1-3 3-5 6-5s5 2 6 5" stroke="currentColor" stroke-width="2"/></svg>Comunidades</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21c1.5-4 4-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="2"/></svg>Perfil</a>
+  </nav>
+
+  <script>
+    const communities = [
+      {id:1,name:"Fantasía Oscura",slug:"fantasia-oscura",icon:"FO",category:"Género",activity:"Muy activa",members:8240,posts:1840,online:312,description:"Teorías, recomendaciones y debates sobre mundos oscuros, magia peligrosa y antihéroes.",tags:["Fantasía","Seinen","Teorías"],accent:"#8f2335",featured:true},
+      {id:2,name:"Club Manhwa",slug:"club-manhwa",icon:"CM",category:"General",activity:"Muy activa",members:7160,posts:1520,online:284,description:"Estrenos, recomendaciones y conversaciones sobre manhwa de todos los géneros.",tags:["Manhwa","Estrenos","Recomendaciones"],accent:"#6a3d87",featured:true},
+      {id:3,name:"Ashes of the Crown",slug:"ashes-of-the-crown",icon:"AC",category:"Obra",activity:"Muy activa",members:5840,posts:1288,online:196,description:"Comunidad dedicada a teorías, spoilers moderados y análisis de cada capítulo.",tags:["Obra","Teorías","Spoilers"],accent:"#a91f35",featured:true},
+      {id:4,name:"Misterio y Thriller",slug:"misterio-thriller",icon:"MT",category:"Género",activity:"Activa",members:3920,posts:864,online:102,description:"Recomendaciones, finales explicados y debates sobre tramas complejas.",tags:["Misterio","Thriller","Análisis"],accent:"#303451"},
+      {id:5,name:"Romance sin cliché",slug:"romance-sin-cliche",icon:"RC",category:"Género",activity:"Activa",members:4480,posts:930,online:118,description:"Romances con buena química, desarrollo real y personajes memorables.",tags:["Romance","Josei","Drama"],accent:"#7b315d"},
+      {id:6,name:"Rincón del Fan-Art",slug:"rincon-fanart",icon:"FA",category:"Arte",activity:"Muy activa",members:5210,posts:1420,online:164,description:"Comparte ilustraciones, procesos, retos y recursos para artistas.",tags:["Fan-Art","Dibujo","Retos"],accent:"#5d3d73"},
+      {id:7,name:"Manhua y Cultivo",slug:"manhua-cultivo",icon:"MC",category:"Género",activity:"Activa",members:3660,posts:742,online:88,description:"Cultivo, artes marciales, mundos inmortales y recomendaciones de manhua.",tags:["Manhua","Cultivo","Acción"],accent:"#1f6657"},
+      {id:8,name:"Lectores Nocturnos",slug:"lectores-nocturnos",icon:"LN",category:"General",activity:"Moderada",members:2180,posts:420,online:63,description:"Un espacio tranquilo para comentar lecturas de madrugada.",tags:["General","Lectura","Charla"],accent:"#2f3658"},
+      {id:9,name:"Comedia y Slice of Life",slug:"comedia-slice-life",icon:"CS",category:"Género",activity:"Activa",members:2760,posts:610,online:74,description:"Series ligeras, momentos cotidianos y recomendaciones para relajarse.",tags:["Comedia","Slice of life","Ligero"],accent:"#6c5a25"},
+      {id:10,name:"Paper Samurai",slug:"paper-samurai",icon:"PS",category:"Obra",activity:"Activa",members:3420,posts:688,online:95,description:"Debate de capítulos, personajes y referencias históricas de la obra.",tags:["Obra","Samuráis","Historia"],accent:"#9a2632"},
+      {id:11,name:"Joyas Ocultas",slug:"joyas-ocultas",icon:"JO",category:"General",activity:"Moderada",members:1840,posts:356,online:42,description:"Obras poco conocidas que merecen más lectores y mejores reseñas.",tags:["Indie","Recomendaciones","Descubrimiento"],accent:"#28527a"},
+      {id:12,name:"Debate de Adaptaciones",slug:"adaptaciones",icon:"DA",category:"General",activity:"Activa",members:2980,posts:574,online:81,description:"Comparaciones entre manga, anime y otras adaptaciones.",tags:["Anime","Manga","Adaptaciones"],accent:"#2f5c78"}
+    ];
+
+    const state={search:"",category:"all",activity:"all",view:"grid"};
+    const joined=new Set([2,6]);
+    const featuredGrid=document.getElementById("featuredGrid");
+    const communitiesGrid=document.getElementById("communitiesGrid");
+    const emptyState=document.getElementById("emptyState");
+    const toast=document.getElementById("toast");
+    const modal=document.getElementById("requestModal");
+
+    function filteredCommunities(){
+      const q=state.search.trim().toLowerCase();
+      return communities.filter(c=>{
+        const searchMatch=!q||`${c.name} ${c.slug} ${c.category} ${c.description} ${c.tags.join(" ")}`.toLowerCase().includes(q);
+        const categoryMatch=state.category==="all"||c.category===state.category;
+        const activityMatch=state.activity==="all"||c.activity===state.activity;
+        return searchMatch&&categoryMatch&&activityMatch;
+      });
+    }
+
+    function renderFeatured(){
+      featuredGrid.innerHTML=communities.filter(c=>c.featured).map(c=>`
+        <article class="featured-card" style="--accent:${c.accent}">
+          <div class="featured-bg"></div>
+          <div class="featured-content">
+            <div class="featured-icon">${c.icon}</div>
+            <div class="featured-name">${c.name}</div>
+            <div class="featured-meta">
+              <span>${c.members.toLocaleString("es-PE")} miembros</span><span>•</span>
+              <span>${c.posts.toLocaleString("es-PE")} publicaciones</span><span>•</span>
+              <span>${c.online} conectados</span>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function render(){
+      const data=filteredCommunities();
+      communitiesGrid.className=state.view==="list"?"communities-grid list-view":"communities-grid";
+      communitiesGrid.innerHTML=data.map(c=>`
+        <article class="community-card" style="--accent:${c.accent}">
+          <div class="community-banner"></div>
+          <div class="community-icon">${c.icon}</div>
+          <button class="join-btn ${joined.has(c.id)?"joined":""}" data-join="${c.id}">
+            ${joined.has(c.id)?"Miembro":"Unirse"}
+          </button>
+
+          <div class="community-body">
+            <div class="community-name">${c.name}</div>
+            <div class="community-slug">c/${c.slug} · ${c.category}</div>
+            <p class="community-description">${c.description}</p>
+
+            <div class="tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+
+            <div class="community-stats">
+              <div class="mini-stat"><strong>${c.members.toLocaleString("es-PE")}</strong><span>Miembros</span></div>
+              <div class="mini-stat"><strong>${c.posts.toLocaleString("es-PE")}</strong><span>Publicaciones</span></div>
+              <div class="mini-stat"><strong>${c.online}</strong><span>Conectados</span></div>
+            </div>
+
+            <div class="community-footer">
+              <span class="activity">${c.activity}</span>
+              <button class="open-btn" data-open="${c.id}">Ver comunidad</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      document.getElementById("resultsCount").textContent=`${data.length} ${data.length===1?"resultado":"resultados"}`;
+      document.getElementById("communityStat").textContent=communities.length;
+      communitiesGrid.hidden=data.length===0;
+      emptyState.hidden=data.length>0;
+      bindCards();
+    }
+
+    function bindCards(){
+      document.querySelectorAll("[data-join]").forEach(btn=>{
+        btn.onclick=()=>{
+          const id=+btn.dataset.join;
+          if(joined.has(id))joined.delete(id);else joined.add(id);
+          render();
+          showToast(joined.has(id)?"Te uniste a la comunidad":"Saliste de la comunidad");
+        };
+      });
+
+      document.querySelectorAll("[data-open]").forEach(btn=>{
+        btn.onclick=()=>{
+          const community=communities.find(c=>c.id===+btn.dataset.open);
+          showToast(`Abrir c/${community.slug}`);
+        };
+      });
+    }
+
+    function showToast(message){
+      toast.textContent=message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer=setTimeout(()=>toast.classList.remove("show"),1700);
+    }
+
+    document.getElementById("communitySearch").oninput=e=>{state.search=e.target.value;render();};
+    document.getElementById("categoryFilter").onchange=e=>{state.category=e.target.value;render();};
+    document.getElementById("activityFilter").onchange=e=>{state.activity=e.target.value;render();};
+
+    document.getElementById("gridBtn").onclick=()=>{
+      state.view="grid";
+      document.getElementById("gridBtn").classList.add("active");
+      document.getElementById("listBtn").classList.remove("active");
+      render();
+    };
+
+    document.getElementById("listBtn").onclick=()=>{
+      state.view="list";
+      document.getElementById("listBtn").classList.add("active");
+      document.getElementById("gridBtn").classList.remove("active");
+      render();
+    };
+
+    document.getElementById("requestBtn").onclick=()=>modal.classList.add("show");
+    document.getElementById("cancelRequest").onclick=()=>modal.classList.remove("show");
+    document.getElementById("submitRequest").onclick=()=>{
+      const name=document.getElementById("requestName").value.trim();
+      if(!name){showToast("Escribe un nombre para la comunidad");return;}
+      modal.classList.remove("show");
+      showToast("Solicitud enviada para revisión");
+      document.getElementById("requestName").value="";
+      document.getElementById("requestDescription").value="";
+    };
+
+    modal.onclick=e=>{if(e.target===modal)modal.classList.remove("show");};
+
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape")modal.classList.remove("show");
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){
+        e.preventDefault();
+        document.getElementById("globalSearch").focus();
+      }
+    });
+
+    renderFeatured();
+    render();
+  </script>
+</body>
+</html>

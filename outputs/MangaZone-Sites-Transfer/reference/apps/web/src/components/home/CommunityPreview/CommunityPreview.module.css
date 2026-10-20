@@ -1,0 +1,206 @@
+.section {
+  min-width: 0;
+  scroll-margin-top: calc(var(--mz-header-height) + var(--mz-space-4));
+}
+
+.tabs {
+  display: flex;
+  gap: var(--mz-space-2);
+  margin-block: var(--mz-space-4);
+}
+
+.tab {
+  min-height: 36px;
+  padding-inline: var(--mz-space-4);
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-surface);
+  color: var(--mz-text-secondary);
+  font-size: var(--mz-text-xs);
+  font-weight: 700;
+  transition:
+    color var(--mz-transition-fast),
+    border-color var(--mz-transition-fast),
+    background-color var(--mz-transition-fast);
+}
+
+.tab[aria-selected="true"] {
+  border-color: rgb(232 25 44 / 38%);
+  background: var(--mz-red-soft);
+  color: var(--mz-red-hover);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--mz-space-4);
+}
+
+.post {
+  min-width: 0;
+  padding: var(--mz-space-4);
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-lg);
+  background: var(--mz-card);
+  box-shadow: var(--mz-shadow-sm);
+  transition:
+    border-color var(--mz-transition-normal),
+    background-color var(--mz-transition-normal);
+}
+
+.postHeader {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--mz-space-2);
+}
+
+.avatar {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--mz-radius-full);
+  color: var(--mz-text-on-accent);
+  font-size: 0.6875rem;
+  font-weight: 800;
+}
+
+.crimson { background: linear-gradient(145deg, var(--mz-red), #8b1020); }
+.blue { background: linear-gradient(145deg, var(--mz-info), #1e3a8a); }
+.gold { background: linear-gradient(145deg, var(--mz-warning), #92400e); }
+.green { background: linear-gradient(145deg, var(--mz-success), #166534); }
+.violet { background: linear-gradient(145deg, #8b5cf6, #4c1d95); }
+
+.identity,
+.username,
+.time {
+  display: block;
+  min-width: 0;
+}
+
+.identity {
+  flex: 1;
+}
+
+.username {
+  overflow: hidden;
+  color: var(--mz-text-primary);
+  font-size: var(--mz-text-xs);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  margin-top: 2px;
+  color: var(--mz-text-muted);
+  font-size: 0.625rem;
+}
+
+.title {
+  margin: var(--mz-space-3) 0 var(--mz-space-2);
+  color: var(--mz-text-primary);
+  font-size: var(--mz-text-sm);
+  line-height: 1.4;
+}
+
+.excerpt {
+  display: -webkit-box;
+  min-height: 3.2em;
+  margin: 0;
+  overflow: hidden;
+  color: var(--mz-text-secondary);
+  font-size: var(--mz-text-xs);
+  line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.spoiler {
+  display: flex;
+  min-height: 58px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mz-space-2);
+  padding: var(--mz-space-2) var(--mz-space-3);
+  border: 1px solid var(--mz-warning-soft);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-warning-soft);
+  color: var(--mz-warning);
+  font-size: var(--mz-text-xs);
+  font-weight: 700;
+}
+
+.revealButton {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: var(--mz-space-1);
+  margin-left: auto;
+  padding-inline: var(--mz-space-3);
+  border: 1px solid var(--mz-border-strong);
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-bg-secondary);
+  color: var(--mz-text-primary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.metrics {
+  display: flex;
+  gap: var(--mz-space-4);
+  margin-top: var(--mz-space-3);
+  padding-top: var(--mz-space-3);
+  border-top: 1px solid var(--mz-border-soft);
+  color: var(--mz-text-muted);
+  font-size: 0.6875rem;
+}
+
+.metrics span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mz-space-1);
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    border-color: var(--mz-border-strong);
+    color: var(--mz-text-primary);
+  }
+
+  .post:hover {
+    border-color: var(--mz-border-strong);
+    background: var(--mz-card-hover);
+  }
+}
+
+@media (max-width: 760px) {
+  .tab {
+    min-height: 40px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .post {
+    padding: var(--mz-space-3);
+    border-radius: var(--mz-radius-md);
+  }
+
+  .revealButton {
+    min-height: 40px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .tab,
+  .revealButton {
+    min-height: 40px;
+  }
+}

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090d" />
+  <title>MangaZone — Estados generales</title>
+  <meta name="description" content="Prototipo visual de estados generales de MangaZone." />
+  <style>
+    :root{
+      --bg:#08080b;
+      --surface:#121219;
+      --surface-2:#181820;
+      --surface-3:#20202a;
+      --border:#292933;
+      --border-soft:#1d1d25;
+      --text:#f5f5f7;
+      --text-2:#b9b9c5;
+      --muted:#7f7f90;
+      --red:#e63946;
+      --red-2:#ff4e5b;
+      --red-soft:rgba(230,57,70,.15);
+      --green:#46c97c;
+      --green-soft:rgba(70,201,124,.13);
+      --blue:#5ea8ff;
+      --blue-soft:rgba(94,168,255,.12);
+      --yellow:#f4bd52;
+      --yellow-soft:rgba(244,189,82,.12);
+      --purple:#9b6dff;
+      --purple-soft:rgba(155,109,255,.12);
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --header-h:64px;
+      --sidebar-w:72px;
+      --max:1480px;
+      --radius:18px;
+      --font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --display:"Arial Narrow",Impact,Haettenschweiler,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;min-height:100vh;color:var(--text);font-family:var(--font);
+      background:
+        radial-gradient(circle at 13% 0%,rgba(230,57,70,.08),transparent 25%),
+        radial-gradient(circle at 88% 8%,rgba(94,168,255,.05),transparent 22%),
+        linear-gradient(180deg,#09090d 0%,#08080b 58%,#0b0b10 100%);
+    }
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
+    :focus-visible{outline:2px solid var(--red-2);outline-offset:3px}
+    ::selection{background:var(--red);color:#fff}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-track{background:#0b0b0f}
+    ::-webkit-scrollbar-thumb{background:#2b2b35;border-radius:999px;border:2px solid #0b0b0f}
+
+    .topbar{
+      position:fixed;inset:0 0 auto;height:var(--header-h);z-index:60;
+      display:flex;align-items:center;gap:18px;padding:0 22px;
+      background:rgba(9,9,13,.8);backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+    .brand-mark{
+      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--red),#861d2b);font-weight:900;
+      box-shadow:0 0 26px rgba(230,57,70,.3)
+    }
+    .brand-text{font-family:var(--display);font-size:26px;letter-spacing:.6px;line-height:1}
+    .brand-text span{color:var(--red)}
+    .topnav{display:flex;gap:6px}
+    .topnav a{padding:10px 12px;border-radius:10px;color:var(--text-2);font-size:14px}
+    .topnav a:hover,.topnav a.active{background:rgba(255,255,255,.055);color:#fff}
+    .header-search{flex:1;max-width:560px;margin-left:auto;position:relative}
+    .header-search input{
+      width:100%;height:42px;border-radius:13px;border:1px solid var(--border);
+      background:rgba(19,19,25,.9);padding:0 92px 0 42px;outline:none
+    }
+    .header-search input:focus{border-color:rgba(230,57,70,.7);box-shadow:0 0 0 4px var(--red-soft)}
+    .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .shortcut{
+      position:absolute;right:10px;top:50%;transform:translateY(-50%);
+      color:var(--muted);font-size:11px;border:1px solid var(--border);padding:4px 7px;border-radius:7px
+    }
+    .header-actions{display:flex;gap:8px}
+    .icon-btn,.profile-btn{
+      height:40px;border:1px solid var(--border);background:var(--surface);
+      border-radius:11px;display:grid;place-items:center
+    }
+    .icon-btn{width:40px}.profile-btn{padding:0 13px;font-weight:800}
+
+    .sidebar{
+      position:fixed;left:0;top:var(--header-h);bottom:0;width:var(--sidebar-w);z-index:50;
+      background:rgba(10,10,14,.9);border-right:1px solid rgba(255,255,255,.06);
+      padding:14px 10px;display:flex;flex-direction:column;gap:8px
+    }
+    .side-link{
+      width:50px;height:48px;border-radius:13px;display:grid;place-items:center;color:var(--muted);
+      position:relative
+    }
+    .side-link:hover,.side-link.active{background:var(--red-soft);color:#fff}
+    .side-link.active::before{
+      content:"";position:absolute;left:-10px;width:3px;height:24px;border-radius:3px;background:var(--red)
+    }
+    .side-spacer{flex:1}
+
+    .app{
+      width:min(calc(100% - var(--sidebar-w)),var(--max));
+      margin-left:var(--sidebar-w);
+      padding:calc(var(--header-h) + 26px) 26px 110px;
+    }
+
+    .hero{
+      border:1px solid var(--border-soft);border-radius:24px;padding:30px 34px;
+      background:
+        linear-gradient(90deg,rgba(8,8,11,.97),rgba(8,8,11,.76) 56%,rgba(8,8,11,.28)),
+        radial-gradient(circle at 84% 42%,rgba(94,168,255,.18),transparent 22%),
+        radial-gradient(circle at 74% 28%,rgba(230,57,70,.2),transparent 22%),
+        linear-gradient(135deg,#180e13,#11121a 56%,#251118);
+      box-shadow:var(--shadow)
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;color:#8bc4ff;
+      font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase
+    }
+    .eyebrow::before{content:"";width:22px;height:2px;background:var(--blue)}
+    h1{
+      font-family:var(--display);font-size:clamp(42px,6vw,70px);line-height:.95;
+      margin:10px 0 8px;text-transform:uppercase
+    }
+    .hero p{max-width:740px;color:var(--text-2);line-height:1.65;margin:0}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    .primary,.secondary{
+      min-height:44px;padding:0 15px;border-radius:12px;font-weight:850
+    }
+    .primary{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+    .secondary{border:1px solid var(--border);background:var(--surface)}
+
+    .toolbar{
+      display:grid;grid-template-columns:minmax(260px,1fr) auto auto;gap:10px;margin:22px 0 18px
+    }
+    .search-box{position:relative}
+    .search-box input{
+      width:100%;height:44px;border:1px solid var(--border);border-radius:12px;
+      background:var(--surface);padding:0 14px 0 42px;outline:none
+    }
+    .search-box span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .select{
+      height:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:0 34px 0 12px
+    }
+    .view-toggle{
+      display:flex;padding:4px;height:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface)
+    }
+    .view-toggle button{width:38px;border:0;border-radius:9px;background:transparent;color:var(--muted)}
+    .view-toggle button.active{background:var(--red-soft);color:#fff}
+
+    .states-grid{
+      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px
+    }
+    .state-card{
+      border:1px solid var(--border);border-radius:18px;background:rgba(18,18,24,.84);
+      overflow:hidden;transition:.2s
+    }
+    .state-card:hover{transform:translateY(-4px);border-color:#3d3d49}
+    .state-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;
+      border-bottom:1px solid var(--border-soft)
+    }
+    .state-title{font-weight:900}
+    .state-tag{
+      padding:6px 8px;border-radius:999px;font-size:10px;font-weight:900;
+      background:#101016;border:1px solid var(--border)
+    }
+    .state-preview{
+      min-height:280px;padding:24px;display:grid;place-items:center;position:relative;
+      background:
+        radial-gradient(circle at 50% 25%,rgba(255,255,255,.03),transparent 25%),
+        linear-gradient(180deg,rgba(255,255,255,.015),transparent)
+    }
+    .state-box{text-align:center;max-width:280px}
+    .state-icon{
+      width:74px;height:74px;border-radius:22px;display:grid;place-items:center;
+      margin:0 auto 15px;font-size:30px;font-weight:950;border:1px solid transparent
+    }
+    .state-icon.error{background:var(--red-soft);border-color:rgba(230,57,70,.35)}
+    .state-icon.info{background:var(--blue-soft);border-color:rgba(94,168,255,.3)}
+    .state-icon.warning{background:var(--yellow-soft);border-color:rgba(244,189,82,.3)}
+    .state-icon.success{background:var(--green-soft);border-color:rgba(70,201,124,.3)}
+    .state-icon.purple{background:var(--purple-soft);border-color:rgba(155,109,255,.3)}
+    .state-box h3{margin:0;font-size:18px}
+    .state-box p{margin:8px 0 0;color:var(--text-2);font-size:12px;line-height:1.55}
+    .state-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .state-actions button{
+      min-height:38px;padding:0 12px;border-radius:10px;font-weight:800
+    }
+    .state-actions .main{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+    .state-actions .alt{border:1px solid var(--border);background:var(--surface-2)}
+
+    .skeleton{
+      width:100%;display:grid;gap:12px
+    }
+    .skeleton-line,.skeleton-cover,.skeleton-circle{
+      background:linear-gradient(110deg,#17171f 8%,#22222c 18%,#17171f 33%);
+      background-size:200% 100%;animation:shine 1.4s linear infinite
+    }
+    .skeleton-line{height:12px;border-radius:999px}
+    .skeleton-line.short{width:55%}
+    .skeleton-cover{height:120px;border-radius:14px}
+    .skeleton-circle{width:54px;height:54px;border-radius:50%}
+    @keyframes shine{to{background-position-x:-200%}}
+
+    .deleted-post{
+      width:100%;padding:14px;border:1px dashed #3a3a46;border-radius:14px;background:#101016;
+      display:flex;gap:12px;align-items:center;text-align:left
+    }
+    .deleted-post strong{font-size:13px}
+    .deleted-post span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+
+    .blocked-profile{
+      width:100%;display:grid;gap:12px
+    }
+    .blocked-top{display:flex;align-items:center;gap:12px}
+    .blocked-avatar{width:58px;height:58px;border-radius:18px;background:#20202a;display:grid;place-items:center;font-weight:900}
+    .blocked-lines{flex:1;display:grid;gap:8px}
+    .blocked-message{padding:12px;border-radius:13px;background:#101016;border:1px solid var(--border-soft);color:var(--text-2);font-size:11px}
+
+    .empty-library{display:grid;gap:12px;justify-items:center}
+    .empty-shelf{width:180px;height:100px;position:relative}
+    .empty-shelf::before,.empty-shelf::after{
+      content:"";position:absolute;left:10px;right:10px;height:8px;border-radius:999px;background:#24242f
+    }
+    .empty-shelf::before{bottom:18px}.empty-shelf::after{bottom:0}
+    .book{position:absolute;bottom:26px;width:24px;border-radius:5px 5px 2px 2px;background:var(--red)}
+    .book.b1{left:36px;height:58px}.book.b2{left:65px;height:72px;background:var(--blue)}.book.b3{left:94px;height:48px;background:var(--purple)}.book.b4{left:123px;height:66px;background:var(--yellow)}
+
+    .loading-ring{
+      width:64px;height:64px;border-radius:50%;border:6px solid #20202a;border-top-color:var(--red);
+      animation:spin 1s linear infinite;margin:0 auto 15px
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .states-grid.list-view{grid-template-columns:1fr}
+    .list-view .state-card{display:grid;grid-template-columns:240px 1fr}
+    .list-view .state-head{border-bottom:0;border-right:1px solid var(--border-soft)}
+    .list-view .state-preview{min-height:220px}
+
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.68);
+      backdrop-filter:blur(4px);display:none;place-items:center;padding:18px
+    }
+    .modal-backdrop.show{display:grid}
+    .modal{
+      width:min(100%,470px);border:1px solid var(--border);border-radius:18px;background:#13131b;
+      padding:20px;box-shadow:var(--shadow)
+    }
+    .modal h2{margin:0 0 8px}
+    .modal p{margin:0;color:var(--text-2);font-size:13px;line-height:1.55}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+    .modal-actions button{height:42px;padding:0 14px;border-radius:11px;border:1px solid var(--border);background:var(--surface-2)}
+    .modal-actions .confirm{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+
+    .toast{
+      position:fixed;left:50%;bottom:28px;z-index:120;transform:translate(-50%,20px);
+      opacity:0;pointer-events:none;transition:.25s;
+      background:#15151e;border:1px solid var(--border);border-radius:12px;
+      padding:11px 14px;box-shadow:var(--shadow);font-size:12px
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .mobile-nav{display:none}
+
+    @media(max-width:1180px){
+      .states-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .topnav a:nth-last-child(-n+2){display:none}
+    }
+    @media(max-width:940px){
+      :root{--sidebar-w:0px}
+      .sidebar{display:none}
+      .app{width:100%;margin-left:0}
+      .topnav{display:none}
+    }
+    @media(max-width:760px){
+      .header-search{display:none}
+      .profile-btn{display:none}
+      .topbar{padding:0 14px}
+      .app{padding-left:16px;padding-right:16px}
+      .toolbar{grid-template-columns:1fr 1fr}
+      .search-box{grid-column:1/-1}
+      .states-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:640px){
+      :root{--header-h:58px}
+      .brand-text{font-size:22px}.brand-mark{width:31px;height:31px}
+      .header-actions .icon-btn:first-child{display:none}
+      .app{padding-top:calc(var(--header-h) + 16px);padding-bottom:92px}
+      .hero{padding:24px 21px}
+      h1{font-size:44px}
+      .hero p{font-size:13px}
+      .toolbar{grid-template-columns:1fr}
+      .search-box{grid-column:auto}
+      .list-view .state-card{display:block}
+      .list-view .state-head{border-right:0;border-bottom:1px solid var(--border-soft)}
+      .mobile-nav{
+        display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:70;
+        left:0;right:0;bottom:0;padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+        background:rgba(10,10,14,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)
+      }
+      .mobile-nav a{display:grid;place-items:center;gap:3px;color:var(--muted);font-size:10px;min-height:48px}
+      .mobile-nav a.active{color:#fff}
+      .mobile-nav svg{width:20px;height:20px}
+      .toast{bottom:82px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-mark">MZ</span>
+      <span class="brand-text">Manga<span>Zone</span></span>
+    </a>
+    <nav class="topnav">
+      <a href="#">Inicio</a><a href="#">Explorar</a><a href="#">Fan-Art</a><a href="#">Clips</a><a href="#">Anime</a><a href="#">Comunidad</a>
+    </nav>
+    <div class="header-search">
+      <span class="search-icon">⌕</span>
+      <input id="globalSearch" placeholder="Buscar manga…" />
+      <span class="shortcut">Ctrl K</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn">♢</button><button class="icon-btn">✉</button><button class="profile-btn">LunaV</button>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <a class="side-link" href="#">⌂</a><a class="side-link" href="#">⌕</a><a class="side-link" href="#">▤</a><a class="side-link" href="#">♛</a><a class="side-link" href="#">◎</a>
+    <div class="side-spacer"></div><a class="side-link active" href="#">◇</a>
+  </aside>
+
+  <main class="app">
+    <section class="hero">
+      <span class="eyebrow">Sistema visual compartido</span>
+      <h1>Estados generales</h1>
+      <p>
+        Biblioteca visual de pantallas vacías, errores, bloqueos, carga y confirmaciones para mantener una experiencia consistente en toda la plataforma.
+      </p>
+      <div class="hero-actions">
+        <button id="simulateBtn" class="primary">Simular estado aleatorio</button>
+        <button id="resetBtn" class="secondary">Restablecer demostración</button>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="search-box"><span>⌕</span><input id="stateSearch" placeholder="Buscar estado…" /></div>
+      <select id="categoryFilter" class="select">
+        <option value="all">Todas las categorías</option>
+        <option value="Error">Error</option>
+        <option value="Vacío">Vacío</option>
+        <option value="Carga">Carga</option>
+        <option value="Restricción">Restricción</option>
+        <option value="Confirmación">Confirmación</option>
+      </select>
+      <div class="view-toggle"><button id="gridBtn" class="active">▦</button><button id="listBtn">☷</button></div>
+    </section>
+
+    <section id="statesGrid" class="states-grid"></section>
+  </main>
+
+  <div id="confirmModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Confirmar acción</h2>
+      <p>Este modal representa una confirmación reutilizable para eliminar, abandonar o restablecer información.</p>
+      <div class="modal-actions">
+        <button id="cancelModal">Cancelar</button>
+        <button id="confirmModalBtn" class="confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <nav class="mobile-nav">
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11 12 3l9 8v9H3z" stroke="currentColor" stroke-width="2"/></svg>Inicio</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.7-3.7" stroke="currentColor" stroke-width="2"/></svg>Explorar</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4zM8 5v14" stroke="currentColor" stroke-width="2"/></svg>Biblioteca</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19l1-5.8L3.5 9.2l5.9-.9z" stroke="currentColor" stroke-width="2"/></svg>Listas</a>
+    <a class="active" href="#"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2"/></svg>Estados</a>
+  </nav>
+
+  <script>
+    const states = [
+      {id:1,title:"Página no encontrada",category:"Error",tag:"404",icon:"404",tone:"error",heading:"No encontramos esta página",text:"El enlace puede haber cambiado o el contenido ya no está disponible.",primary:"Volver al inicio",secondary:"Explorar"},
+      {id:2,title:"Acceso restringido",category:"Restricción",tag:"403",icon:"🔒",tone:"warning",heading:"No tienes acceso",text:"Tu cuenta no cuenta con permisos para ver este contenido.",primary:"Volver",secondary:"Solicitar acceso"},
+      {id:3,title:"Error interno",category:"Error",tag:"500",icon:"!",tone:"error",heading:"Algo salió mal",text:"Ocurrió un problema inesperado. Intenta nuevamente en unos momentos.",primary:"Reintentar",secondary:"Ir al inicio"},
+      {id:4,title:"Sin resultados",category:"Vacío",tag:"Búsqueda",icon:"⌕",tone:"info",heading:"No encontramos resultados",text:"Prueba con otros términos o elimina algunos filtros.",primary:"Limpiar filtros",secondary:"Explorar"},
+      {id:5,title:"Biblioteca vacía",category:"Vacío",tag:"Biblioteca",custom:"library",heading:"Tu biblioteca está vacía",text:"Guarda obras para continuar leyendo desde cualquier dispositivo.",primary:"Explorar catálogo",secondary:"Importar lista"},
+      {id:6,title:"Contenido eliminado",category:"Restricción",tag:"Eliminado",custom:"deleted",heading:"Contenido eliminado",text:"La publicación ya no está disponible en MangaZone.",primary:"Volver",secondary:"Ver comunidad"},
+      {id:7,title:"Cuenta suspendida",category:"Restricción",tag:"Moderación",icon:"⚠",tone:"warning",heading:"Cuenta suspendida",text:"Este perfil está temporalmente restringido por una medida de moderación.",primary:"Más información",secondary:"Volver"},
+      {id:8,title:"Bloqueo entre usuarios",category:"Restricción",tag:"Privacidad",custom:"blocked",heading:"Perfil no disponible",text:"No puedes ver la actividad de este usuario.",primary:"Desbloquear",secondary:"Volver"},
+      {id:9,title:"Carga inicial",category:"Carga",tag:"Skeleton",custom:"skeleton",heading:"Cargando contenido",text:"Representación de tarjetas mientras se obtiene información.",primary:"Completar carga",secondary:"Cancelar"},
+      {id:10,title:"Procesando solicitud",category:"Carga",tag:"Proceso",custom:"loading",heading:"Procesando solicitud",text:"Estamos preparando la información. No cierres esta ventana.",primary:"Finalizar demo",secondary:"Cancelar"},
+      {id:11,title:"Acción completada",category:"Confirmación",tag:"Éxito",icon:"✓",tone:"success",heading:"Cambios guardados",text:"La operación se completó correctamente.",primary:"Continuar",secondary:"Deshacer"},
+      {id:12,title:"Confirmación destructiva",category:"Confirmación",tag:"Modal",icon:"×",tone:"purple",heading:"¿Eliminar este contenido?",text:"La acción puede ser permanente y requiere confirmación explícita.",primary:"Abrir modal",secondary:"Cancelar"}
+    ];
+
+    const grid = document.getElementById("statesGrid");
+    const state = {search:"",category:"all",view:"grid"};
+    const toast = document.getElementById("toast");
+    const modal = document.getElementById("confirmModal");
+
+    function previewContent(item){
+      if(item.custom==="library"){
+        return `<div class="state-box empty-library">
+          <div class="empty-shelf"><i class="book b1"></i><i class="book b2"></i><i class="book b3"></i><i class="book b4"></i></div>
+          <h3>${item.heading}</h3><p>${item.text}</p>
+          <div class="state-actions"><button class="main">${item.primary}</button><button class="alt">${item.secondary}</button></div>
+        </div>`;
+      }
+      if(item.custom==="deleted"){
+        return `<div class="state-box" style="max-width:100%;width:100%">
+          <div class="deleted-post"><div class="state-icon error" style="width:52px;height:52px;margin:0;font-size:22px">×</div><div><strong>${item.heading}</strong><span>${item.text}</span></div></div>
+          <div class="state-actions"><button class="main">${item.primary}</button><button class="alt">${item.secondary}</button></div>
+        </div>`;
+      }
+      if(item.custom==="blocked"){
+        return `<div class="state-box blocked-profile">
+          <div class="blocked-top"><div class="blocked-avatar">?</div><div class="blocked-lines"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div></div>
+          <div class="blocked-message">${item.text}</div>
+          <div class="state-actions"><button class="main">${item.primary}</button><button class="alt">${item.secondary}</button></div>
+        </div>`;
+      }
+      if(item.custom==="skeleton"){
+        return `<div class="skeleton">
+          <div class="skeleton-cover"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line"></div>
+          <div class="state-actions"><button class="main">${item.primary}</button><button class="alt">${item.secondary}</button></div>
+        </div>`;
+      }
+      if(item.custom==="loading"){
+        return `<div class="state-box"><div class="loading-ring"></div><h3>${item.heading}</h3><p>${item.text}</p>
+          <div class="state-actions"><button class="main">${item.primary}</button><button class="alt">${item.secondary}</button></div></div>`;
+      }
+      return `<div class="state-box">
+        <div class="state-icon ${item.tone}">${item.icon}</div>
+        <h3>${item.heading}</h3><p>${item.text}</p>
+        <div class="state-actions"><button class="main">${item.primary}</button><button class="alt">${item.secondary}</button></div>
+      </div>`;
+    }
+
+    function filtered(){
+      const q=state.search.trim().toLowerCase();
+      return states.filter(item=>{
+        const searchMatch=!q||`${item.title} ${item.category} ${item.heading} ${item.text}`.toLowerCase().includes(q);
+        const categoryMatch=state.category==="all"||item.category===state.category;
+        return searchMatch&&categoryMatch;
+      });
+    }
+
+    function render(){
+      const data=filtered();
+      grid.className=state.view==="list"?"states-grid list-view":"states-grid";
+      grid.innerHTML=data.map(item=>`
+        <article class="state-card" data-id="${item.id}">
+          <div class="state-head">
+            <div class="state-title">${item.title}</div>
+            <span class="state-tag">${item.tag}</span>
+          </div>
+          <div class="state-preview">${previewContent(item)}</div>
+        </article>
+      `).join("");
+
+      document.querySelectorAll(".state-card .main,.state-card .alt").forEach(btn=>{
+        btn.addEventListener("click",e=>{
+          e.stopPropagation();
+          const card=e.target.closest(".state-card");
+          const item=states.find(s=>s.id===+card.dataset.id);
+          if(item.id===12 && btn.classList.contains("main")) modal.classList.add("show");
+          else showToast(`${item.title}: ${btn.textContent}`);
+        });
+      });
+    }
+
+    function showToast(message){
+      toast.textContent=message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer=setTimeout(()=>toast.classList.remove("show"),1700);
+    }
+
+    document.getElementById("stateSearch").oninput=e=>{state.search=e.target.value;render();};
+    document.getElementById("categoryFilter").onchange=e=>{state.category=e.target.value;render();};
+
+    document.getElementById("gridBtn").onclick=()=>{
+      state.view="grid";gridBtn.classList.add("active");listBtn.classList.remove("active");render();
+    };
+    document.getElementById("listBtn").onclick=()=>{
+      state.view="list";listBtn.classList.add("active");gridBtn.classList.remove("active");render();
+    };
+
+    document.getElementById("simulateBtn").onclick=()=>{
+      const item=states[Math.floor(Math.random()*states.length)];
+      state.search=item.title;
+      state.category="all";
+      document.getElementById("stateSearch").value=item.title;
+      document.getElementById("categoryFilter").value="all";
+      render();
+      showToast(`Mostrando: ${item.title}`);
+    };
+
+    document.getElementById("resetBtn").onclick=()=>{
+      state.search="";state.category="all";
+      document.getElementById("stateSearch").value="";
+      document.getElementById("categoryFilter").value="all";
+      render();
+      showToast("Demostración restablecida");
+    };
+
+    document.getElementById("cancelModal").onclick=()=>modal.classList.remove("show");
+    document.getElementById("confirmModalBtn").onclick=()=>{
+      modal.classList.remove("show");
+      showToast("Acción confirmada");
+    };
+    modal.onclick=e=>{if(e.target===modal)modal.classList.remove("show");};
+
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape")modal.classList.remove("show");
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){
+        e.preventDefault();document.getElementById("globalSearch").focus();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

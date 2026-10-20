@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" role="img" aria-labelledby="title description">
+  <title id="title">Portada abstracta de demostración</title>
+  <desc id="description">Portada geométrica oscura con el acento rojo de MangaZone.</desc>
+  <defs>
+    <linearGradient id="base" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#09090b"/>
+      <stop offset=".52" stop-color="#20202a"/>
+      <stop offset="1" stop-color="#530c16"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="30%" r="66%">
+      <stop offset="0" stop-color="#ff4d5e" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#e8192c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="900" fill="url(#base)"/>
+  <rect width="600" height="900" fill="url(#glow)"/>
+  <circle cx="390" cy="280" r="156" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="28"/>
+  <circle cx="390" cy="280" r="86" fill="#e8192c" fill-opacity=".28"/>
+  <path d="m80 820 292-650 108 49-292 650z" fill="#fff" fill-opacity=".055"/>
+  <path d="m222 900 246-548 80 36-230 512z" fill="#e8192c" fill-opacity=".2"/>
+  <text x="50" y="790" fill="#fff" fill-opacity=".86" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="7">MANGAZONE</text>
+  <text x="52" y="832" fill="#fff" fill-opacity=".42" font-family="Arial, sans-serif" font-size="15" letter-spacing="4">DEMO VISUAL</text>
+</svg>

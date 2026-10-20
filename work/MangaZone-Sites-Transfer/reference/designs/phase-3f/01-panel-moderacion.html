@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>MangaZone — Panel de Moderación</title>
+<meta name="description" content="Prototipo visual responsive del Panel de Moderación de MangaZone" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#090b10;
+  --bg-soft:#0e1117;
+  --panel:#12161d;
+  --panel-2:#171c24;
+  --panel-3:#1d232d;
+  --line:#252c37;
+  --line-strong:#333b48;
+  --text:#f7f8fb;
+  --muted:#9da7b4;
+  --muted-2:#707b89;
+  --red:#e8192c;
+  --red-2:#ff3345;
+  --red-soft:rgba(232,25,44,.12);
+  --green:#25c26e;
+  --green-soft:rgba(37,194,110,.12);
+  --yellow:#e7b441;
+  --yellow-soft:rgba(231,180,65,.12);
+  --blue:#55a7ff;
+  --blue-soft:rgba(85,167,255,.12);
+  --radius:16px;
+  --shadow:0 18px 60px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 88% 2%, rgba(232,25,44,.10), transparent 28rem),
+    radial-gradient(circle at 6% 26%, rgba(255,255,255,.025), transparent 24rem),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.hidden{display:none!important}
+.icon{width:18px;height:18px;stroke-width:2}
+.icon-sm{width:15px;height:15px}
+.icon-lg{width:21px;height:21px}
+.app{min-height:100vh}
+.header{
+  position:sticky;top:0;z-index:40;
+  height:68px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(9,11,16,.82);
+  backdrop-filter:blur(18px);
+}
+.header-inner{
+  height:100%;max-width:1600px;margin:auto;padding:0 24px;
+  display:flex;align-items:center;gap:18px;
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+.brand-mark{
+  width:31px;height:31px;border-radius:9px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--red-2),#a20d1b);
+  box-shadow:0 8px 24px rgba(232,25,44,.28);
+  font-family:"Bebas Neue",sans-serif;font-size:19px;letter-spacing:.5px
+}
+.brand-name{
+  font-family:"Bebas Neue",sans-serif;
+  font-size:24px;letter-spacing:1.1px;
+}
+.top-nav{display:flex;align-items:center;gap:4px;margin-left:18px}
+.nav-link{
+  padding:9px 11px;border-radius:9px;color:var(--muted);
+  font-size:13px;font-weight:600;
+}
+.nav-link:hover,.nav-link.active{background:#171b23;color:#fff}
+.header-spacer{flex:1}
+.header-search{
+  width:min(330px,28vw);height:38px;
+  display:flex;align-items:center;gap:8px;
+  padding:0 11px;border-radius:10px;
+  border:1px solid var(--line);
+  background:#10141a;color:var(--muted);
+}
+.header-search input{
+  width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:13px
+}
+.header-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+  background:#10141a;color:#dce1e8;display:grid;place-items:center
+}
+.icon-btn:hover{background:#171c24;border-color:#3a424f}
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#343b47,#1f242d);
+  border:1px solid #434b59;font-weight:800;font-size:12px
+}
+
+.shell{max-width:1600px;margin:0 auto;padding:28px 24px 46px}
+.eyebrow{
+  color:var(--red);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase
+}
+.page-head{
+  display:flex;justify-content:space-between;gap:24px;align-items:flex-end;margin-bottom:22px
+}
+.page-title{
+  font-family:"Bebas Neue",sans-serif;
+  margin:5px 0 3px;font-size:48px;line-height:.95;letter-spacing:1.5px
+}
+.page-sub{color:var(--muted);font-size:13px;max-width:720px;line-height:1.55}
+.scope-note{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 11px;border:1px solid var(--line);border-radius:10px;
+  color:var(--muted);font-size:12px;background:rgba(18,22,29,.72)
+}
+.stats{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px
+}
+.stat-card{
+  border:1px solid var(--line);border-radius:14px;background:rgba(18,22,29,.9);
+  padding:15px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  min-height:86px
+}
+.stat-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.stat-value{font-size:27px;font-weight:800;letter-spacing:-.04em}
+.stat-icon{
+  width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+  border:1px solid var(--line)
+}
+.stat-card.pending .stat-icon{background:var(--red-soft);color:#ff6673;border-color:rgba(232,25,44,.25)}
+.stat-card.hidden-state .stat-icon{background:var(--yellow-soft);color:#f0c76a;border-color:rgba(231,180,65,.25)}
+.stat-card.reviewed .stat-icon{background:var(--green-soft);color:#57d893;border-color:rgba(37,194,110,.22)}
+
+.workspace{
+  display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px;align-items:start
+}
+.main-card,.detail-panel{
+  border:1px solid var(--line);background:rgba(16,20,26,.94);
+  border-radius:var(--radius);box-shadow:var(--shadow)
+}
+.main-card{overflow:hidden}
+.toolbar{
+  padding:14px 15px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.tabs{
+  display:flex;align-items:center;gap:4px;padding:4px;border-radius:11px;background:#0c0f14;
+  border:1px solid #1d232c
+}
+.tab{
+  border:0;background:transparent;color:var(--muted);
+  padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700
+}
+.tab.active{background:#1a1f28;color:#fff;box-shadow:inset 0 0 0 1px #2c3440}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter{
+  height:35px;padding:0 30px 0 10px;border-radius:9px;
+  background:#10141a;color:#dfe4ec;border:1px solid var(--line);
+  font-size:12px;outline:none
+}
+.queue-head{
+  padding:11px 16px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;gap:12px
+}
+.queue-count{font-size:12px;color:var(--muted)}
+.refresh{
+  border:0;background:transparent;color:var(--muted);
+  display:flex;gap:7px;align-items:center;font-size:12px;font-weight:600
+}
+.refresh:hover{color:#fff}
+.list{min-height:515px}
+.item{
+  width:100%;border:0;border-bottom:1px solid #202630;background:transparent;color:inherit;
+  text-align:left;padding:14px 16px;display:grid;
+  grid-template-columns:88px minmax(0,1fr) auto;gap:14px;align-items:start
+}
+.item:last-child{border-bottom:0}
+.item:hover{background:#141922}
+.item.selected{background:linear-gradient(90deg,rgba(232,25,44,.10),rgba(232,25,44,.025));box-shadow:inset 3px 0 0 var(--red)}
+.type-block{display:flex;flex-direction:column;gap:8px}
+.badge{
+  width:max-content;display:inline-flex;align-items:center;gap:5px;padding:5px 7px;
+  border-radius:7px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase
+}
+.badge.post{background:var(--blue-soft);color:#8cc1ff}
+.badge.comment{background:#7f65ff1b;color:#ae9eff}
+.status{
+  width:max-content;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--muted)
+}
+.dot{width:6px;height:6px;border-radius:99px;background:#77818f}
+.status.pending .dot{background:var(--red)}
+.status.hidden-s .dot{background:var(--yellow)}
+.status.reviewed-s .dot{background:var(--green)}
+.item-main{min-width:0}
+.item-top{
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:5px
+}
+.community{font-size:12px;font-weight:750}
+.author{font-size:11px;color:var(--muted)}
+.sep{color:#49515e}
+.snippet{
+  font-size:13px;line-height:1.47;color:#d7dce4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
+}
+.report{
+  margin-top:7px;display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;color:#f0aab1;background:rgba(232,25,44,.08);
+  padding:5px 7px;border-radius:7px
+}
+.item-meta{text-align:right;min-width:92px}
+.date{font-size:11px;color:var(--muted);white-space:nowrap}
+.more{margin-top:18px;color:#606a78;display:flex;justify-content:flex-end}
+
+.detail-panel{
+  position:sticky;top:84px;overflow:hidden;min-height:610px
+}
+.detail-empty{
+  min-height:610px;display:grid;place-items:center;text-align:center;padding:36px;color:var(--muted)
+}
+.empty-icon{
+  width:48px;height:48px;border:1px solid var(--line);border-radius:14px;
+  display:grid;place-items:center;margin:0 auto 12px;background:#11151b;color:#707a88
+}
+.detail-content{display:none}
+.detail-panel.has-selection .detail-empty{display:none}
+.detail-panel.has-selection .detail-content{display:block}
+.detail-head{
+  padding:15px 17px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px
+}
+.detail-title{font-size:14px;font-weight:800;margin:3px 0}
+.detail-id{font-size:10px;color:var(--muted-2)}
+.close-detail{display:none}
+.detail-body{padding:16px 17px 18px;max-height:calc(100vh - 120px);overflow:auto}
+.meta-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px
+}
+.meta-box{
+  background:#0f1318;border:1px solid var(--line);border-radius:10px;padding:9px 10px
+}
+.meta-label{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted-2);font-weight:800}
+.meta-value{font-size:11px;margin-top:3px;font-weight:650}
+.section-label{
+  margin:14px 0 7px;font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted-2);font-weight:800
+}
+.full-content{
+  padding:12px;border-radius:11px;background:#0d1116;border:1px solid var(--line);
+  font-size:12px;line-height:1.58;color:#dde1e8
+}
+.context-card{
+  padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#131820;
+  font-size:11px;color:var(--muted);line-height:1.5
+}
+.timeline{display:flex;flex-direction:column;gap:9px}
+.timeline-item{display:grid;grid-template-columns:9px 1fr;gap:8px}
+.timeline-dot{width:7px;height:7px;border-radius:50%;background:#5d6674;margin-top:5px}
+.timeline-copy{font-size:10px;color:var(--muted);line-height:1.45}
+.timeline-copy strong{color:#dce1e8;font-weight:700}
+.reason{
+  width:100%;min-height:76px;resize:vertical;border-radius:10px;border:1px solid var(--line);
+  background:#0d1116;color:#fff;padding:10px 11px;outline:none;font-size:12px;line-height:1.45
+}
+.reason:focus{border-color:#505967;box-shadow:0 0 0 3px rgba(255,255,255,.035)}
+.reason.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(232,25,44,.08)}
+.reason-help{display:flex;justify-content:space-between;gap:10px;margin-top:5px;color:var(--muted-2);font-size:9px}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.btn{
+  min-height:38px;border-radius:10px;border:1px solid var(--line);
+  display:flex;justify-content:center;align-items:center;gap:7px;
+  font-size:11px;font-weight:800
+}
+.btn-danger{background:var(--red);border-color:var(--red);color:white}
+.btn-danger:hover{background:#f11f33}
+.btn-restore{background:#151b20;border-color:#284a38;color:#9ce9bd}
+.btn-restore:hover{background:#19231f}
+.btn-secondary{background:#11161c;color:#d7dce4}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+
+.state-stage{min-height:515px;display:none;place-items:center;text-align:center;padding:40px}
+.state-stage.active{display:grid}
+.state-title{font-weight:800;font-size:14px;margin-top:12px}
+.state-copy{font-size:11px;color:var(--muted);max-width:300px;line-height:1.5;margin-top:5px}
+.spinner{
+  width:34px;height:34px;border:3px solid #252b34;border-top-color:var(--red);
+  border-radius:50%;animation:spin .8s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.demo-strip{
+  margin-top:14px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end
+}
+.demo-btn{
+  border:1px solid var(--line);background:#0d1116;color:var(--muted);
+  border-radius:8px;padding:7px 9px;font-size:10px;font-weight:700
+}
+.demo-btn:hover{color:#fff;background:#151a21}
+
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:80;
+  display:none;place-items:center;padding:20px;backdrop-filter:blur(5px)
+}
+.modal-backdrop.open{display:grid}
+.modal{
+  width:min(440px,100%);border-radius:16px;border:1px solid #343c48;
+  background:#12161d;box-shadow:0 28px 90px rgba(0,0,0,.58);overflow:hidden
+}
+.modal-top{padding:17px 18px 12px}
+.modal-icon{
+  width:40px;height:40px;border-radius:11px;background:var(--red-soft);color:#ff6674;
+  border:1px solid rgba(232,25,44,.22);display:grid;place-items:center;margin-bottom:11px
+}
+.modal h3{font-size:16px;margin:0 0 6px}
+.modal p{font-size:11px;color:var(--muted);line-height:1.5;margin:0}
+.consequence{
+  margin:11px 18px;padding:10px;border-radius:10px;
+  background:#0d1116;border:1px solid var(--line);font-size:11px;line-height:1.48;color:#cfd5de
+}
+.modal-actions{
+  padding:13px 18px 17px;display:flex;justify-content:flex-end;gap:8px
+}
+.modal-actions .btn{padding:0 13px}
+
+.toast{
+  position:fixed;right:20px;bottom:20px;z-index:100;
+  background:#171c24;border:1px solid #353d49;border-radius:11px;
+  padding:11px 13px;box-shadow:var(--shadow);font-size:11px;
+  display:none;align-items:center;gap:9px;max-width:360px
+}
+.toast.show{display:flex}
+
+@media (max-width:1180px){
+  .workspace{grid-template-columns:minmax(0,1fr) 360px}
+  .top-nav{display:none}
+}
+@media (max-width:960px){
+  .workspace{display:block}
+  .detail-panel{
+    position:fixed;z-index:60;inset:auto 0 0 0;top:auto;
+    border-radius:20px 20px 0 0;transform:translateY(105%);
+    transition:transform .28s ease;max-height:86vh;min-height:0
+  }
+  .detail-panel.open-mobile{transform:translateY(0)}
+  .detail-empty{display:none!important}
+  .detail-panel.has-selection .detail-content{display:block}
+  .detail-body{max-height:calc(86vh - 58px)}
+  .close-detail{display:grid}
+  .workspace-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:55;
+    backdrop-filter:blur(3px)
+  }
+  .workspace-overlay.open{display:block}
+}
+@media (max-width:760px){
+  .header{height:60px}
+  .header-inner{padding:0 14px}
+  .brand-name{font-size:21px}
+  .brand-mark{width:29px;height:29px}
+  .header-search{width:38px;padding:0;justify-content:center;border:0;background:transparent}
+  .header-search input{display:none}
+  .header-actions .icon-btn:first-child{display:none}
+  .shell{padding:20px 12px 28px}
+  .page-head{display:block;margin-bottom:16px}
+  .page-title{font-size:39px}
+  .page-sub{font-size:12px}
+  .scope-note{display:none}
+  .stats{grid-template-columns:repeat(3,1fr);gap:7px}
+  .stat-card{padding:11px;min-height:72px}
+  .stat-value{font-size:22px}
+  .stat-icon{display:none}
+  .stat-label{font-size:10px}
+  .toolbar{align-items:stretch;padding:10px}
+  .tabs{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
+  .tab{padding:8px 5px;font-size:10px}
+  .filters{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .filter:last-child{grid-column:1 / -1}
+  .queue-head{padding:10px 12px}
+  .item{grid-template-columns:66px minmax(0,1fr);padding:12px;gap:10px}
+  .item-meta{grid-column:2;text-align:left;display:flex;align-items:center;gap:10px;margin-top:-4px}
+  .more{display:none}
+  .snippet{-webkit-line-clamp:3;font-size:12px}
+  .report{font-size:10px}
+  .detail-head{padding:13px 14px}
+  .detail-body{padding:13px 14px 18px}
+  .meta-grid{grid-template-columns:1fr 1fr}
+  .action-row{grid-template-columns:1fr}
+  .toast{left:12px;right:12px;bottom:12px}
+}
+@media (max-width:420px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat-card.reviewed{grid-column:1 / -1}
+  .item{grid-template-columns:1fr}
+  .type-block{flex-direction:row;align-items:center}
+  .item-meta{grid-column:1}
+  .meta-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="header">
+  <div class="header-inner">
+    <a class="brand" href="#" aria-label="MangaZone inicio">
+      <span class="brand-mark">MZ</span>
+      <span class="brand-name">MangaZone</span>
+    </a>
+    <nav class="top-nav" aria-label="Navegación principal">
+      <a class="nav-link" href="#">Inicio</a>
+      <a class="nav-link" href="#">Explorar</a>
+      <a class="nav-link" href="#">Biblioteca</a>
+      <a class="nav-link active" href="#">Comunidades</a>
+      <a class="nav-link" href="#">Grupos</a>
+    </nav>
+    <div class="header-spacer"></div>
+    <label class="header-search" aria-label="Buscar en MangaZone">
+      <i data-lucide="search" class="icon-sm"></i>
+      <input placeholder="Buscar manga, comunidad..." />
+    </label>
+    <div class="header-actions">
+      <button class="icon-btn" type="button" aria-label="Notificaciones"><i data-lucide="bell" class="icon"></i></button>
+      <button class="icon-btn" type="button" aria-label="Ayuda"><i data-lucide="circle-help" class="icon"></i></button>
+      <div class="avatar" aria-label="Moderador Kai">K</div>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="page-head">
+    <div>
+      <div class="eyebrow">Herramientas de comunidad</div>
+      <h1 class="page-title">Moderación</h1>
+      <div class="page-sub">Revisa publicaciones y comentarios que requieran moderación, con o sin reporte asociado. Las acciones se aplican únicamente al contenido y requieren un motivo antes de confirmarse.</div>
+    </div>
+    <div class="scope-note"><i data-lucide="shield-check" class="icon-sm"></i> Alcance: moderación de contenido</div>
+  </div>
+
+  <section class="stats" aria-label="Resumen de moderación">
+    <article class="stat-card pending">
+      <div><div class="stat-label">Pendientes</div><div class="stat-value" id="pendingMetric">12</div></div>
+      <div class="stat-icon"><i data-lucide="inbox" class="icon-lg"></i></div>
+    </article>
+    <article class="stat-card hidden-state">
+      <div><div class="stat-label">Ocultos</div><div class="stat-value">8</div></div>
+      <div class="stat-icon"><i data-lucide="eye-off" class="icon-lg"></i></div>
+    </article>
+    <article class="stat-card reviewed">
+      <div><div class="stat-label">Revisados hoy</div><div class="stat-value">27</div></div>
+      <div class="stat-icon"><i data-lucide="check-check" class="icon-lg"></i></div>
+    </article>
+  </section>
+
+  <section class="workspace">
+    <article class="main-card">
+      <div class="toolbar">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="queue" type="button">Revisión</button>
+          <button class="tab" data-tab="hidden" type="button">Contenido oculto</button>
+          <button class="tab" data-tab="history" type="button">Historial</button>
+        </div>
+        <div class="filters">
+          <select class="filter" id="typeFilter" aria-label="Filtrar por tipo">
+            <option value="all">Tipo: Todos</option>
+            <option value="Post">Post</option>
+            <option value="Comentario">Comentario</option>
+          </select>
+          <select class="filter" id="statusFilter" aria-label="Filtrar por estado del contenido">
+            <option value="all">Estado: Todos</option>
+            <option value="Visible">Visible</option>
+            <option value="Oculto">Oculto</option>
+          </select>
+          <select class="filter" id="communityFilter" aria-label="Filtrar por comunidad">
+            <option value="all">Community: Todas</option>
+            <option value="Teorías & Misterios">Teorías & Misterios</option>
+            <option value="Romance Manhwa">Romance Manhwa</option>
+            <option value="Shonen Weekly">Shonen Weekly</option>
+            <option value="Arte & Fanworks">Arte & Fanworks</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="queue-head">
+        <span class="queue-count" id="queueCount">5 elementos</span>
+        <button class="refresh" id="refreshBtn" type="button"><i data-lucide="refresh-cw" class="icon-sm"></i> Actualizar</button>
+      </div>
+
+      <div id="listView" class="list"></div>
+
+      <div id="loadingState" class="state-stage">
+        <div><div class="spinner"></div><div class="state-title">Cargando revisión</div><div class="state-copy">Estamos obteniendo los elementos de moderación más recientes.</div></div>
+      </div>
+      <div id="emptyState" class="state-stage">
+        <div><div class="empty-icon"><i data-lucide="inbox" class="icon-lg"></i></div><div class="state-title">No hay elementos aquí</div><div class="state-copy">La revisión está al día o los filtros actuales no tienen coincidencias.</div></div>
+      </div>
+      <div id="errorState" class="state-stage">
+        <div><div class="empty-icon"><i data-lucide="triangle-alert" class="icon-lg"></i></div><div class="state-title">No se pudo cargar la revisión</div><div class="state-copy">Reintenta la operación. Ninguna acción de moderación fue aplicada.</div><button class="btn btn-secondary" style="margin:14px auto 0;padding:0 14px" onclick="renderItems()">Reintentar</button></div>
+      </div>
+    </article>
+
+    <aside class="detail-panel" id="detailPanel" aria-label="Detalle del elemento seleccionado">
+      <div class="detail-empty">
+        <div>
+          <div class="empty-icon"><i data-lucide="panel-right-open" class="icon-lg"></i></div>
+          <div class="state-title">Selecciona un elemento</div>
+          <div class="state-copy">Revisa el contenido completo, contexto e historial antes de tomar una acción.</div>
+        </div>
+      </div>
+      <div class="detail-content">
+        <div class="detail-head">
+          <div>
+            <div class="eyebrow" id="detailType">POST</div>
+            <div class="detail-title">Detalle de revisión</div>
+            <div class="detail-id" id="detailId">MZ-MOD-0000</div>
+          </div>
+          <button class="icon-btn close-detail" id="closeDetail" type="button" aria-label="Cerrar detalle"><i data-lucide="x" class="icon"></i></button>
+        </div>
+        <div class="detail-body">
+          <div class="meta-grid">
+            <div class="meta-box"><div class="meta-label">Autor</div><div class="meta-value" id="detailAuthor">—</div></div>
+            <div class="meta-box"><div class="meta-label">Community</div><div class="meta-value" id="detailCommunity">—</div></div>
+            <div class="meta-box"><div class="meta-label">Estado del contenido</div><div class="meta-value" id="detailStatus">—</div></div>
+            <div class="meta-box"><div class="meta-label">Resultado de moderación</div><div class="meta-value" id="detailModerationResult">—</div></div>
+            <div class="meta-box"><div class="meta-label">Fecha</div><div class="meta-value" id="detailDate">—</div></div>
+          </div>
+
+          <div class="section-label">Contenido completo</div>
+          <div class="full-content" id="detailContent">—</div>
+
+          <div class="section-label">Contexto</div>
+          <div class="context-card" id="detailContext">—</div>
+
+          <div class="section-label">Motivo / reporte</div>
+          <div class="context-card" id="detailReport">—</div>
+
+          <div class="section-label">Historial de moderación</div>
+          <div class="timeline" id="detailHistory"></div>
+
+          <div class="section-label">Motivo de la acción <span style="color:var(--red)">*</span></div>
+          <textarea class="reason" id="reasonField" maxlength="2000" placeholder="Explica por qué corresponde ocultar o restaurar este contenido..."></textarea>
+          <div class="reason-help"><span>Obligatorio antes de aplicar una acción.</span><span id="reasonCount">0/2000</span></div>
+
+          <div class="action-row">
+            <button class="btn btn-danger" id="hideBtn" type="button"><i data-lucide="eye-off" class="icon-sm"></i> Ocultar</button>
+            <button class="btn btn-restore" id="restoreBtn" type="button"><i data-lucide="rotate-ccw" class="icon-sm"></i> Restaurar</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <div class="demo-strip" aria-label="Estados de prototipo">
+    <button class="demo-btn" data-demo="loading" type="button">Demo: Loading</button>
+    <button class="demo-btn" data-demo="error" type="button">Demo: Error</button>
+    <button class="demo-btn" data-demo="empty" type="button">Demo: Vacío</button>
+    <button class="demo-btn" data-demo="normal" type="button">Demo: Normal</button>
+  </div>
+</main>
+</div>
+
+<div class="workspace-overlay" id="workspaceOverlay"></div>
+
+<div class="modal-backdrop" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-icon"><i data-lucide="shield-alert" class="icon-lg"></i></div>
+      <h3 id="confirmTitle">Confirmar acción</h3>
+      <p id="confirmCopy">Revisa la consecuencia antes de continuar.</p>
+    </div>
+    <div class="consequence" id="consequenceCopy"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="cancelConfirm" type="button">Cancelar</button>
+      <button class="btn btn-danger" id="executeConfirm" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="circle-check" class="icon"></i><span id="toastText">Acción aplicada.</span></div>
+
+<script>
+const items = [
+  {
+    id:"MZ-MOD-1042", type:"Post", community:"Teorías & Misterios", author:"@KuroNeko",
+    snippet:"El capítulo confirma que el personaje sigue vivo. Dejen de inventar teorías absurdas...",
+    content:"El capítulo confirma que el personaje sigue vivo. Dejen de inventar teorías absurdas. Cualquiera que haya leído con atención sabe exactamente qué pasó y ya cansan los mismos comentarios.",
+    date:"Hoy, 20:14", status:"Visible", moderationResult:"Pendiente de revisión",
+    report:"Posible hostigamiento / lenguaje agresivo",
+    context:"Post publicado en el hilo «Capítulo 117 — discusión semanal». 43 respuestas y 126 votos.",
+    history:[["20:19","Reporte recibido","2 usuarios marcaron el post por hostigamiento."],["20:21","En revisión","Asignado a moderación de contenido."]]
+  },
+  {
+    id:"MZ-MOD-1041", type:"Comentario", community:"Romance Manhwa", author:"@LunaPanels",
+    snippet:"No entiendo cómo alguien puede apoyar a ese personaje, literalmente no aporta nada...",
+    content:"No entiendo cómo alguien puede apoyar a ese personaje, literalmente no aporta nada y cada vez que aparece arruina el capítulo. Algunos fans deberían aprender a leer antes de defenderlo.",
+    date:"Hoy, 19:52", status:"Visible", moderationResult:"Pendiente de revisión",
+    report:"Insultos dirigidos a otros miembros",
+    context:"Comentario en el post «¿Team Seo-jun o Team Min-ho?». El post original permanece visible.",
+    history:[["19:57","Reporte recibido","1 reporte por ataques personales."],["20:02","En revisión","Pendiente de primera revisión."]]
+  },
+  {
+    id:"MZ-MOD-1038", type:"Post", community:"Shonen Weekly", author:"@PanelStorm",
+    snippet:"Subo las páginas filtradas porque ya están por todos lados. Miren el giro final...",
+    content:"Subo las páginas filtradas porque ya están por todos lados. Miren el giro final del capítulo antes de que las bajen.",
+    date:"Hoy, 18:43", status:"Visible", moderationResult:"Pendiente de revisión",
+    report:"Posible filtración / contenido no autorizado",
+    context:"Post con 4 imágenes adjuntas en «Leaks & Spoilers». Las imágenes no se muestran en este prototipo.",
+    history:[["18:45","Reporte recibido","3 reportes relacionados con material filtrado."],["18:47","Prioridad elevada","Marcado para revisión rápida por volumen de reportes."]]
+  },
+  {
+    id:"MZ-MOD-1032", type:"Comentario", community:"Arte & Fanworks", author:"@InkFox",
+    snippet:"Este dibujo está claramente copiado. Ni siquiera intentaste cambiar la composición...",
+    content:"Este dibujo está claramente copiado. Ni siquiera intentaste cambiar la composición del original y todavía lo publicas como si fuera tuyo.",
+    date:"Hoy, 16:28", status:"Oculto", moderationResult:"Ocultado temporalmente",
+    report:"Acusación directa / conflicto entre usuarios",
+    context:"Comentario en un fanart. El comentario fue ocultado temporalmente por un moderador anterior.",
+    history:[["16:30","Reporte recibido","El autor del post reportó el comentario."],["16:36","Ocultado","@MikaMod ocultó el comentario mientras se verificaba el contexto."]]
+  },
+  {
+    id:"MZ-MOD-1027", type:"Post", community:"Teorías & Misterios", author:"@RavenTheory",
+    snippet:"Recopilé todas las pistas del arco y creo que la identidad real del antagonista...",
+    content:"Recopilé todas las pistas del arco y creo que la identidad real del antagonista se puede deducir por el símbolo que aparece repetido en los capítulos 88, 94 y 101. Incluyo mis capturas y una línea temporal.",
+    date:"Hoy, 14:06", status:"Visible", moderationResult:"Revisado sin acción",
+    report:null,
+    context:"Post marcado con etiqueta de spoilers. Fue revisado y se determinó que cumple las normas de la Community.",
+    history:[["14:12","Revisión iniciada","El elemento fue seleccionado para revisión."],["14:18","Revisado sin acción","@KaiMod confirmó que el contenido podía permanecer visible."]]
+  }
+];
+
+let activeTab = "queue";
+let selectedId = null;
+let pendingAction = null;
+
+const listView = document.getElementById("listView");
+const queueCount = document.getElementById("queueCount");
+const detailPanel = document.getElementById("detailPanel");
+const overlay = document.getElementById("workspaceOverlay");
+const reasonField = document.getElementById("reasonField");
+const reasonCount = document.getElementById("reasonCount");
+
+function statusClass(status){
+  if(status==="Oculto") return "hidden-s";
+  return "reviewed-s";
+}
+function typeClass(type){ return type==="Post" ? "post":"comment"; }
+
+function tabAccepts(item){
+  if(activeTab==="queue") return item.status==="Visible" && item.moderationResult==="Pendiente de revisión";
+  if(activeTab==="hidden") return item.status==="Oculto";
+  return item.moderationResult!=="Pendiente de revisión";
+}
+
+function filteredItems(){
+  const type = document.getElementById("typeFilter").value;
+  const status = document.getElementById("statusFilter").value;
+  const community = document.getElementById("communityFilter").value;
+  return items.filter(item =>
+    tabAccepts(item) &&
+    (type==="all" || item.type===type) &&
+    (status==="all" || item.status===status) &&
+    (community==="all" || item.community===community)
+  );
+}
+
+function itemTemplate(item){
+  return `
+    <button class="item ${selectedId===item.id?"selected":""}" data-id="${item.id}" type="button">
+      <div class="type-block">
+        <span class="badge ${typeClass(item.type)}">${item.type}</span>
+        <span class="status ${statusClass(item.status)}"><span class="dot"></span>${item.status}</span>
+        <span class="status"><span class="dot" style="background:#5d6674"></span>${item.moderationResult}</span>
+      </div>
+      <div class="item-main">
+        <div class="item-top"><span class="community">${item.community}</span><span class="sep">•</span><span class="author">${item.author}</span></div>
+        <div class="snippet">${item.snippet}</div>
+        <span class="report"><i data-lucide="flag" class="icon-sm"></i>${item.report || "Sin reporte asociado"}</span>
+      </div>
+      <div class="item-meta">
+        <div class="date">${item.date}</div>
+        <div class="more"><i data-lucide="chevron-right" class="icon"></i></div>
+      </div>
+    </button>`;
+}
+
+function renderItems(){
+  hideAllStates();
+  listView.style.display = "block";
+  const filtered = filteredItems();
+  queueCount.textContent = `${filtered.length} ${filtered.length===1?"elemento":"elementos"}`;
+  listView.innerHTML = filtered.map(itemTemplate).join("");
+  if(filtered.length===0){
+    listView.style.display="none";
+    document.getElementById("emptyState").classList.add("active");
+  }
+  document.querySelectorAll(".item").forEach(btn => btn.addEventListener("click",()=>selectItem(btn.dataset.id)));
+  if(window.lucide) lucide.createIcons();
+}
+
+function selectItem(id){
+  selectedId=id;
+  const item=items.find(x=>x.id===id);
+  if(!item) return;
+  document.getElementById("detailType").textContent=item.type.toUpperCase();
+  document.getElementById("detailId").textContent=item.id;
+  document.getElementById("detailAuthor").textContent=item.author;
+  document.getElementById("detailCommunity").textContent=item.community;
+  document.getElementById("detailStatus").textContent=item.status;
+  document.getElementById("detailModerationResult").textContent=item.moderationResult;
+  document.getElementById("detailDate").textContent=item.date;
+  document.getElementById("detailContent").textContent=item.content;
+  document.getElementById("detailContext").textContent=item.context;
+  document.getElementById("detailReport").textContent=item.report || "Sin reporte asociado";
+  document.getElementById("detailHistory").innerHTML=item.history.map(h=>`
+    <div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-copy"><strong>${h[1]}</strong> · ${h[0]}<br>${h[2]}</div></div>
+  `).join("");
+  detailPanel.classList.add("has-selection");
+  reasonField.value="";
+  reasonCount.textContent="0/2000";
+  reasonField.classList.remove("error");
+
+  const hideBtn=document.getElementById("hideBtn");
+  const restoreBtn=document.getElementById("restoreBtn");
+  hideBtn.disabled = item.status!=="Visible";
+  restoreBtn.disabled = item.status!=="Oculto";
+  renderItems();
+
+  if(window.innerWidth<=960){
+    detailPanel.classList.add("open-mobile");
+    overlay.classList.add("open");
+  }
+  if(window.lucide) lucide.createIcons();
+}
+
+function closeMobileDetail(){
+  detailPanel.classList.remove("open-mobile");
+  overlay.classList.remove("open");
+}
+document.getElementById("closeDetail").addEventListener("click",closeMobileDetail);
+overlay.addEventListener("click",closeMobileDetail);
+
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    activeTab=tab.dataset.tab;
+    selectedId=null;
+    detailPanel.classList.remove("has-selection","open-mobile");
+    overlay.classList.remove("open");
+    renderItems();
+  });
+});
+["typeFilter","statusFilter","communityFilter"].forEach(id=>document.getElementById(id).addEventListener("change",renderItems));
+
+reasonField.addEventListener("input",()=>{
+  reasonCount.textContent=`${reasonField.value.length}/2000`;
+  if(reasonField.value.trim().length>=8) reasonField.classList.remove("error");
+});
+
+function requestAction(action){
+  const item=items.find(x=>x.id===selectedId);
+  if(!item) return;
+  const reason=reasonField.value.trim();
+  if(reason.length<8){
+    reasonField.classList.add("error");
+    reasonField.focus();
+    showToast("Escribe un motivo claro antes de continuar.", true);
+    return;
+  }
+  pendingAction={action,item,reason};
+  const isHide=action==="hide";
+  document.getElementById("confirmTitle").textContent=isHide ? "Confirmar ocultamiento":"Confirmar restauración";
+  document.getElementById("confirmCopy").textContent=isHide
+    ? "El contenido dejará de ser visible para los usuarios, pero seguirá registrado para moderación."
+    : "El contenido volverá a ser visible para los usuarios.";
+  document.getElementById("consequenceCopy").innerHTML=
+    `<strong>${item.type}</strong> de ${item.author} en <strong>${item.community}</strong>.<br><br>Motivo: “${escapeHtml(reason)}”`;
+  const execute=document.getElementById("executeConfirm");
+  execute.textContent=isHide ? "Sí, ocultar":"Sí, restaurar";
+  execute.className=`btn ${isHide?"btn-danger":"btn-restore"}`;
+  document.getElementById("confirmModal").classList.add("open");
+}
+document.getElementById("hideBtn").addEventListener("click",()=>requestAction("hide"));
+document.getElementById("restoreBtn").addEventListener("click",()=>requestAction("restore"));
+document.getElementById("cancelConfirm").addEventListener("click",()=>document.getElementById("confirmModal").classList.remove("open"));
+document.getElementById("confirmModal").addEventListener("click",e=>{
+  if(e.target.id==="confirmModal") e.currentTarget.classList.remove("open");
+});
+document.getElementById("executeConfirm").addEventListener("click",()=>{
+  if(!pendingAction) return;
+  const {action,item,reason}=pendingAction;
+  if(action==="hide"){
+    item.status="Oculto";
+    item.moderationResult="Ocultado";
+  } else {
+    item.status="Visible";
+    item.moderationResult="Restaurado";
+  }
+  item.history.push([new Date().toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"}),action==="hide"?"Ocultado":"Restaurado",`Acción aplicada en prototipo. Motivo: ${reason}`]);
+  document.getElementById("confirmModal").classList.remove("open");
+  showToast(action==="hide" ? "Contenido ocultado en el prototipo.":"Contenido restaurado en el prototipo.");
+  selectedId=null;
+  detailPanel.classList.remove("has-selection","open-mobile");
+  overlay.classList.remove("open");
+  renderItems();
+});
+
+function hideAllStates(){
+  ["loadingState","emptyState","errorState"].forEach(id=>document.getElementById(id).classList.remove("active"));
+}
+document.querySelectorAll(".demo-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const mode=btn.dataset.demo;
+    hideAllStates();
+    if(mode==="normal"){ renderItems(); return; }
+    listView.style.display="none";
+    if(mode==="loading") document.getElementById("loadingState").classList.add("active");
+    if(mode==="error") document.getElementById("errorState").classList.add("active");
+    if(mode==="empty") document.getElementById("emptyState").classList.add("active");
+    queueCount.textContent= mode==="loading" ? "Cargando…" : "0 elementos";
+  });
+});
+document.getElementById("refreshBtn").addEventListener("click",()=>{
+  hideAllStates(); listView.style.display="none";
+  document.getElementById("loadingState").classList.add("active");
+  setTimeout(renderItems,700);
+});
+
+function showToast(message,isError=false){
+  const toast=document.getElementById("toast");
+  document.getElementById("toastText").textContent=message;
+  toast.querySelector("svg")?.setAttribute("data-lucide",isError?"triangle-alert":"circle-check");
+  toast.classList.add("show");
+  if(window.lucide) lucide.createIcons();
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
+}
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+
+renderItems();
+if(window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

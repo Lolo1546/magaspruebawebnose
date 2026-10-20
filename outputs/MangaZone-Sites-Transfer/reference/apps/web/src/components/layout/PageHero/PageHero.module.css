@@ -1,0 +1,130 @@
+.hero {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: clamp(var(--mz-space-5), 4vw, var(--mz-space-7));
+  border: 1px solid var(--mz-border-soft);
+  border-radius: var(--mz-radius-xl);
+  background:
+    radial-gradient(circle at 84% 32%, var(--mz-red-soft), transparent 25%),
+    linear-gradient(135deg, var(--mz-bg-secondary), var(--mz-surface));
+  box-shadow: var(--mz-shadow-sm);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--mz-space-2);
+  color: var(--mz-red-hover);
+  font-size: var(--mz-text-xs);
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  width: 22px;
+  height: 2px;
+  border-radius: var(--mz-radius-full);
+  background: var(--mz-red);
+  content: "";
+}
+
+.title {
+  margin: var(--mz-space-2) 0 0;
+  color: var(--mz-text-primary);
+  font-family: var(--mz-font-display);
+  font-size: clamp(2.75rem, 7vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: 0.025em;
+  line-height: 0.96;
+  text-transform: uppercase;
+}
+
+.description {
+  max-width: 720px;
+  margin-top: var(--mz-space-3);
+  color: var(--mz-text-secondary);
+  font-size: var(--mz-text-sm);
+  line-height: 1.65;
+}
+
+.actions,
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mz-space-3);
+  margin-top: var(--mz-space-5);
+}
+
+.stats {
+  padding: 0;
+}
+
+.stat {
+  display: flex;
+  min-width: 124px;
+  flex-direction: column;
+  padding: 10px var(--mz-space-3);
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-glass);
+}
+
+.stat dt,
+.stat dd {
+  margin: 0;
+}
+
+.stat dd {
+  order: -1;
+  color: var(--mz-text-primary);
+  font-size: var(--mz-text-lg);
+  font-weight: 750;
+}
+
+.stat dt {
+  margin-top: 2px;
+  color: var(--mz-text-muted);
+  font-size: var(--mz-text-xs);
+}
+
+.visual {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(42%, 520px);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: var(--mz-space-5);
+    border-radius: var(--mz-radius-lg);
+  }
+
+  .visual {
+    width: 34%;
+    opacity: 0.38;
+  }
+}
+
+@media (max-width: 540px) {
+  .title {
+    font-size: 2.75rem;
+  }
+
+  .actions > * {
+    flex: 1 1 auto;
+  }
+
+  .stat {
+    flex: 1 1 120px;
+  }
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09090d">
+<title>MangaZone — Editar / gestionar lista</title>
+<meta name="description" content="Prototipo visual para editar y gestionar una lista en MangaZone.">
+<style>
+:root{
+  --bg:#08080b;--surface:#121219;--surface2:#181820;--surface3:#20202a;--border:#292933;--border2:#1d1d25;
+  --text:#f5f5f7;--text2:#b9b9c5;--muted:#7f7f90;--red:#e63946;--red2:#ff4e5b;--redSoft:rgba(230,57,70,.15);
+  --green:#46c97c;--blue:#5ea8ff;--gold:#f1c75b;--shadow:0 26px 80px rgba(0,0,0,.45);
+  --header:64px;--side:72px;--font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--display:"Arial Narrow",Impact,Haettenschweiler,sans-serif
+}
+*{box-sizing:border-box;scrollbar-color:#7f1f2d #0b0b0f;scrollbar-width:thin}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(230,57,70,.08),transparent 25%),linear-gradient(180deg,#09090d,#08080b);color:var(--text);font-family:var(--font)}
+button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#0b0b0f;border-radius:999px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#7f1f2d,#e63946);border:2px solid #0b0b0f;border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#a52a3a,#ff4e5b)}::-webkit-scrollbar-corner{background:#0b0b0f}
+:focus-visible{outline:2px solid var(--red2);outline-offset:3px}
+
+.topbar{position:fixed;inset:0 0 auto;height:var(--header);z-index:60;display:flex;align-items:center;gap:18px;padding:0 22px;background:rgba(9,9,13,.82);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}.mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--red),#861d2b);font-weight:900;box-shadow:0 0 26px rgba(230,57,70,.3)}
+.brandtxt{font:26px/1 var(--display)}.brandtxt span{color:var(--red)}.nav{display:flex;gap:6px}.nav a{padding:10px 12px;border-radius:10px;color:var(--text2);font-size:14px}.nav a:hover,.nav a.active{background:#ffffff0d;color:#fff}
+.search{flex:1;max-width:520px;margin-left:auto;position:relative}.search input{width:100%;height:42px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:0 14px 0 40px;outline:none}.search span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.hactions{display:flex;gap:8px}.hbtn{height:40px;min-width:40px;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:0 12px;font-weight:800}
+.sidebar{position:fixed;left:0;top:var(--header);bottom:0;width:var(--side);z-index:50;background:rgba(10,10,14,.9);border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:8px}
+.slink{width:50px;height:48px;border-radius:13px;display:grid;place-items:center;color:var(--muted);position:relative}.slink:hover,.slink.active{background:var(--redSoft);color:#fff}.slink.active:before{content:"";position:absolute;left:-10px;width:3px;height:24px;border-radius:3px;background:var(--red)}.spacer{flex:1}
+
+.app{margin-left:var(--side);padding:calc(var(--header) + 26px) 26px 110px}
+.hero{position:relative;overflow:hidden;border:1px solid var(--border2);border-radius:24px;padding:28px 32px;background:linear-gradient(90deg,rgba(8,8,11,.97),rgba(8,8,11,.76) 56%,rgba(8,8,11,.25)),radial-gradient(circle at 83% 40%,rgba(230,57,70,.28),transparent 23%),linear-gradient(135deg,#180e13,#11121a 56%,#251118);box-shadow:var(--shadow)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#ff858f;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.eyebrow:before{content:"";width:22px;height:2px;background:var(--red)}
+h1{margin:9px 0 7px;font:clamp(40px,5vw,62px)/.95 var(--display);text-transform:uppercase}.hero p{max-width:740px;margin:0;color:var(--text2);font-size:13px;line-height:1.6}
+.heroActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary,.secondary,.danger{height:44px;padding:0 15px;border-radius:12px;font-weight:850}.primary{border:0;background:linear-gradient(135deg,var(--red),#b72435)}.secondary{border:1px solid var(--border);background:var(--surface)}.danger{border:1px solid rgba(230,57,70,.45);background:var(--redSoft);color:#ff9aa2}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;margin-top:22px}
+.maincol{display:grid;gap:16px}.card{border:1px solid var(--border);border-radius:18px;background:rgba(18,18,24,.86);padding:18px}.card h2{margin:0;font-size:18px}.card p.sub{margin:5px 0 0;color:var(--muted);font-size:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.group{display:grid;gap:7px}.labelrow{display:flex;justify-content:space-between;gap:10px}.label{font-size:12px;font-weight:850}.count,.hint{font-size:10px;color:var(--muted)}.field,.textarea{width:100%;border:1px solid var(--border);border-radius:11px;background:#15151d;outline:none}.field{height:44px;padding:0 12px}.textarea{min-height:96px;padding:11px 12px;resize:vertical}.field:focus,.textarea:focus{border-color:#e63946aa;box-shadow:0 0 0 4px var(--redSoft)}
+
+.visgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.vis{border:1px solid var(--border);border-radius:14px;background:#15151d;padding:13px;text-align:left}.vis.active{border-color:#e6394688;background:var(--redSoft)}.vicon{width:34px;height:34px;border-radius:10px;background:#20202a;display:grid;place-items:center;margin-bottom:9px}.vtitle{font-size:12px;font-weight:900}.vcopy{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.4}
+
+.tools{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.tool{height:38px;padding:0 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface2);font-size:11px;font-weight:800}
+.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:10px;margin-top:16px}.toolbar .search2{position:relative}.search2 input{width:100%;height:42px;border:1px solid var(--border);border-radius:11px;background:#15151d;padding:0 12px 0 38px}.search2 span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}.select{height:42px;border:1px solid var(--border);border-radius:11px;background:#15151d;padding:0 12px}
+
+.list{display:grid;gap:10px;margin-top:14px}.item{display:grid;grid-template-columns:34px 64px minmax(0,1fr) 110px 42px;gap:12px;align-items:center;padding:11px;border:1px solid var(--border2);border-radius:14px;background:#101016;transition:.15s}.item.dragging{opacity:.45}.handle{color:var(--muted);font-size:18px;text-align:center}.cover{width:64px;aspect-ratio:2/3;border-radius:9px;background:linear-gradient(135deg,var(--accent),#191920);display:grid;place-items:center;font-weight:950}.ititle{font-size:13px;font-weight:900}.imeta{margin-top:5px;color:var(--muted);font-size:10px}.progress{margin-top:8px;height:5px;background:#292933;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--red),#ff7b86)}.status{font-size:10px;color:var(--text2);text-align:center}.remove{width:38px;height:38px;border:1px solid rgba(230,57,70,.35);border-radius:10px;background:rgba(230,57,70,.08);color:#ff8b95;font-size:18px}
+.empty{padding:42px 20px;text-align:center;border:1px dashed #373743;border-radius:14px;color:var(--muted)}.empty strong{display:block;color:#fff;margin-bottom:6px}
+
+.sidecol{display:grid;gap:14px;align-content:start}.sticky{position:sticky;top:calc(var(--header) + 18px)}.preview{border:1px solid var(--border);border-radius:18px;background:#121218;overflow:hidden;box-shadow:var(--shadow)}.pcovers{height:180px;display:grid;grid-template-columns:repeat(4,1fr);position:relative}.pcovers i:nth-child(1){background:linear-gradient(160deg,#a91f35,#19141b)}.pcovers i:nth-child(2){background:linear-gradient(160deg,#6d3d87,#18151d)}.pcovers i:nth-child(3){background:linear-gradient(160deg,#1f6657,#141a19)}.pcovers i:nth-child(4){background:linear-gradient(160deg,#2f5c78,#15191e)}.badge{position:absolute;left:12px;top:12px;padding:6px 8px;border-radius:999px;background:#08080bcc;border:1px solid #ffffff1f;font-size:10px;font-weight:900}.pbody{padding:15px}.ptitle{font-size:18px;font-weight:950}.pdesc{margin-top:6px;color:var(--text2);font-size:11px;line-height:1.5}.pmeta{display:flex;justify-content:space-between;margin-top:12px;color:var(--muted);font-size:10px}
+.summary{border:1px solid var(--border);border-radius:17px;background:#121218;padding:15px}.summary h3{margin:0 0 12px;font-size:14px}.srow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--border2);font-size:11px}.srow:first-of-type{border-top:0}.srow span:first-child{color:var(--muted)}
+.savebar{position:sticky;bottom:12px;display:flex;justify-content:space-between;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--border);border-radius:15px;background:#111117f2;backdrop-filter:blur(12px);box-shadow:var(--shadow);z-index:20}.changed{font-size:11px;color:var(--muted)}.saveactions{display:flex;gap:9px}.saveactions button{height:42px;padding:0 14px;border-radius:11px;font-weight:850}.discard{border:1px solid var(--border);background:var(--surface2)}.save{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+
+.modalbg{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.68);backdrop-filter:blur(4px);display:none;place-items:center;padding:18px}.modalbg.show{display:grid}.modal{width:min(100%,480px);border:1px solid var(--border);border-radius:18px;background:#13131b;padding:20px;box-shadow:var(--shadow)}.modal h3{margin:0 0 8px;font-size:20px}.modal p{margin:0;color:var(--text2);font-size:12px;line-height:1.55}.modal .field{margin-top:14px}.modalactions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.modalactions button{height:42px;padding:0 14px;border-radius:11px;font-weight:850}.malt{border:1px solid var(--border);background:var(--surface2)}.mdanger{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+.toast{position:fixed;left:50%;bottom:26px;z-index:140;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.22s;background:#15151e;border:1px solid var(--border);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow);font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:1080px){.nav{display:none}.layout{grid-template-columns:1fr}.sticky{position:static}.sidecol{grid-template-columns:1fr 1fr}.preview{grid-column:1/-1}}
+@media(max-width:820px){:root{--side:0}.sidebar{display:none}.app{margin-left:0}.search{display:none}.grid2{grid-template-columns:1fr}}
+@media(max-width:640px){:root{--header:58px}.topbar{padding:0 12px}.brandtxt{font-size:22px}.hactions .hbtn:first-child{display:none}.app{padding:calc(var(--header) + 16px) 14px 88px}.hero{padding:22px 20px}.visgrid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.item{grid-template-columns:26px 54px minmax(0,1fr) 38px}.cover{width:54px}.status{display:none}.sidecol{grid-template-columns:1fr}.savebar{bottom:8px;align-items:stretch;flex-direction:column}.saveactions{display:grid;grid-template-columns:1fr 1.2fr}.saveactions button{width:100%}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#"><span class="mark">MZ</span><span class="brandtxt">Manga<span>Zone</span></span></a>
+  <nav class="nav"><a href="#">Inicio</a><a href="#">Explorar</a><a href="#">Biblioteca</a><a class="active" href="#">Listas</a><a href="#">Comunidad</a></nav>
+  <div class="search"><span>⌕</span><input placeholder="Buscar manga…"></div>
+  <div class="hactions"><button class="hbtn">♢</button><button class="hbtn">LunaV</button></div>
+</header>
+
+<aside class="sidebar">
+  <a class="slink" href="#">⌂</a><a class="slink" href="#">⌕</a><a class="slink" href="#">▤</a><a class="slink active" href="#">☆</a>
+  <div class="spacer"></div><a class="slink" href="#">⚙</a>
+</aside>
+
+<main class="app">
+  <section class="hero">
+    <span class="eyebrow">Gestión de colección</span>
+    <h1>Editar lista</h1>
+    <p>Actualiza la información de la lista, administra su visibilidad y reorganiza las obras que contiene sin perder el contexto de tu biblioteca.</p>
+    <div class="heroActions">
+      <button id="viewPublicBtn" class="secondary">Ver como visitante</button>
+      <button id="shareBtn" class="secondary">Compartir</button>
+      <button id="deleteListBtn" class="danger">Eliminar lista</button>
+    </div>
+  </section>
+
+  <div class="layout">
+    <section class="maincol">
+      <article class="card">
+        <h2>Información de la lista</h2><p class="sub">Edita cómo se presenta esta colección.</p>
+        <div class="grid2">
+          <div class="group">
+            <div class="labelrow"><label class="label">Nombre</label><span id="nameCount" class="count">30 / 60</span></div>
+            <input id="nameInput" class="field" maxlength="60" value="Fantasía oscura imprescindible">
+          </div>
+          <div class="group">
+            <div class="labelrow"><label class="label">Slug público</label><span class="count">Automático</span></div>
+            <input id="slugInput" class="field" value="fantasia-oscura-imprescindible" readonly>
+          </div>
+        </div>
+        <div class="group" style="margin-top:14px">
+          <div class="labelrow"><label class="label">Descripción</label><span id="descCount" class="count">91 / 240</span></div>
+          <textarea id="descInput" class="textarea" maxlength="240">Obras con mundos crueles, magia peligrosa y protagonistas marcados por decisiones difíciles.</textarea>
+        </div>
+
+        <div class="group" style="margin-top:18px">
+          <div class="labelrow"><span class="label">Visibilidad</span></div>
+          <div class="visgrid">
+            <button class="vis active" data-vis="Pública"><div class="vicon">◉</div><div class="vtitle">Pública</div><div class="vcopy">Aparece en tu perfil y puede compartirse.</div></button>
+            <button class="vis" data-vis="No listada"><div class="vicon">↗</div><div class="vtitle">No listada</div><div class="vcopy">Solo quienes tengan el enlace podrán verla.</div></button>
+            <button class="vis" data-vis="Privada"><div class="vicon">◇</div><div class="vtitle">Privada</div><div class="vcopy">Solo tú podrás acceder a ella.</div></button>
+          </div>
+        </div>
+
+        <div class="tools">
+          <button id="changeCoverBtn" class="tool">▧ Cambiar portada</button>
+          <button id="autoCoverBtn" class="tool">✦ Regenerar collage</button>
+          <button id="duplicateBtn" class="tool">⧉ Duplicar lista</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Obras en la lista</h2><p class="sub">Busca, ordena o elimina mangas de esta colección.</p>
+        <div class="toolbar">
+          <div class="search2"><span>⌕</span><input id="itemSearch" placeholder="Buscar dentro de la lista…"></div>
+          <select id="sortSelect" class="select">
+            <option value="manual">Orden manual</option>
+            <option value="title">Título A–Z</option>
+            <option value="progress">Mayor progreso</option>
+          </select>
+          <button id="addMangaBtn" class="tool" style="height:42px">＋ Añadir manga</button>
+        </div>
+        <div id="mangaList" class="list"></div>
+        <div id="emptyState" class="empty" hidden><strong>La lista está vacía</strong>Añade mangas para comenzar a organizarla.</div>
+      </article>
+
+      <div class="savebar">
+        <div id="changedText" class="changed">Sin cambios pendientes</div>
+        <div class="saveactions">
+          <button id="discardBtn" class="discard">Descartar cambios</button>
+          <button id="saveBtn" class="save">Guardar cambios</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidecol">
+      <div class="sticky" style="display:grid;gap:14px">
+        <article class="preview">
+          <div class="pcovers"><i></i><i></i><i></i><i></i><span id="previewBadge" class="badge">Pública</span></div>
+          <div class="pbody">
+            <div id="previewTitle" class="ptitle">Fantasía oscura imprescindible</div>
+            <div id="previewDesc" class="pdesc">Obras con mundos crueles, magia peligrosa y protagonistas marcados por decisiones difíciles.</div>
+            <div class="pmeta"><span id="previewCount">6 obras</span><span>Actualizada ahora</span></div>
+          </div>
+        </article>
+
+        <article class="summary">
+          <h3>Resumen</h3>
+          <div class="srow"><span>Visibilidad</span><span id="summaryVisibility">Pública</span></div>
+          <div class="srow"><span>Obras</span><span id="summaryCount">6</span></div>
+          <div class="srow"><span>Creada</span><span>12 jul 2026</span></div>
+          <div class="srow"><span>Última edición</span><span>Hoy</span></div>
+          <div class="srow"><span>Seguidores</span><span>128</span></div>
+        </article>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div id="removeModal" class="modalbg">
+  <div class="modal">
+    <h3>Quitar manga de la lista</h3>
+    <p id="removeText">La obra dejará de aparecer en esta colección, pero permanecerá en tu biblioteca.</p>
+    <div class="modalactions"><button id="cancelRemove" class="malt">Cancelar</button><button id="confirmRemove" class="mdanger">Quitar manga</button></div>
+  </div>
+</div>
+
+<div id="deleteModal" class="modalbg">
+  <div class="modal">
+    <h3>Eliminar lista</h3>
+    <p>Esta acción elimina la colección, no las obras de tu biblioteca. Escribe <strong>ELIMINAR</strong> para confirmar.</p>
+    <input id="deleteInput" class="field" placeholder="ELIMINAR">
+    <div class="modalactions"><button id="cancelDelete" class="malt">Cancelar</button><button id="confirmDelete" class="mdanger">Eliminar definitivamente</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+let items=[
+{id:1,title:"Ashes of the Crown",type:"Manga",chapter:"41 / 48",progress:82,accent:"#a91f35"},
+{id:2,title:"Neon Exorcist",type:"Manga",chapter:"9 / 18",progress:50,accent:"#8b2030"},
+{id:3,title:"Grim Summer",type:"Manga",chapter:"35 / 35",progress:100,accent:"#62312d"},
+{id:4,title:"Nocturne Academy",type:"Manga",chapter:"96 / 96",progress:100,accent:"#303451"},
+{id:5,title:"The Jade Archivist",type:"Manhua",chapter:"13 / 22",progress:59,accent:"#1f6a55"},
+{id:6,title:"Tower of Glass",type:"Manhua",chapter:"44 / 87",progress:51,accent:"#266a72"}
+];
+let visibility="Pública",removeId=null,changed=false;
+const nameInput=document.getElementById("nameInput"),descInput=document.getElementById("descInput"),list=document.getElementById("mangaList"),toast=document.getElementById("toast");
+
+function showToast(msg){toast.textContent=msg;toast.classList.add("show");clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove("show"),1700)}
+function markChanged(){changed=true;document.getElementById("changedText").textContent="Cambios sin guardar"}
+function updateInfo(){
+ document.getElementById("nameCount").textContent=nameInput.value.length+" / 60";
+ document.getElementById("descCount").textContent=descInput.value.length+" / 240";
+ document.getElementById("previewTitle").textContent=nameInput.value.trim()||"Lista sin nombre";
+ document.getElementById("previewDesc").textContent=descInput.value.trim()||"Sin descripción.";
+}
+function render(){
+ const q=document.getElementById("itemSearch").value.trim().toLowerCase();
+ const sort=document.getElementById("sortSelect").value;
+ let data=items.filter(x=>x.title.toLowerCase().includes(q));
+ if(sort==="title")data=[...data].sort((a,b)=>a.title.localeCompare(b.title));
+ if(sort==="progress")data=[...data].sort((a,b)=>b.progress-a.progress);
+ list.innerHTML=data.map((x,i)=>`<article class="item" draggable="${sort==="manual"}" data-id="${x.id}">
+   <div class="handle">⋮⋮</div>
+   <div class="cover" style="--accent:${x.accent}">${x.title.split(" ").slice(0,2).map(w=>w[0]).join("")}</div>
+   <div><div class="ititle">${x.title}</div><div class="imeta">${x.type} · Cap. ${x.chapter}</div><div class="progress"><div class="bar" style="width:${x.progress}%"></div></div></div>
+   <div class="status">${x.progress}% leído</div>
+   <button class="remove" data-remove="${x.id}" title="Quitar de la lista">×</button>
+ </article>`).join("");
+ document.getElementById("emptyState").hidden=data.length>0;
+ document.getElementById("previewCount").textContent=items.length+" "+(items.length===1?"obra":"obras");
+ document.getElementById("summaryCount").textContent=items.length;
+ bindRows();
+}
+function bindRows(){
+ document.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{removeId=+b.dataset.remove;let it=items.find(x=>x.id===removeId);document.getElementById("removeText").textContent=`"${it.title}" dejará de aparecer en esta colección, pero permanecerá en tu biblioteca.`;document.getElementById("removeModal").classList.add("show")});
+ let dragId=null;
+ document.querySelectorAll(".item[draggable='true']").forEach(row=>{
+   row.ondragstart=()=>{dragId=+row.dataset.id;row.classList.add("dragging")};
+   row.ondragend=()=>row.classList.remove("dragging");
+   row.ondragover=e=>e.preventDefault();
+   row.ondrop=e=>{e.preventDefault();const targetId=+row.dataset.id;if(dragId===targetId)return;const from=items.findIndex(x=>x.id===dragId),to=items.findIndex(x=>x.id===targetId);const [m]=items.splice(from,1);items.splice(to,0,m);markChanged();render()}
+ });
+}
+nameInput.oninput=()=>{updateInfo();markChanged()};descInput.oninput=()=>{updateInfo();markChanged()};
+document.querySelectorAll(".vis").forEach(b=>b.onclick=()=>{document.querySelectorAll(".vis").forEach(x=>x.classList.remove("active"));b.classList.add("active");visibility=b.dataset.vis;document.getElementById("previewBadge").textContent=visibility;document.getElementById("summaryVisibility").textContent=visibility;markChanged()});
+document.getElementById("itemSearch").oninput=render;document.getElementById("sortSelect").onchange=render;
+document.getElementById("confirmRemove").onclick=()=>{items=items.filter(x=>x.id!==removeId);document.getElementById("removeModal").classList.remove("show");markChanged();render();showToast("Manga quitado de la lista")};
+document.getElementById("cancelRemove").onclick=()=>document.getElementById("removeModal").classList.remove("show");
+document.getElementById("deleteListBtn").onclick=()=>document.getElementById("deleteModal").classList.add("show");
+document.getElementById("cancelDelete").onclick=()=>document.getElementById("deleteModal").classList.remove("show");
+document.getElementById("confirmDelete").onclick=()=>{if(document.getElementById("deleteInput").value.trim()!=="ELIMINAR"){showToast("Escribe ELIMINAR para confirmar");return}document.getElementById("deleteModal").classList.remove("show");showToast("Lista eliminada en esta demostración")};
+document.getElementById("saveBtn").onclick=()=>{changed=false;document.getElementById("changedText").textContent="Cambios guardados";showToast("Cambios guardados")};
+document.getElementById("discardBtn").onclick=()=>{showToast("Cambios descartados en esta demo");location.reload()};
+document.getElementById("changeCoverBtn").onclick=()=>showToast("Selector de portada simulado");
+document.getElementById("autoCoverBtn").onclick=()=>showToast("Collage regenerado");
+document.getElementById("duplicateBtn").onclick=()=>showToast("Lista duplicada");
+document.getElementById("addMangaBtn").onclick=()=>showToast("Abrir selector de manga");
+document.getElementById("viewPublicBtn").onclick=()=>showToast("Vista pública simulada");
+document.getElementById("shareBtn").onclick=()=>showToast(visibility==="Privada"?"La lista privada no puede compartirse":"Enlace preparado");
+document.querySelectorAll(".modalbg").forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove("show")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modalbg").forEach(m=>m.classList.remove("show"));if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();document.getElementById("saveBtn").click()}});
+updateInfo();render();
+</script>
+</body>
+</html>

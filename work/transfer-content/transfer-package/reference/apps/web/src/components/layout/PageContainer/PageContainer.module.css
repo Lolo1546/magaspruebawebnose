@@ -1,0 +1,7 @@
+.container {
+  width: 100%;
+  max-width: var(--mz-content-max-width);
+  margin-inline: auto;
+  padding-right: max(var(--mz-page-gutter), env(safe-area-inset-right));
+  padding-left: max(var(--mz-page-gutter), env(safe-area-inset-left));
+}

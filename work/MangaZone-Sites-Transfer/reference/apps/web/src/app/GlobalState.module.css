@@ -1,0 +1,47 @@
+.page {
+  display: grid;
+  align-items: center;
+  padding-block: clamp(var(--mz-space-7), 12vh, 128px);
+}
+
+.link {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--mz-space-5);
+  border: 1px solid var(--mz-border-strong);
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-surface-secondary);
+  color: var(--mz-text-primary);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1;
+  transition:
+    background-color var(--mz-transition-normal),
+    border-color var(--mz-transition-normal);
+}
+
+.primaryLink {
+  border-color: transparent;
+  background: var(--mz-red);
+  color: var(--mz-text-on-accent);
+}
+
+@media (hover: hover) {
+  .link:hover {
+    border-color: var(--mz-red);
+    background: var(--mz-card-hover);
+  }
+
+  .primaryLink:hover {
+    border-color: transparent;
+    background: var(--mz-red-hover);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .link {
+    min-height: 44px;
+  }
+}

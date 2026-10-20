@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#07070a" />
+  <title>MangaZone — Lector</title>
+  <meta name="description" content="Prototipo visual del lector de capítulos de MangaZone." />
+  <style>
+    :root{
+      --bg:#07070a;
+      --surface:#101016;
+      --surface-2:#17171f;
+      --surface-3:#20202a;
+      --border:#292933;
+      --border-soft:#1c1c24;
+      --text:#f5f5f7;
+      --text-2:#b9b9c4;
+      --muted:#7f7f8d;
+      --red:#e63946;
+      --red-2:#ff4d5a;
+      --red-soft:rgba(230,57,70,.15);
+      --gold:#f1c75b;
+      --ok:#43c77a;
+      --warning:#f4bd52;
+      --header-h:62px;
+      --panel-w:330px;
+      --radius:14px;
+      --shadow:0 20px 60px rgba(0,0,0,.4);
+      --fast:150ms;
+      --normal:260ms;
+      --font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{background:var(--bg);scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+    button,input,select{font:inherit;color:inherit}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    :focus-visible{outline:2px solid var(--red-2);outline-offset:3px}
+    ::selection{background:var(--red);color:#fff}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-track{background:#09090d}
+    ::-webkit-scrollbar-thumb{background:#2b2b35;border-radius:999px;border:2px solid #09090d}
+
+    .reader-topbar{
+      position:fixed;inset:0 0 auto;height:var(--header-h);z-index:70;
+      display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;
+      padding:0 14px;background:rgba(8,8,11,.88);backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(255,255,255,.07)
+    }
+    .back-link{
+      height:40px;padding:0 13px;border:1px solid var(--border);border-radius:11px;
+      background:var(--surface);display:flex;align-items:center;gap:8px;font-weight:800
+    }
+    .back-link:hover,.icon-btn:hover,.control-btn:hover{background:var(--surface-2)}
+    .chapter-heading{min-width:0}
+    .chapter-heading strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+    .chapter-heading span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+    .top-actions{display:flex;gap:8px}
+    .icon-btn{
+      width:40px;height:40px;border:1px solid var(--border);border-radius:11px;
+      background:var(--surface);display:grid;place-items:center
+    }
+
+    .reader-shell{
+      padding-top:var(--header-h);
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 50% 0%,rgba(230,57,70,.06),transparent 28%),
+        #07070a
+    }
+
+    .control-strip{
+      position:sticky;top:var(--header-h);z-index:55;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      padding:10px 14px;background:rgba(8,8,11,.84);backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,.05)
+    }
+    .control-btn,.select{
+      height:40px;border:1px solid var(--border);background:var(--surface);
+      border-radius:11px;padding:0 12px
+    }
+    .control-btn{font-weight:800}
+    .select{max-width:230px}
+    .grow{flex:1;max-width:280px}
+    .zoom-value{font-size:12px;color:var(--muted);min-width:54px;text-align:center}
+
+    .reader-layout{
+      display:grid;grid-template-columns:minmax(0,1fr);position:relative
+    }
+    .pages-wrap{
+      width:100%;padding:24px 18px 120px;display:flex;justify-content:center
+    }
+    .pages{
+      width:min(100%,920px);
+      display:flex;flex-direction:column;align-items:center;gap:12px;
+      transition:width var(--normal)
+    }
+    .page{
+      width:100%;background:#0e0e14;border:1px solid rgba(255,255,255,.06);
+      box-shadow:0 18px 50px rgba(0,0,0,.3);position:relative;overflow:hidden
+    }
+    .page img{width:100%;height:auto}
+    .page-number{
+      position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.65);
+      backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);
+      border-radius:999px;padding:5px 8px;font-size:10px;color:var(--text-2)
+    }
+    .page.loading::after{
+      content:"Cargando página…";position:absolute;inset:0;display:grid;place-items:center;
+      background:linear-gradient(110deg,#111118 8%,#191922 18%,#111118 33%);
+      background-size:200% 100%;animation:shine 1.4s linear infinite;color:var(--muted);font-size:12px
+    }
+    @keyframes shine{to{background-position-x:-200%}}
+
+    .reader-footer{
+      width:min(100%,920px);margin:0 auto;padding:0 18px 120px
+    }
+    .chapter-complete{
+      border:1px solid var(--border);border-radius:18px;background:var(--surface);
+      padding:22px;text-align:center
+    }
+    .chapter-complete h2{margin:0 0 8px}
+    .chapter-complete p{margin:0;color:var(--text-2)}
+    .footer-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .primary,.secondary{
+      min-height:44px;padding:0 16px;border-radius:12px;font-weight:850
+    }
+    .primary{border:0;background:linear-gradient(135deg,var(--red),#b72435)}
+    .secondary{border:1px solid var(--border);background:var(--surface-2)}
+
+    .side-panel{
+      position:fixed;top:var(--header-h);right:0;bottom:0;width:var(--panel-w);z-index:65;
+      transform:translateX(105%);transition:transform var(--normal);
+      background:rgba(13,13,18,.97);backdrop-filter:blur(20px);
+      border-left:1px solid rgba(255,255,255,.08);padding:18px;overflow-y:auto
+    }
+    .side-panel.open{transform:translateX(0)}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .panel-head h2{font-size:17px;margin:0}
+    .close-panel{width:36px;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+    .setting{padding:16px 0;border-top:1px solid var(--border-soft)}
+    .setting:first-of-type{border-top:0}
+    .setting-label{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);margin-bottom:10px}
+    .segmented{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+    .segmented.three{grid-template-columns:repeat(3,1fr)}
+    .seg-btn{
+      min-height:40px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:12px
+    }
+    .seg-btn.active{background:var(--red-soft);border-color:rgba(230,57,70,.5)}
+    .toggle-row{display:flex;justify-content:space-between;gap:14px;align-items:center}
+    .toggle-copy strong{display:block;font-size:13px}
+    .toggle-copy span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+    .switch{
+      width:46px;height:25px;border-radius:999px;background:#2b2b35;border:0;padding:3px;transition:var(--fast)
+    }
+    .switch::after{
+      content:"";display:block;width:19px;height:19px;border-radius:50%;background:#fff;transition:transform var(--fast)
+    }
+    .switch.on{background:var(--red)}
+    .switch.on::after{transform:translateX(21px)}
+    .credits{display:grid;gap:10px}
+    .credit{display:flex;justify-content:space-between;gap:10px;font-size:12px}
+    .credit span:first-child{color:var(--muted)}
+    .credit span:last-child{text-align:right}
+    .notice{
+      margin-top:14px;padding:12px;border:1px solid rgba(244,189,82,.35);
+      background:rgba(244,189,82,.08);border-radius:12px;color:#e5d39d;font-size:11px;line-height:1.5
+    }
+
+    .backdrop{
+      position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);
+      backdrop-filter:blur(3px);display:none
+    }
+    .backdrop.show{display:block}
+
+    .floating-nav{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:50;
+      display:flex;align-items:center;gap:8px;padding:8px;
+      border:1px solid rgba(255,255,255,.09);border-radius:16px;
+      background:rgba(14,14,20,.9);backdrop-filter:blur(18px);box-shadow:var(--shadow)
+    }
+    .floating-nav button{
+      min-width:42px;height:42px;border:1px solid var(--border);border-radius:11px;background:var(--surface)
+    }
+    .floating-nav .chapter-indicator{
+      min-width:120px;text-align:center;font-size:12px;color:var(--text-2)
+    }
+
+    .toast{
+      position:fixed;left:50%;bottom:82px;z-index:90;transform:translate(-50%,20px);
+      opacity:0;pointer-events:none;transition:var(--normal);
+      background:#15151e;border:1px solid var(--border);border-radius:12px;padding:11px 14px;
+      box-shadow:var(--shadow);font-size:12px
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+
+    body.light-reader{background:#ececf0}
+    body.light-reader .reader-shell{background:#ececf0}
+    body.light-reader .page{border-color:#d4d4da;box-shadow:0 15px 35px rgba(0,0,0,.12)}
+    body.sepia-reader{background:#cfc2a5}
+    body.sepia-reader .reader-shell{background:#cfc2a5}
+    body.sepia-reader .page{filter:sepia(.35) saturate(.8)}
+    body.focus-mode .reader-topbar,
+    body.focus-mode .control-strip,
+    body.focus-mode .floating-nav{opacity:0;pointer-events:none;transition:opacity var(--normal)}
+    body.focus-mode:hover .reader-topbar,
+    body.focus-mode:hover .control-strip,
+    body.focus-mode:hover .floating-nav{opacity:1;pointer-events:auto}
+
+    @media(max-width:860px){
+      .chapter-heading span{display:none}
+      .control-strip{justify-content:flex-start;overflow-x:auto}
+      .control-strip::-webkit-scrollbar{display:none}
+      .control-strip .select{min-width:150px}
+      .pages-wrap{padding-left:0;padding-right:0}
+      .pages{width:100%!important;gap:8px}
+      .page{border-left:0;border-right:0}
+    }
+    @media(max-width:620px){
+      :root{--header-h:58px;--panel-w:min(340px,92vw)}
+      .reader-topbar{grid-template-columns:auto minmax(0,1fr) auto;padding:0 9px;gap:8px}
+      .back-link{width:40px;padding:0;justify-content:center;font-size:0}
+      .back-link::before{content:"←";font-size:18px}
+      .top-actions .icon-btn:first-child{display:none}
+      .chapter-heading strong{font-size:12px}
+      .control-strip{padding:8px}
+      .control-btn,.select{height:38px;font-size:11px}
+      .zoom-value{display:none}
+      .floating-nav{bottom:10px;width:calc(100% - 18px);justify-content:space-between}
+      .floating-nav .chapter-indicator{min-width:0;flex:1}
+      .reader-footer{padding-left:10px;padding-right:10px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="reader-topbar">
+    <a href="#" class="back-link">← Volver a la ficha</a>
+    <div class="chapter-heading">
+      <strong>Ashes of the Crown — Capítulo 48: La corona despierta</strong>
+      <span>Release de Crown Team · Español · Publicado hace 2 horas</span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="bookmarkBtn" aria-label="Guardar progreso">☆</button>
+      <button class="icon-btn" id="settingsBtn" aria-label="Abrir configuración">⚙</button>
+    </div>
+  </header>
+
+  <main class="reader-shell">
+    <div class="control-strip">
+      <select id="chapterSelect" class="select grow" aria-label="Seleccionar capítulo">
+        <option value="48">Capítulo 48 — La corona despierta</option>
+        <option value="47">Capítulo 47 — El pacto del norte</option>
+        <option value="46">Capítulo 46 — Cenizas en la capital</option>
+      </select>
+
+      <select id="releaseSelect" class="select" aria-label="Seleccionar release">
+        <option>Crown Team</option>
+        <option>Red Moon Scan</option>
+      </select>
+
+      <button class="control-btn" id="zoomOut">−</button>
+      <span class="zoom-value" id="zoomValue">100%</span>
+      <button class="control-btn" id="zoomIn">＋</button>
+      <button class="control-btn" id="fitWidth">Ajustar</button>
+      <button class="control-btn" id="focusBtn">Modo enfoque</button>
+    </div>
+
+    <div class="reader-layout">
+      <section class="pages-wrap">
+        <div class="pages" id="pages"></div>
+      </section>
+
+      <section class="reader-footer">
+        <div class="chapter-complete">
+          <h2>Has llegado al final del capítulo</h2>
+          <p>Tu progreso se guardó visualmente en este prototipo.</p>
+          <div class="footer-actions">
+            <button class="secondary" id="prevChapter">← Capítulo anterior</button>
+            <button class="primary" id="nextChapter">Capítulo siguiente →</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <aside class="side-panel" id="sidePanel" aria-label="Configuración del lector">
+    <div class="panel-head">
+      <h2>Configuración del lector</h2>
+      <button class="close-panel" id="closePanel">×</button>
+    </div>
+
+    <div class="setting">
+      <div class="setting-label">Tema</div>
+      <div class="segmented three" id="themeButtons">
+        <button class="seg-btn active" data-theme="dark">Oscuro</button>
+        <button class="seg-btn" data-theme="light">Claro</button>
+        <button class="seg-btn" data-theme="sepia">Sepia</button>
+      </div>
+    </div>
+
+    <div class="setting">
+      <div class="setting-label">Modo de lectura</div>
+      <div class="segmented">
+        <button class="seg-btn active" data-mode="vertical">Vertical</button>
+        <button class="seg-btn" data-mode="paged">Por páginas</button>
+      </div>
+    </div>
+
+    <div class="setting">
+      <div class="toggle-row">
+        <div class="toggle-copy">
+          <strong>Separación entre páginas</strong>
+          <span>Muestra espacio entre cada imagen.</span>
+        </div>
+        <button class="switch on" id="gapSwitch" aria-label="Alternar separación"></button>
+      </div>
+    </div>
+
+    <div class="setting">
+      <div class="toggle-row">
+        <div class="toggle-copy">
+          <strong>Mostrar número de página</strong>
+          <span>Superpone el número en cada página.</span>
+        </div>
+        <button class="switch on" id="numberSwitch" aria-label="Alternar números"></button>
+      </div>
+    </div>
+
+    <div class="setting">
+      <div class="setting-label">Créditos de la release</div>
+      <div class="credits">
+        <div class="credit"><span>Grupo</span><span>Crown Team</span></div>
+        <div class="credit"><span>Traducción</span><span>LunaV</span></div>
+        <div class="credit"><span>Limpieza</span><span>Kaito_89</span></div>
+        <div class="credit"><span>Redraw</span><span>Nova</span></div>
+        <div class="credit"><span>Typesetting</span><span>Aria</span></div>
+      </div>
+      <div class="notice">
+        Estos créditos son metadata demostrativa. No representan licencia, copyright ni autorización editorial.
+      </div>
+    </div>
+  </aside>
+
+  <div class="backdrop" id="backdrop"></div>
+
+  <div class="floating-nav">
+    <button id="floatPrev" aria-label="Capítulo anterior">←</button>
+    <div class="chapter-indicator">Capítulo 48 de 48</div>
+    <button id="scrollTopBtn" aria-label="Ir arriba">↑</button>
+    <button id="floatNext" aria-label="Capítulo siguiente">→</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const pageCount = 12;
+    const pagesEl = document.getElementById("pages");
+    const toast = document.getElementById("toast");
+
+    function pageArt(index){
+      const dark = index % 2 === 0;
+      const accent = ["#9d2634","#263d6f","#5a2d67","#1f5a59"][index % 4];
+      const dialogue = [
+        "La corona no elige a un rey.",
+        "El norte ya conoce tu nombre.",
+        "No hay poder sin cenizas.",
+        "Entonces abriremos las puertas."
+      ][index % 4];
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="${index % 3 === 0 ? 1450 : 1320}" viewBox="0 0 1000 ${index % 3 === 0 ? 1450 : 1320}">
+          <defs>
+            <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="${dark ? "#0d0d12" : "#17171f"}"/>
+              <stop offset=".7" stop-color="${accent}"/>
+              <stop offset="1" stop-color="#08080b"/>
+            </linearGradient>
+            <radialGradient id="r" cx=".7" cy=".25" r=".5">
+              <stop stop-color="#fff" stop-opacity=".22"/>
+              <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="1000" height="100%" fill="#f2f2f2"/>
+          <rect x="24" y="24" width="952" height="620" fill="url(#bg)"/>
+          <rect x="24" y="668" width="454" height="628" fill="url(#bg)"/>
+          <rect x="502" y="668" width="474" height="628" fill="url(#bg)"/>
+          <rect x="24" y="24" width="952" height="620" fill="url(#r)"/>
+          <circle cx="710" cy="280" r="170" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="4"/>
+          <path d="M90 550 L850 120 M120 1200 L430 760 M560 1220 L920 740" stroke="#fff" stroke-opacity=".13" stroke-width="28"/>
+          <text x="70" y="110" fill="#fff" font-family="Arial Black" font-size="44">ASHES OF THE CROWN</text>
+          <text x="70" y="165" fill="#fff" fill-opacity=".65" font-family="Arial" font-size="24">Página ${index}</text>
+
+          <rect x="90" y="470" rx="26" width="430" height="104" fill="#fff"/>
+          <text x="120" y="528" fill="#111" font-family="Arial" font-size="28">${dialogue}</text>
+
+          <rect x="555" y="760" rx="24" width="330" height="116" fill="#fff"/>
+          <text x="590" y="815" fill="#111" font-family="Arial" font-size="26">No volveré atrás.</text>
+          <text x="590" y="852" fill="#111" font-family="Arial" font-size="20">Aunque el trono arda.</text>
+
+          <text x="255" y="1020" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="110">${index % 2 ? "KAEL" : "CROWN"}</text>
+          <text x="740" y="1110" text-anchor="middle" fill="#fff" font-family="Arial Black" font-size="95">${index % 2 ? "ASH" : "48"}</text>
+        </svg>`;
+      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+    }
+
+    function renderPages(){
+      pagesEl.innerHTML = "";
+      for(let i=1;i<=pageCount;i++){
+        const page = document.createElement("article");
+        page.className = "page loading";
+        const img = document.createElement("img");
+        img.alt = `Página ${i} del capítulo`;
+        img.loading = i > 2 ? "lazy" : "eager";
+        const num = document.createElement("span");
+        num.className = "page-number";
+        num.textContent = `${i} / ${pageCount}`;
+        page.append(img,num);
+        pagesEl.appendChild(page);
+        setTimeout(()=>{
+          img.src = pageArt(i);
+          img.onload = ()=>page.classList.remove("loading");
+        },Math.min(i*70,500));
+      }
+    }
+
+    let zoom = 100;
+    function applyZoom(){
+      pagesEl.style.width = `min(100%, ${920 * zoom/100}px)`;
+      document.getElementById("zoomValue").textContent = `${zoom}%`;
+    }
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(()=>toast.classList.remove("show"),1800);
+    }
+
+    document.getElementById("zoomIn").onclick=()=>{
+      zoom=Math.min(140,zoom+10);applyZoom();
+    };
+    document.getElementById("zoomOut").onclick=()=>{
+      zoom=Math.max(60,zoom-10);applyZoom();
+    };
+    document.getElementById("fitWidth").onclick=()=>{
+      zoom=100;applyZoom();showToast("Vista ajustada al ancho");
+    };
+
+    const sidePanel=document.getElementById("sidePanel");
+    const backdrop=document.getElementById("backdrop");
+    function openPanel(){
+      sidePanel.classList.add("open");backdrop.classList.add("show");
+    }
+    function closePanel(){
+      sidePanel.classList.remove("open");backdrop.classList.remove("show");
+    }
+    document.getElementById("settingsBtn").onclick=openPanel;
+    document.getElementById("closePanel").onclick=closePanel;
+    backdrop.onclick=closePanel;
+
+    document.querySelectorAll("[data-theme]").forEach(btn=>{
+      btn.onclick=()=>{
+        document.querySelectorAll("[data-theme]").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        document.body.classList.remove("light-reader","sepia-reader");
+        if(btn.dataset.theme==="light") document.body.classList.add("light-reader");
+        if(btn.dataset.theme==="sepia") document.body.classList.add("sepia-reader");
+      };
+    });
+
+    document.querySelectorAll("[data-mode]").forEach(btn=>{
+      btn.onclick=()=>{
+        document.querySelectorAll("[data-mode]").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        if(btn.dataset.mode==="paged"){
+          pagesEl.style.gap="40px";
+          showToast("Modo por páginas simulado");
+        }else{
+          pagesEl.style.gap=document.getElementById("gapSwitch").classList.contains("on")?"12px":"0";
+          showToast("Modo vertical activado");
+        }
+      };
+    });
+
+    document.getElementById("gapSwitch").onclick=function(){
+      this.classList.toggle("on");
+      pagesEl.style.gap=this.classList.contains("on")?"12px":"0";
+    };
+    document.getElementById("numberSwitch").onclick=function(){
+      this.classList.toggle("on");
+      document.querySelectorAll(".page-number").forEach(n=>n.style.display=this.classList.contains("on")?"":"none");
+    };
+
+    document.getElementById("focusBtn").onclick=()=>{
+      document.body.classList.toggle("focus-mode");
+      showToast(document.body.classList.contains("focus-mode")?"Modo enfoque activado":"Modo enfoque desactivado");
+    };
+
+    document.getElementById("bookmarkBtn").onclick=function(){
+      const active=this.dataset.active==="true";
+      this.dataset.active=String(!active);
+      this.textContent=active?"☆":"★";
+      this.style.color=active?"":"var(--gold)";
+      showToast(active?"Marcador eliminado":"Progreso guardado");
+    };
+
+    function demoPrev(){showToast("Iría al capítulo 47");}
+    function demoNext(){showToast("No hay capítulo siguiente disponible");}
+    document.getElementById("prevChapter").onclick=demoPrev;
+    document.getElementById("floatPrev").onclick=demoPrev;
+    document.getElementById("nextChapter").onclick=demoNext;
+    document.getElementById("floatNext").onclick=demoNext;
+    document.getElementById("scrollTopBtn").onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+
+    document.getElementById("chapterSelect").onchange=e=>showToast(`Capítulo ${e.target.value} seleccionado`);
+    document.getElementById("releaseSelect").onchange=e=>showToast(`Release: ${e.target.value}`);
+
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape") closePanel();
+      if(e.key==="ArrowLeft" && !["INPUT","SELECT"].includes(document.activeElement.tagName)) demoPrev();
+      if(e.key==="ArrowRight" && !["INPUT","SELECT"].includes(document.activeElement.tagName)) demoNext();
+      if(e.key.toLowerCase()==="f") document.getElementById("focusBtn").click();
+      if(e.key.toLowerCase()==="s") openPanel();
+    });
+
+    renderPages();
+    applyZoom();
+  </script>
+</body>
+</html>

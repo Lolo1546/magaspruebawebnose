@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MangaZone — Manga Editorial Studio</title>
+<meta name="description" content="Prototipo visual de MangaZone para crear y editar fichas editoriales de manga.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#07090d;--bg2:#0b0e13;--surface:#10141a;--surface2:#151a22;--surface3:#1a2029;
+  --line:#262d37;--line2:#343d49;--text:#f6f2ed;--muted:#989ea8;--muted2:#676f7a;
+  --red:#e8192c;--red2:#ff3547;--redsoft:rgba(232,25,44,.12);
+  --gold:#b99b68;--goldsoft:rgba(185,155,104,.10);
+  --green:#45c984;--greensoft:rgba(69,201,132,.12);
+  --yellow:#d9ad5c;--yellowsoft:rgba(217,173,92,.12);
+  --blue:#72a8e4;--bluesoft:rgba(114,168,228,.12);
+  --shadow:0 26px 80px rgba(0,0,0,.42);--softshadow:0 14px 42px rgba(0,0,0,.24);--radius:16px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark;scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 90% -10%,rgba(232,25,44,.11),transparent 30rem),
+    radial-gradient(circle at 0% 60%,rgba(185,155,104,.04),transparent 28rem),
+    linear-gradient(180deg,#080a0e 0%,#07090d 65%,#080a0f 100%);
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.17;
+  background-image:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.010) 1px,transparent 1px);
+  background-size:38px 38px;mask-image:linear-gradient(to bottom,#000,transparent 78%);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.icon{width:18px;height:18px;stroke-width:2}.icon-sm{width:15px;height:15px}.icon-lg{width:22px;height:22px}
+.studio{min-height:100vh;display:flex;flex-direction:column}
+
+/* COMMAND BAR */
+.commandbar{
+  height:68px;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:0 20px;
+  background:rgba(8,10,14,.88);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(18px);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+.brandmark{
+  width:35px;height:42px;border-radius:5px 9px 5px 9px;display:grid;place-items:center;position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#ef2436,#9d0d1a);border:1px solid rgba(255,255,255,.11);box-shadow:0 9px 24px rgba(232,25,44,.22);
+  font-family:"Bebas Neue";font-size:19px;letter-spacing:.7px;
+}
+.brandmark::after{content:"";position:absolute;right:-8px;bottom:-9px;width:26px;height:36px;border:1px solid rgba(255,255,255,.15);transform:rotate(17deg)}
+.brandname{font-family:"Bebas Neue";font-size:23px;letter-spacing:1.25px;line-height:1}.brandcontext{margin-top:3px;color:#b69b6e;font-size:8px;text-transform:uppercase;font-weight:800;letter-spacing:.14em}
+.command-sep{width:1px;height:30px;background:#232a33;margin:0 4px}
+.backcatalog{min-height:36px;padding:0 10px;border:1px solid #292f38;border-radius:8px;background:#0f1318;display:inline-flex;align-items:center;gap:7px;color:#b9bec6;font-size:9px;font-weight:700}
+.backcatalog:hover{background:#151a21;color:#fff}
+.command-center{display:flex;align-items:center;gap:7px;margin-left:auto;margin-right:auto}
+.segmented{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid #272f39;border-radius:9px;background:#0c1015}
+.seg-btn{min-height:29px;padding:0 9px;border:0;border-radius:6px;background:transparent;color:#757d88;font-size:8px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.seg-btn.active{background:#1a2028;color:#fff;box-shadow:inset 0 0 0 1px #313a45}
+.command-actions{display:flex;align-items:center;gap:7px}
+.save-indicator{min-height:32px;padding:0 9px;border:1px solid #29303a;border-radius:16px;background:#0e1217;display:flex;align-items:center;gap:7px;color:#8e959f;font-size:8px;white-space:nowrap}
+.save-indicator .dot{width:6px;height:6px;border-radius:50%;background:#69717d}
+.save-indicator.saving .dot{background:var(--gold);animation:pulse 1s infinite}
+.save-indicator.success .dot{background:var(--green);box-shadow:0 0 9px rgba(69,201,132,.4)}
+.save-indicator.error .dot{background:var(--red)}
+@keyframes pulse{50%{opacity:.35}}
+.btn{min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#11161c;color:#e5e9ee;font-size:9px;font-weight:800;transition:.16s ease}
+.btn:hover{transform:translateY(-1px);border-color:#3f4855}.btn-primary{border-color:var(--red);background:linear-gradient(180deg,#ef2134,#c81223);box-shadow:0 8px 22px rgba(232,25,44,.17);color:#fff}
+.btn-warning{border-color:#5c4927;background:#211b12;color:#f0cb7d}.btn-danger{border-color:#a91827;background:linear-gradient(180deg,#d71b2d,#ab1322);color:#fff}.btn-ghost{background:transparent}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+
+.catalog-breadcrumb{
+  min-width:max-content;display:flex;align-items:center;gap:6px;color:#6f7781;
+  font-size:8px;font-weight:700;letter-spacing:.02em
+}
+.catalog-breadcrumb strong{color:#bfc4cb;font-weight:750}
+.catalog-breadcrumb i{color:#454d57}
+
+/* DEMO STRIP */
+.prototype-strip{width:min(1640px,100%);margin:0 auto;padding:9px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.prototype-title{font-size:8px;color:#5f6671;font-weight:800;text-transform:uppercase;letter-spacing:.15em}.prototype-controls{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.demo-btn{min-height:26px;padding:0 8px;border-radius:6px;border:1px solid #242c35;background:#0e1217;color:#777f89;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.demo-btn.active{color:#fff;border-color:#5b3037;background:rgba(232,25,44,.08)}
+
+/* IDENTITY STAGE */
+.identity-stage{width:min(1640px,100%);margin:0 auto;padding:24px 20px 18px}
+.identity-frame{
+  min-height:290px;display:grid;grid-template-columns:190px minmax(0,1fr) 365px;gap:0;position:relative;overflow:hidden;
+  border:1px solid #2a313b;border-radius:18px;background:#171b22;box-shadow:var(--shadow);
+}
+.identity-banner-layer{
+  position:absolute;inset:0;background:
+    linear-gradient(100deg,rgba(9,11,15,.98) 0%,rgba(9,11,15,.90) 34%,rgba(9,11,15,.60) 67%,rgba(9,11,15,.36) 100%),
+    radial-gradient(circle at 82% 36%,rgba(232,25,44,.28),transparent 22rem),
+    linear-gradient(135deg,#1c1116,#171c25 54%,#13161d);
+  background-size:cover;background-position:center;
+}
+.identity-frame::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(126deg,transparent 0 20px,rgba(255,255,255,.018) 21px 22px)}
+.identity-number{position:absolute;right:18px;top:-23px;z-index:1;font-family:"Bebas Neue";font-size:124px;line-height:1;color:rgba(255,255,255,.035);letter-spacing:-3px;user-select:none}
+.identity-cover-zone{display:flex;align-items:center;justify-content:center;padding:22px 12px 22px 22px;position:relative;z-index:2}
+.cover-art,.preview-cover,.media-cover-preview,.card-cover{
+  background:
+    linear-gradient(155deg,rgba(255,255,255,.14),transparent 22%),
+    linear-gradient(160deg,#561923,#13171d 53%,#9e1c2c);
+  background-size:cover;background-position:center;
+}
+.cover-art{width:142px;aspect-ratio:2/3;border-radius:7px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.13);box-shadow:0 26px 54px rgba(0,0,0,.50)}
+.cover-art::before{content:"CRIMSON\A HORIZON";white-space:pre;position:absolute;left:11px;bottom:13px;font-family:"Bebas Neue";font-size:26px;line-height:.86;letter-spacing:1px}
+.cover-art::after{content:"VOL. 07";position:absolute;right:9px;top:10px;color:#e3bec3;font-size:7px;font-weight:800;letter-spacing:.1em}
+.cover-art.has-image::before,.cover-art.has-image::after,.preview-cover.has-image::after,.media-cover-preview.has-image::after,.card-cover.has-image::after{display:none}
+.no-cover{display:none;width:142px;aspect-ratio:2/3;border-radius:7px;border:1px dashed #434b56;background:#0d1116;place-items:center;text-align:center;color:#68717c;font-size:8px;line-height:1.45;padding:12px}
+.identity-main{padding:30px 24px 26px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.identity-kicker{display:flex;align-items:center;gap:8px;color:#d0b585;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.17em}
+.identity-kicker::before{content:"";width:24px;height:1px;background:#9b825b}
+.identity-title{max-width:840px;margin:10px 0 9px;font-family:"Bebas Neue";font-size:62px;line-height:.88;letter-spacing:1.4px;text-wrap:balance}
+.identity-slug{color:#777f89;font:9px ui-monospace,SFMono-Regular,Menlo,monospace}
+.identity-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
+.meta-pill{min-height:28px;padding:0 9px;border:1px solid #323944;border-radius:15px;background:rgba(16,20,26,.80);display:inline-flex;align-items:center;gap:6px;color:#cfd4db;font-size:8px;font-weight:750;text-transform:uppercase;letter-spacing:.04em}
+.meta-pill.draft{color:#e0c48b;border-color:#584a2d;background:rgba(217,173,92,.07)}.meta-pill.public{color:#8fe1b3;border-color:#2b503b;background:rgba(69,201,132,.07)}.meta-pill.hidden{color:#ff8d98;border-color:#5d2831;background:rgba(232,25,44,.07)}
+.identity-aside{padding:26px 28px 24px 20px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;z-index:2}
+.identity-aside::before{content:"";position:absolute;left:0;top:24px;bottom:24px;width:1px;background:linear-gradient(transparent,#333a45,transparent)}
+.identity-stat{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:8px}.identity-stat span{color:#777f89}.identity-stat strong{font-size:8px}
+.identity-update{margin-top:12px;color:#626b75;font-size:8px;line-height:1.5}
+
+/* MAIN STUDIO LAYOUT */
+.studio-body{width:min(1640px,100%);margin:0 auto;padding:0 20px 56px;display:grid;grid-template-columns:100px minmax(0,1fr) 440px;gap:16px;align-items:start}
+.context-rail{position:sticky;top:88px;display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.rail-label{padding:0 6px 6px;color:#555e68;font-size:7px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}
+.rail-item{min-height:58px;padding:8px 7px;border-radius:9px;border:1px solid transparent;background:transparent;color:#6e7681;display:flex;flex-direction:column;justify-content:center;gap:4px;transition:.16s}
+.rail-item:hover{background:#11161c;border-color:#262d36;color:#dfe3e9}.rail-item.active{background:rgba(232,25,44,.07);border-color:rgba(232,25,44,.18);color:#fff;box-shadow:inset 2px 0 0 var(--red)}
+.rail-no{font-family:"Bebas Neue";font-size:19px;line-height:1;color:#555d67}.rail-item.active .rail-no{color:var(--red)}.rail-name{font-size:7px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;line-height:1.25}
+.workspace{min-width:0;border-top:1px solid rgba(255,255,255,.05)}
+.editor-section{position:relative;padding:26px 0 30px;border-bottom:1px solid rgba(255,255,255,.075)}.editor-section:last-child{border-bottom:0}
+.section-heading{display:grid;grid-template-columns:82px minmax(0,1fr);gap:14px;align-items:start;margin-bottom:19px}
+.section-no{font-family:"Bebas Neue";font-size:54px;line-height:.8;color:rgba(255,255,255,.075);letter-spacing:-1px}
+.section-copy h2{margin:0;font-family:"Bebas Neue";font-size:28px;line-height:1;letter-spacing:1px}.section-copy p{margin:6px 0 0;color:#777f89;font-size:9px;line-height:1.5;max-width:680px}
+
+/* FIELDS */
+.field{min-width:0}.field.full{grid-column:1/-1}.field-label-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px}
+label,.label{color:#cdd2d8;font-size:9px;font-weight:700}.req{color:#ff6875}.help{color:#707883;font-size:8px;line-height:1.45}
+input[type=text],input[type=search],select,textarea{width:100%;border:1px solid #2b333d;border-radius:8px;background:#0c1015;color:#f2f4f7;outline:0;transition:.16s}
+input[type=text],input[type=search],select{height:40px;padding:0 11px;font-size:10px}textarea{min-height:134px;padding:10px 11px;font-size:10px;line-height:1.6;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#65333b;box-shadow:0 0 0 3px rgba(232,25,44,.055)}input[readonly]{border-style:dashed;color:#8e959f;background:#0b0f14}
+.error-text{display:none;margin-top:6px;color:#ff8793;font-size:8px;line-height:1.45}.field.error input,.field.error select,.field.error textarea{border-color:#8b2c37}.field.error .error-text{display:block}
+.field-foot{display:flex;gap:7px;margin-top:6px;color:#727a84;font-size:8px;line-height:1.45}
+.info-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,.7fr);gap:18px}
+.info-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.info-meta-grid .wide{grid-column:1/-1}
+.alt-zone{margin-top:15px;padding-top:15px;border-top:1px solid #242b34}.alias-list{display:grid;gap:7px;margin:8px 0}
+.alias-row{display:grid;grid-template-columns:26px minmax(0,1fr) 32px;gap:7px}.grip,.remove{height:38px;border:1px solid #29313a;border-radius:8px;background:#0d1116;color:#69727d;display:grid;place-items:center}
+.remove{width:32px;color:#d37782;border-color:#3a2930;background:#151015}.add-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+.inline-error{display:none;margin-top:7px;padding:8px 9px;border:1px solid rgba(232,25,44,.20);border-radius:8px;background:rgba(232,25,44,.07);color:#efa0a8;font-size:8px}.inline-error.show{display:block}
+
+/* MULTIMEDIA */
+.media-grid{display:grid;grid-template-columns:minmax(240px,.75fr) minmax(360px,1.25fr);gap:16px}
+.media-module{border:1px solid #272e38;border-radius:12px;background:#0d1116;overflow:hidden}
+.media-head{padding:11px 12px;border-bottom:1px solid #232a33;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.media-head strong{font-size:9px}.media-head span{color:#6f7781;font-size:7px;text-transform:uppercase;letter-spacing:.08em}
+.media-body{padding:12px}.media-copy{margin-bottom:10px;color:#7a828c;font-size:8px;line-height:1.5}
+.media-cover-preview{width:132px;aspect-ratio:2/3;border:1px solid rgba(255,255,255,.10);border-radius:6px;position:relative;overflow:hidden;box-shadow:0 16px 32px rgba(0,0,0,.32)}
+.media-cover-preview::after{content:"CRIMSON\A HORIZON";white-space:pre;position:absolute;left:9px;bottom:10px;font-family:"Bebas Neue";font-size:20px;line-height:.9}
+.media-cover-placeholder{display:none;width:132px;aspect-ratio:2/3;border:1px dashed #3b434e;border-radius:6px;background:#0b0f14;place-items:center;text-align:center;color:#68717c;font-size:8px;padding:10px}
+.media-banner-preview{width:100%;aspect-ratio:16/6;border:1px solid rgba(255,255,255,.10);border-radius:7px;position:relative;overflow:hidden;background:
+ linear-gradient(90deg,rgba(8,10,14,.84),rgba(8,10,14,.35)),
+ radial-gradient(circle at 78% 40%,rgba(232,25,44,.28),transparent 15rem),
+ linear-gradient(135deg,#25131a,#171d26);background-size:cover;background-position:center;box-shadow:0 16px 32px rgba(0,0,0,.28)}
+.media-banner-preview::after{content:"BANNER ACTUAL";position:absolute;right:10px;bottom:8px;font-size:7px;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.55)}
+.media-banner-preview.has-image::after{display:none}
+.media-banner-placeholder{display:none;width:100%;aspect-ratio:16/6;border:1px dashed #3b434e;border-radius:7px;background:#0b0f14;place-items:center;text-align:center;color:#68717c;font-size:8px;padding:10px}
+.media-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.file-input{display:none}.upload-note{margin-top:7px;color:#656d78;font-size:7px;line-height:1.45}
+
+/* DISCOVERY */
+.discovery-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.7fr);gap:18px}
+.slug-panel{padding:12px;border-left:2px solid #554a37;background:linear-gradient(90deg,rgba(185,155,104,.06),transparent)}
+.slug-line{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:#c5cad1}.slug-help{margin-top:5px;color:#747c86;font-size:8px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 10px}.genre-chip{min-height:29px;padding:0 9px;border:1px solid #333b46;border-radius:15px;background:#11161c;display:inline-flex;align-items:center;gap:7px;color:#d5d9df;font-size:8px;font-weight:700}
+.genre-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#202630;color:#8f969f;display:grid;place-items:center}
+.genre-picker{position:relative}.genre-popover{display:none;position:absolute;left:0;right:0;top:44px;z-index:25;padding:6px;border:1px solid #303844;border-radius:9px;background:#11161c;box-shadow:var(--shadow)}
+.genre-picker.open .genre-popover{display:grid;gap:3px}.genre-option{min-height:34px;border:0;border-radius:7px;background:transparent;color:#cfd4db;text-align:left;padding:0 9px;font-size:9px}.genre-option:hover{background:#1a2028}
+
+/* CREDITS */
+.credit-stage{border:1px solid #272e38;border-radius:12px;overflow:hidden;background:#0d1116}.credit-row{display:grid;grid-template-columns:minmax(0,1fr) 150px 34px;gap:10px;align-items:center;padding:10px 11px;border-bottom:1px solid #232a33}.credit-row:last-child{border-bottom:0}
+.person{display:flex;align-items:center;gap:9px}.person-avatar{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(145deg,#30262b,#1f242b);border:1px solid #3e3a3f;color:#e2d0d3;font-size:8px;font-weight:800}
+.person-name{font-size:9px;font-weight:750}.person-meta{margin-top:2px;color:#707883;font-size:8px}.credit-add{margin-top:10px;display:grid;grid-template-columns:minmax(0,1fr) 145px auto;gap:7px}
+
+/* PUBLICATION */
+.workflow-stage{display:grid;grid-template-columns:1fr 34px 1fr 34px 1fr;align-items:center}.workflow-node{min-height:104px;padding:14px;border:1px solid #2b323c;border-radius:11px;background:#0d1116;position:relative}
+.workflow-node.current.draft{border-color:#6a522d;background:rgba(217,173,92,.06)}.workflow-node.current.public{border-color:#2b5a40;background:rgba(69,201,132,.06)}.workflow-node.current.hidden{border-color:#652934;background:rgba(232,25,44,.06)}
+.workflow-name{font-family:"Bebas Neue";font-size:21px;letter-spacing:.6px}.workflow-node p{margin:5px 0 0;color:#767e88;font-size:8px;line-height:1.5}.workflow-arrow{display:grid;place-items:center;color:#4f5863}
+.version-strip{margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.version-item{padding:9px 10px;border-top:1px solid #29313a;color:#747c86;font-size:8px}.version-item strong{display:block;margin-top:4px;color:#e0e4e9;font-size:9px}
+
+/* PREVIEW */
+.preview-dock{position:sticky;top:84px;display:grid;gap:12px;min-width:0}
+.preview-shell{border:1px solid #2a313b;border-radius:14px;background:#0c1015;box-shadow:var(--shadow);overflow:hidden}
+.preview-toolbar{min-height:46px;padding:9px 10px;border-bottom:1px solid #252c35;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.preview-live{display:flex;align-items:center;gap:6px;color:#8b929c;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.preview-live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 10px rgba(232,25,44,.55)}
+.preview-frame{padding:12px;background:#090c11;display:flex;justify-content:center;min-height:570px}
+.public-preview{width:100%;min-height:544px;border:1px solid #222933;border-radius:10px;overflow:hidden;background:#0b0e13;transition:.22s ease}
+.public-preview.mobile{width:290px}
+.public-top{height:38px;padding:0 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #202630;background:#0d1116}.public-logo{font-family:"Bebas Neue";font-size:16px;letter-spacing:.8px}.public-top span{font-size:7px;color:#686f79}
+.public-hero{min-height:272px;position:relative;padding:20px 14px 18px 130px;overflow:hidden;background:
+ linear-gradient(90deg,rgba(8,10,14,.97),rgba(8,10,14,.80) 58%,rgba(8,10,14,.38)),
+ radial-gradient(circle at 85% 35%,rgba(232,25,44,.22),transparent 15rem),
+ linear-gradient(135deg,#21131a,#121720);background-size:cover;background-position:center}
+.preview-cover{position:absolute;left:14px;top:20px;width:100px;aspect-ratio:2/3;border-radius:5px;border:1px solid rgba(255,255,255,.1);box-shadow:0 14px 32px rgba(0,0,0,.4);overflow:hidden}
+.preview-cover::after{content:"CRIMSON\A HORIZON";white-space:pre;position:absolute;left:7px;bottom:8px;font-family:"Bebas Neue";font-size:15px;line-height:.88}
+.preview-no-cover{display:none;position:absolute;left:14px;top:20px;width:100px;aspect-ratio:2/3;border:1px dashed #3b434e;border-radius:5px;place-items:center;text-align:center;color:#68717c;font-size:7px;background:#0d1116}
+.preview-kicker{color:#d1b486;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.14em}.preview-title{margin:7px 0 4px;font-family:"Bebas Neue";font-size:30px;line-height:.9;letter-spacing:.7px}
+.preview-alt{color:#7b828c;font-size:7px;line-height:1.4;min-height:10px}.preview-tags{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0 8px}.preview-tag{min-height:22px;padding:0 7px;border:1px solid #363d47;border-radius:12px;background:#11161c;display:inline-flex;align-items:center;color:#c6cbd2;font-size:7px}
+.preview-meta{display:flex;flex-wrap:wrap;gap:7px;color:#8f969f;font-size:7px}.preview-synopsis{padding:12px 14px;border-top:1px solid #202630;color:#a6acb5;font-size:8px;line-height:1.55}
+.preview-credits{padding:10px 14px;border-top:1px solid #202630}.preview-credits strong{display:block;margin-bottom:6px;color:#737b85;font-size:7px;text-transform:uppercase;letter-spacing:.1em}.preview-credit-list{display:flex;gap:10px;flex-wrap:wrap;color:#d2d6dc;font-size:8px}
+.public-preview.mobile .public-hero{min-height:326px;padding:176px 12px 14px}.public-preview.mobile .preview-cover,.public-preview.mobile .preview-no-cover{left:50%;transform:translateX(-50%);top:14px;width:96px}
+.public-preview.mobile .preview-title{text-align:center;font-size:27px}.public-preview.mobile .preview-kicker,.public-preview.mobile .preview-alt{text-align:center}.public-preview.mobile .preview-tags,.public-preview.mobile .preview-meta{justify-content:center}
+
+/* CARD PREVIEW */
+.card-preview-wrap{display:none;width:100%;min-height:544px;align-items:flex-start;justify-content:center;padding:22px;background:
+ radial-gradient(circle at 50% 15%,rgba(232,25,44,.08),transparent 18rem),#090c11}
+.card-preview-wrap.active{display:flex}.catalog-card{width:min(270px,100%);border:1px solid #2b323c;border-radius:12px;overflow:hidden;background:#11161c;box-shadow:0 18px 50px rgba(0,0,0,.36)}
+.card-cover{width:100%;aspect-ratio:2/3;position:relative;background-size:cover;background-position:center}
+.card-cover::after{content:"CRIMSON\A HORIZON";white-space:pre;position:absolute;left:12px;bottom:12px;font-family:"Bebas Neue";font-size:24px;line-height:.88;letter-spacing:.8px}
+.card-cover-placeholder{display:none;width:100%;aspect-ratio:2/3;place-items:center;background:#0d1116;color:#68717c;font-size:8px}
+.card-info{padding:11px 12px 13px}.card-title{font-family:"Bebas Neue";font-size:22px;letter-spacing:.6px}.card-meta{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap}.card-chip{padding:4px 6px;border:1px solid #343c47;border-radius:10px;color:#aeb4bc;font-size:7px}.card-state{margin-top:9px;color:#6f7782;font-size:7px;text-transform:uppercase;letter-spacing:.08em}
+
+/* READINESS */
+.readiness{border:1px solid #2a313b;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 35%),#10141a;box-shadow:var(--softshadow);overflow:hidden}
+.readiness-head{padding:12px 13px;border-bottom:1px solid #252c35;display:flex;justify-content:space-between;align-items:center}.readiness-head strong{font-size:10px}.readiness-count{font-family:"Bebas Neue";font-size:20px;color:#d6b77f;letter-spacing:.6px}
+.readiness-body{padding:10px 12px}.requirement{min-height:31px;display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:8px;border-bottom:1px solid #222832;font-size:8px;color:#9aa1ab}.requirement:last-child{border-bottom:0}
+.req-icon{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;border:1px solid #39414b;color:#6f7781}.requirement.ok .req-icon{border-color:#2d684a;background:rgba(69,201,132,.08);color:#77d9a2}.requirement.warn .req-icon{border-color:#5c4927;background:rgba(217,173,92,.07);color:#e0bd74}
+.requirement-type{font-size:6px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#68707a}.requirement-type.required{color:#c7a973}.requirement-type.recommended{color:#7f8994}
+.readiness-progress{height:5px;margin:9px 12px 12px;border-radius:5px;background:#252b33;overflow:hidden}.readiness-progress span{display:block;height:100%;width:80%;background:linear-gradient(90deg,var(--red),#b91827);transition:.22s}
+
+/* PUBLIC VIEW MODE */
+body.preview-mode .context-rail,body.preview-mode .workspace{opacity:.16;filter:saturate(.65);pointer-events:none;transition:.2s}
+body.preview-mode .studio-body{grid-template-columns:70px minmax(300px,.55fr) minmax(620px,1.45fr)}
+body.preview-mode .preview-dock{transform:scale(1.01);transform-origin:top right}body.preview-mode .preview-frame{min-height:690px}body.preview-mode .public-preview{min-height:665px}
+
+/* DRAWERS */
+.drawer-overlay{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.58);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.2s}.drawer-overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;right:0;top:68px;bottom:0;z-index:75;width:min(560px,94vw);background:linear-gradient(180deg,#12171e,#0c1015);border-left:1px solid #303844;box-shadow:-28px 0 80px rgba(0,0,0,.5);transform:translateX(105%);transition:.24s ease;display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}.drawer-head{padding:18px;border-bottom:1px solid #252c35;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.drawer-kicker{color:#c6a978;font-size:8px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}.drawer-title{margin-top:5px;font-family:"Bebas Neue";font-size:26px;letter-spacing:.8px}.drawer-sub{margin-top:4px;color:#7d848e;font-size:8px;line-height:1.45}.drawer-body{padding:17px;overflow:auto}.drawer-close{width:34px;height:34px;border-radius:8px;border:1px solid #303844;background:#11161c;color:#aab1ba;display:grid;place-items:center}
+.compare-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.compare-card{padding:11px;border:1px solid #2b333d;border-radius:10px;background:#0d1116}.compare-label{font-size:7px;color:#6d7580;text-transform:uppercase;letter-spacing:.1em;font-weight:800}.compare-value{margin-top:4px;font-family:"Bebas Neue";font-size:20px}
+.diff-list{display:grid;border-top:1px solid #242b34}.diff-row{display:grid;grid-template-columns:130px 1fr auto;gap:9px;align-items:center;padding:10px 0;border-bottom:1px solid #242b34;font-size:8px}.diff-row span:first-child{color:#777f89}.diff-status{padding:4px 6px;border-radius:10px;border:1px solid #383f49;color:#adb3bb;font-size:7px}.diff-status.changed{color:#e0bd74;border-color:#5c4927;background:rgba(217,173,92,.07)}.diff-status.plus{color:#7fd7a4;border-color:#2d684a;background:rgba(69,201,132,.07)}
+.drawer-actions{margin-top:15px;display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap}
+.duplicate-vs{display:grid;grid-template-columns:1fr 44px 1fr;gap:8px;align-items:stretch;margin-bottom:14px}.vs-card{padding:11px;border:1px solid #2b333d;border-radius:10px;background:#0d1116}.vs-cover{width:54px;aspect-ratio:2/3;border-radius:4px;margin-bottom:8px;background:linear-gradient(155deg,#4c1721,#11151b 60%,#8c1927)}.vs-card.alt .vs-cover{background:linear-gradient(155deg,#263747,#101319 60%,#8d6d50)}.vs-card strong{font-size:9px}.vs-card small{display:block;margin-top:4px;color:#777f89;font-size:7px}.vs-word{display:grid;place-items:center;font-family:"Bebas Neue";font-size:20px;color:#5f6670}
+.match-box{padding:10px;border-left:2px solid var(--red);background:rgba(232,25,44,.055);font-size:8px;color:#b8bdc5;line-height:1.5}.admin-exception{margin-top:14px;padding:11px;border:1px solid #4d3d25;border-radius:10px;background:rgba(217,173,92,.05)}.admin-exception strong{font-size:9px;color:#e0bd74}.admin-exception p{margin:4px 0 9px;color:#8f856f;font-size:8px;line-height:1.45}
+
+/* REVIEW BEFORE PUBLISH */
+.review-modal{position:fixed;inset:0;z-index:90;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.74);backdrop-filter:blur(7px)}.review-modal.open{display:grid}
+.review-sheet{width:min(780px,100%);max-height:min(86vh,880px);overflow:auto;border:1px solid #39424d;border-radius:16px;background:linear-gradient(180deg,#151a21,#0e1217);box-shadow:0 38px 120px rgba(0,0,0,.66)}
+.review-head{padding:20px 21px 15px;border-top:2px solid var(--red);border-bottom:1px solid #252c35}.review-kicker{color:#c6aa79;font-size:8px;text-transform:uppercase;font-weight:800;letter-spacing:.16em}.review-title{margin-top:5px;font-family:"Bebas Neue";font-size:30px;letter-spacing:.8px}.review-copy{margin-top:4px;color:#858c96;font-size:8px;line-height:1.5}
+.review-body{padding:17px 21px}.review-columns{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.review-group{padding:12px;border:1px solid #2a313b;border-radius:10px;background:#0c1015}.review-group h3{margin:0 0 8px;font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#7a828c}.review-item{min-height:27px;display:flex;align-items:center;gap:7px;border-top:1px solid #222832;color:#b7bdc5;font-size:8px}.review-item:first-of-type{border-top:0}.review-item .ok{color:#76d7a0}.review-item .warn{color:#ddba72}.review-version{margin-top:12px;padding:10px;border-left:2px solid var(--red);background:rgba(232,25,44,.05);font-size:8px;color:#b7bdc5}.review-actions{padding:13px 21px 18px;border-top:1px solid #252c35;display:flex;justify-content:flex-end;gap:7px;background:#0b0f14}
+
+/* SENSITIVE MODAL */
+.modal-backdrop{position:fixed;inset:0;z-index:95;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.76);backdrop-filter:blur(7px)}.modal-backdrop.open{display:grid}.modal{width:min(470px,100%);overflow:hidden;border:1px solid #39424d;border-radius:14px;background:linear-gradient(180deg,#141920,#0f1318);box-shadow:0 36px 110px rgba(0,0,0,.65)}.modal-head{padding:18px 19px 12px;border-top:2px solid var(--red)}.modal-icon{width:38px;height:38px;margin-bottom:10px;display:grid;place-items:center;border:1px solid rgba(232,25,44,.2);border-radius:9px;background:rgba(232,25,44,.1);color:#ff8490}.modal h2{margin:0;font-family:"Bebas Neue";font-size:23px;letter-spacing:.7px}.modal p{margin:5px 0 0;color:#9299a3;font-size:9px;line-height:1.55}.modal-body{padding:0 19px 16px}.modal-info{padding:9px 10px;border:1px solid #2b323c;border-radius:8px;background:#0b0f14;color:#b4bac3;font-size:8px;line-height:1.5}.modal-actions{display:flex;justify-content:flex-end;gap:7px;padding:13px 19px 17px;border-top:1px solid #252c35;background:#0c1015}.reason{min-height:90px}.counter{text-align:right;margin-top:5px;color:#68717c;font-size:8px}
+.toast{position:fixed;right:18px;bottom:18px;z-index:110;display:none;align-items:center;gap:8px;max-width:360px;padding:10px 12px;border:1px solid #38414c;border-radius:10px;background:#171d25;box-shadow:var(--shadow);font-size:9px}.toast.show{display:flex}.mobile-actions{display:none}
+
+/* CREATE/PUBLIC/HIDDEN */
+.create-only{display:none!important}.public-only,.hidden-only{display:none!important}
+body.create-mode .edit-only{display:none!important}body.create-mode .create-only{display:inline-flex!important}body.create-mode .no-cover{display:grid}body.create-mode .preview-cover{display:none}body.create-mode .preview-no-cover{display:grid}
+body.public-state .draft-only{display:none!important}body.public-state .public-only{display:inline-flex!important}
+body.hidden-state .draft-only,body.hidden-state .public-only{display:none!important}body.hidden-state .hidden-only{display:inline-flex!important}
+
+/* RESPONSIVE */
+@media(max-width:1330px){
+  .studio-body{grid-template-columns:88px minmax(0,1fr) 400px}.identity-frame{grid-template-columns:170px minmax(0,1fr) 310px}.identity-title{font-size:56px}
+}
+@media(max-width:1130px){
+  .command-center{display:none}.catalog-breadcrumb{margin-left:auto}.studio-body{grid-template-columns:76px minmax(0,1fr)}.preview-dock{grid-column:1/-1;position:static;display:grid;grid-template-columns:minmax(0,1fr) 350px}.readiness{align-self:start}.identity-frame{grid-template-columns:160px minmax(0,1fr) 280px}
+  body.preview-mode .studio-body{grid-template-columns:60px 1fr}.media-grid{grid-template-columns:1fr 1.3fr}
+}
+@media(max-width:880px){
+  .identity-frame{grid-template-columns:140px minmax(0,1fr)}.identity-aside{grid-column:1/-1;padding:0 20px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.identity-aside::before{display:none}.identity-stat{display:block;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:8px;background:rgba(8,10,14,.38)}.identity-stat strong{display:block;margin-top:4px}.identity-update{grid-column:1/-1}.identity-title{font-size:46px}
+  .info-layout,.discovery-grid{grid-template-columns:1fr}.media-grid{grid-template-columns:1fr}.preview-dock{grid-template-columns:1fr}.credit-add{grid-template-columns:1fr 130px}.credit-add .btn{grid-column:1/-1}
+}
+@media(max-width:720px){
+  .commandbar{height:62px;padding:0 10px}.catalog-breadcrumb{display:none}.brandname,.brandcontext{display:none}.command-sep{display:none}.backcatalog span{display:none}.backcatalog{width:36px;padding:0;justify-content:center}.save-indicator span:last-child{display:none}.command-actions .btn{display:none}
+  .prototype-strip{display:block;padding:8px 10px}.prototype-controls{justify-content:flex-start;margin-top:7px}
+  .identity-stage{padding:15px 10px 12px}.identity-frame{display:block;min-height:0}.identity-cover-zone{justify-content:flex-start;padding:18px 18px 0}.cover-art,.no-cover{width:112px}.identity-main{padding:15px 18px 18px}.identity-title{font-size:42px}.identity-aside{padding:0 18px 17px;grid-template-columns:1fr 1fr}
+  .studio-body{display:block;padding:0 10px 92px}.context-rail{position:sticky;top:62px;z-index:35;margin:0 -10px;padding:7px 10px;flex-direction:row;overflow:auto;background:rgba(8,10,14,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}.rail-label{display:none}.rail-item{min-width:103px;min-height:42px;padding:6px 8px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:7px}.rail-no{font-size:16px}
+  .editor-section{padding:22px 0 26px}.section-heading{grid-template-columns:54px 1fr}.section-no{font-size:42px}.section-copy h2{font-size:25px}.info-meta-grid{grid-template-columns:1fr}.credit-row{grid-template-columns:minmax(0,1fr) 120px 32px}.workflow-stage{grid-template-columns:1fr}.workflow-arrow{display:none}.version-strip{grid-template-columns:1fr}
+  body.preview-mode .context-rail,body.preview-mode .workspace{display:none}body.preview-mode .studio-body{display:block}
+  .mobile-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;position:fixed;left:0;right:0;bottom:0;z-index:55;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(8,10,14,.93);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)}.mobile-actions .btn{min-height:42px}
+  .drawer{top:62px;width:100%;border-left:0}.review-columns{grid-template-columns:1fr}.media-grid{grid-template-columns:1fr}.media-module:first-child{order:0}.media-module:last-child{order:1}
+}
+@media(max-width:430px){
+  .identity-title{font-size:38px}.section-heading{grid-template-columns:46px 1fr}.section-no{font-size:36px}.credit-row{grid-template-columns:1fr 32px}.credit-row select{grid-column:1}.credit-row .remove{grid-column:2;grid-row:1}.credit-add{grid-template-columns:1fr}.alias-row{grid-template-columns:24px minmax(0,1fr) 30px}.duplicate-vs{grid-template-columns:1fr}.vs-word{min-height:26px}.compare-pair{grid-template-columns:1fr}.public-preview.mobile{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="studio">
+<header class="commandbar">
+  <div class="brand"><div class="brandmark">MZ</div><div><div class="brandname">MangaZone</div><div class="brandcontext">Manga Editorial Studio · Catálogo editorial</div></div></div>
+  <div class="command-sep"></div>
+  <button class="backcatalog" type="button"><i data-lucide="arrow-left" class="icon-sm"></i><span>Volver al catálogo</span></button>
+  <div class="catalog-breadcrumb" aria-label="Ruta actual">
+    <span>MangaZone</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <span>Catálogo editorial</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <strong>Editar manga</strong>
+  </div>
+
+  <div class="command-center">
+    <div class="segmented">
+      <button class="seg-btn active" data-workmode="edit" type="button">Editar</button>
+      <button class="seg-btn" data-workmode="preview" type="button">Vista pública</button>
+    </div>
+    <div class="segmented">
+      <button class="seg-btn active" data-previewmode="desktop" type="button">Ficha Desktop</button>
+      <button class="seg-btn" data-previewmode="mobile" type="button">Ficha Mobile</button>
+      <button class="seg-btn" data-previewmode="card" type="button">Tarjeta</button>
+    </div>
+  </div>
+
+  <div class="command-actions">
+    <div class="save-indicator" id="saveIndicator"><span class="dot"></span><span id="saveText">Cambios sin guardar</span></div>
+    <button class="btn edit-only" id="saveBtn" type="button"><i data-lucide="save" class="icon-sm"></i>Guardar</button>
+    <button class="btn btn-primary draft-only edit-only" id="publishBtn" type="button"><i data-lucide="send" class="icon-sm"></i>Publicar ficha</button>
+    <button class="btn btn-primary create-only" id="createDraftBtn" type="button"><i data-lucide="file-plus-2" class="icon-sm"></i>Crear borrador</button>
+  </div>
+</header>
+
+<div class="prototype-strip">
+  <div class="prototype-title">Controles de prototipo</div>
+  <div class="prototype-controls">
+    <button class="demo-btn active" data-scenario="normal" type="button">Normal</button>
+    <button class="demo-btn" data-scenario="validation" type="button">Validación</button>
+    <button class="demo-btn" data-scenario="conflict" type="button">Conflicto</button>
+    <button class="demo-btn" data-scenario="duplicate" type="button">Duplicado</button>
+    <button class="demo-btn" data-scenario="saving" type="button">Guardando</button>
+    <button class="demo-btn" data-scenario="published" type="button">Publicado</button>
+    <button class="demo-btn" data-scenario="create" type="button">Crear nuevo</button>
+    <button class="demo-btn" data-scenario="hidden" type="button">Oculto</button>
+  </div>
+</div>
+
+<section class="identity-stage" aria-labelledby="identityTitle">
+  <div class="identity-frame" id="identityFrame">
+    <div class="identity-banner-layer" id="identityBanner"></div>
+    <div class="identity-number">07</div>
+    <div class="identity-cover-zone">
+      <div class="cover-art edit-only" id="identityCover" aria-label="Portada actual de Crimson Horizon"></div>
+      <div class="no-cover create-only" id="identityNoCover"><div><i data-lucide="image-off" class="icon-lg"></i><br>Sin portada</div></div>
+    </div>
+    <div class="identity-main">
+      <div class="identity-kicker" id="identityKicker">Catálogo editorial · ficha canónica</div>
+      <h1 class="identity-title" id="identityTitle">CRIMSON HORIZON</h1>
+      <div class="identity-slug edit-only" id="identitySlug">/manga/crimson-horizon</div>
+      <div class="identity-slug create-only">Se generará al crear el borrador</div>
+      <div class="identity-meta">
+        <span class="meta-pill draft draft-only">Borrador</span>
+        <span class="meta-pill public public-only">Público</span>
+        <span class="meta-pill hidden hidden-only">Oculto</span>
+        <span class="meta-pill" id="identityType">Manga</span>
+        <span class="meta-pill" id="identityDemography">Seinen</span>
+        <span class="meta-pill" id="identityRating">Adolescentes</span>
+        <span class="meta-pill" id="identityWorkState">En publicación</span>
+      </div>
+    </div>
+    <div class="identity-aside">
+      <div class="identity-stat"><span>Versión</span><strong id="identityVersion">7</strong></div>
+      <div class="identity-stat"><span>Estado editorial</span><strong id="identityEditorial">BORRADOR</strong></div>
+      <div class="identity-stat"><span>Actualización</span><strong class="edit-only">Hace 18 min</strong><strong class="create-only">Sin guardar</strong></div>
+      <div class="identity-stat"><span>Demografía</span><strong id="identityDemography2">Seinen</strong></div>
+      <div class="identity-update">El slug permanece estable aunque cambie el título.</div>
+    </div>
+  </div>
+</section>
+
+<div class="studio-body">
+  <nav class="context-rail" aria-label="Índice editorial">
+    <div class="rail-label">Índice</div>
+    <a class="rail-item active" href="#sectionInformation"><span class="rail-no">01</span><span class="rail-name">Información</span></a>
+    <a class="rail-item" href="#sectionMultimedia"><span class="rail-no">02</span><span class="rail-name">Multimedia</span></a>
+    <a class="rail-item" href="#sectionDiscovery"><span class="rail-no">03</span><span class="rail-name">Descubrimiento</span></a>
+    <a class="rail-item" href="#sectionCredits"><span class="rail-no">04</span><span class="rail-name">Créditos</span></a>
+    <a class="rail-item" href="#sectionPublication"><span class="rail-no">05</span><span class="rail-name">Publicación</span></a>
+  </nav>
+
+  <main class="workspace" id="workspace">
+    <section class="editor-section" id="sectionInformation">
+      <div class="section-heading">
+        <div class="section-no">01</div>
+        <div class="section-copy"><h2>Información</h2><p>Identidad, descripción y clasificación editorial de la obra.</p></div>
+      </div>
+
+      <div class="info-layout">
+        <div>
+          <div class="field" id="titleField">
+            <div class="field-label-row"><label for="titleInput">Título principal <span class="req">*</span></label><span class="help">Identidad pública</span></div>
+            <input id="titleInput" type="text" value="Crimson Horizon" autocomplete="off">
+            <div class="error-text">El título principal es obligatorio.</div>
+          </div>
+
+          <div class="alt-zone">
+            <div class="field-label-row"><span class="label">Títulos alternativos</span><span class="help">Nombres alternativos, traducciones conocidas o variantes del título.</span></div>
+            <div class="alias-list" id="aliasList"></div>
+            <div class="add-line">
+              <input id="aliasInput" type="text" placeholder="Añadir título alternativo">
+              <button class="btn" id="addAliasBtn" type="button"><i data-lucide="plus" class="icon-sm"></i>Añadir</button>
+            </div>
+            <div class="inline-error" id="aliasError">Este título alternativo es igual al título principal o duplica otro título alternativo.</div>
+          </div>
+
+          <div class="field" style="margin-top:15px">
+            <div class="field-label-row"><label for="synopsisInput">Sinopsis <span class="req">*</span></label><span class="help"><span id="synopsisCount">238</span> / 3000</span></div>
+            <textarea id="synopsisInput" maxlength="3000">En una ciudad construida sobre los restos de una antigua frontera celestial, un estudiante marcado por un eclipse rojo descubre que su familia custodia una deuda que atraviesa generaciones. Cada nuevo volumen revela un pacto distinto entre memoria, sacrificio y poder.</textarea>
+          </div>
+        </div>
+
+        <div class="info-meta-grid">
+          <div class="field">
+            <div class="field-label-row"><label for="typeSelect">Tipo</label></div>
+            <select id="typeSelect">
+              <option selected>Manga</option><option>Manhua</option><option>Manhwa</option><option>Webtoon</option><option>Novela</option><option>Comic</option><option>One shot</option><option>Doujinshi</option><option>OEL</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-label-row"><label for="demographySelect">Demografía</label></div>
+            <select id="demographySelect"><option selected>Seinen</option><option>Shoujo</option><option>Shounen</option><option>Josei</option><option>Kodomo</option></select>
+            <div class="field-foot">Público editorial al que se dirige principalmente la obra.</div>
+          </div>
+          <div class="field" id="ratingField">
+            <div class="field-label-row"><label for="ratingSelect">Clasificación por edad</label></div>
+            <select id="ratingSelect">
+              <option value="General">Todo público</option>
+              <option value="Teen" selected>Adolescentes</option>
+              <option value="Mature">Maduro</option>
+            </select>
+            <div class="field-foot">Nivel de contenido y edad recomendada.</div>
+            <div class="error-text">La clasificación seleccionada no está permitida.</div>
+          </div>
+          <div class="field">
+            <div class="field-label-row"><label for="workStateSelect">Estado de la obra</label></div>
+            <select id="workStateSelect"><option selected>En publicación</option><option>Finalizado</option><option>En pausa</option></select>
+            <div class="field-foot">Describe el estado narrativo de la obra, no su visibilidad editorial.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="editor-section" id="sectionMultimedia">
+      <div class="section-heading">
+        <div class="section-no">02</div>
+        <div class="section-copy"><h2>Multimedia</h2><p>Portada y banner de la ficha. La selección funciona solo localmente en este prototipo.</p></div>
+      </div>
+
+      <div class="media-grid">
+        <article class="media-module">
+          <div class="media-head"><strong>PORTADA</strong><span>2:3</span></div>
+          <div class="media-body">
+            <div class="media-copy">Imagen principal utilizada en catálogo, búsqueda y biblioteca.</div>
+            <div class="media-cover-preview" id="mediaCoverPreview"></div>
+            <div class="media-cover-placeholder" id="mediaCoverPlaceholder">Sin portada</div>
+            <div class="media-actions">
+              <label class="btn" for="coverFile"><i data-lucide="image-plus" class="icon-sm"></i><span id="coverSelectLabel">Reemplazar</span></label>
+              <button class="btn" id="removeCoverBtn" type="button"><i data-lucide="trash-2" class="icon-sm"></i>Eliminar</button>
+              <input class="file-input" id="coverFile" type="file" accept="image/*">
+            </div>
+            <div class="upload-note">Previsualización local mediante el navegador. No se realiza upload HTTP.</div>
+          </div>
+        </article>
+
+        <article class="media-module">
+          <div class="media-head"><strong>BANNER</strong><span>Panorámico</span></div>
+          <div class="media-body">
+            <div class="media-copy">Imagen panorámica utilizada como fondo de la cabecera de la ficha.</div>
+            <div class="media-banner-preview" id="mediaBannerPreview"></div>
+            <div class="media-banner-placeholder" id="mediaBannerPlaceholder">Sin banner · se usará un fondo neutro MangaZone</div>
+            <div class="media-actions">
+              <label class="btn" for="bannerFile"><i data-lucide="image-plus" class="icon-sm"></i><span id="bannerSelectLabel">Reemplazar</span></label>
+              <button class="btn" id="removeBannerBtn" type="button"><i data-lucide="trash-2" class="icon-sm"></i>Eliminar</button>
+              <input class="file-input" id="bannerFile" type="file" accept="image/*">
+            </div>
+            <div class="upload-note">Previsualización local mediante el navegador. No se realiza upload HTTP.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="editor-section" id="sectionDiscovery">
+      <div class="section-heading">
+        <div class="section-no">03</div>
+        <div class="section-copy"><h2>Descubrimiento</h2><p>Géneros e identificador público estable usados por navegación y catálogo.</p></div>
+      </div>
+
+      <div class="discovery-grid">
+        <div>
+          <div class="field-label-row"><span class="label">Géneros</span><span class="help">Catálogo existente</span></div>
+          <div class="chips" id="genreChips"></div>
+          <div class="genre-picker" id="genrePicker">
+            <input id="genreSearch" type="search" placeholder="Buscar género existente…" autocomplete="off">
+            <div class="genre-popover" id="genrePopover"></div>
+          </div>
+          <div class="inline-error" id="genreError">Selecciona un género válido del catálogo existente.</div>
+        </div>
+
+        <div class="slug-panel">
+          <div class="label">Slug / URL pública</div>
+          <div class="slug-line edit-only">/manga/<strong>crimson-horizon</strong></div>
+          <div class="slug-line create-only">Se generará al crear el borrador</div>
+          <div class="slug-help">El slug no es editable y permanece estable aunque cambie el título.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="editor-section" id="sectionCredits">
+      <div class="section-heading">
+        <div class="section-no">04</div>
+        <div class="section-copy"><h2>Créditos</h2><p>Personas existentes asociadas a la obra y su tipo de contribución.</p></div>
+      </div>
+
+      <div class="credit-stage" id="creatorList"></div>
+      <div class="credit-add">
+        <input id="creatorSearch" type="search" placeholder="Buscar creador existente…">
+        <select id="creatorRole"><option>Historia</option><option>Arte</option><option>Guion</option><option>Arte y guion</option></select>
+        <button class="btn" id="addCreatorBtn" type="button">Añadir creador</button>
+      </div>
+      <div class="inline-error" id="creatorError">Selecciona un creador válido del catálogo existente.</div>
+    </section>
+
+    <section class="editor-section" id="sectionPublication">
+      <div class="section-heading">
+        <div class="section-no">05</div>
+        <div class="section-copy"><h2>Publicación</h2><p>Workflow de publicación de la ficha canónica del catálogo, versión y transición explícita de BORRADOR a PÚBLICO y después a OCULTO.</p></div>
+      </div>
+
+      <div class="workflow-stage">
+        <div class="workflow-node draft current" id="draftNode"><div class="workflow-name">BORRADOR</div><p>Ficha editable. Todavía no forma parte del catálogo público.</p></div>
+        <div class="workflow-arrow"><i data-lucide="arrow-right" class="icon"></i></div>
+        <div class="workflow-node public" id="publicNode"><div class="workflow-name">PÚBLICO</div><p>Disponible públicamente mediante la acción explícita Publicar ficha.</p></div>
+        <div class="workflow-arrow"><i data-lucide="arrow-right" class="icon"></i></div>
+        <div class="workflow-node hidden" id="hiddenNode"><div class="workflow-name">OCULTO</div><p>Retirado por ADMIN. V1 no contempla restore / unhide.</p></div>
+      </div>
+
+      <div class="version-strip">
+        <div class="version-item">Versión de edición<strong id="workspaceVersion">7</strong></div>
+        <div class="version-item">Estado de la obra<strong id="workspaceWorkState">En publicación</strong></div>
+        <div class="version-item">Estado editorial<strong id="workspaceEditorial">BORRADOR</strong></div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="preview-dock">
+    <section class="preview-shell">
+      <div class="preview-toolbar">
+        <div class="preview-live">Live Public Preview</div>
+        <div class="segmented">
+          <button class="seg-btn active" data-previewmode="desktop" type="button">Ficha Desktop</button>
+          <button class="seg-btn" data-previewmode="mobile" type="button">Ficha Mobile</button>
+          <button class="seg-btn" data-previewmode="card" type="button">Tarjeta</button>
+        </div>
+      </div>
+
+      <div class="preview-frame">
+        <div class="public-preview" id="publicPreview">
+          <div class="public-top"><div class="public-logo">MangaZone</div><span>Vista pública simulada</span></div>
+          <div class="public-hero" id="previewHero">
+            <div class="preview-cover" id="previewCover"></div>
+            <div class="preview-no-cover" id="previewNoCover">Sin portada</div>
+            <div class="preview-kicker">Ficha de obra</div>
+            <div class="preview-title" id="previewTitle">Crimson Horizon</div>
+            <div class="preview-alt" id="previewAltTitles">Akai Chihei · Horizon Rouge</div>
+            <div class="preview-tags" id="previewGenres"></div>
+            <div class="preview-meta">
+              <span id="previewType">Manga</span><span>•</span><span id="previewDemography">Seinen</span><span>•</span><span id="previewRating">Adolescentes</span><span>•</span><span id="previewWorkState">En publicación</span>
+            </div>
+          </div>
+          <div class="preview-synopsis" id="previewSynopsis"></div>
+          <div class="preview-credits"><strong>Creadores</strong><div class="preview-credit-list" id="previewCredits"></div></div>
+        </div>
+
+        <div class="card-preview-wrap" id="cardPreviewWrap">
+          <article class="catalog-card">
+            <div class="card-cover" id="cardCover"></div>
+            <div class="card-cover-placeholder" id="cardCoverPlaceholder">Sin portada</div>
+            <div class="card-info">
+              <div class="card-title" id="cardTitle">Crimson Horizon</div>
+              <div class="card-meta">
+                <span class="card-chip" id="cardType">Manga</span>
+                <span class="card-chip" id="cardDemography">Seinen</span>
+              </div>
+              <div class="card-state" id="cardWorkState">En publicación</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="readiness">
+      <div class="readiness-head"><strong>LISTA PARA PUBLICAR</strong><span class="readiness-count" id="readinessCount">8 / 9</span></div>
+      <div class="readiness-body" id="readinessBody"></div>
+      <div class="readiness-progress"><span id="readinessBar"></span></div>
+    </section>
+
+    <section class="readiness edit-only" id="adminSensitive">
+      <div class="readiness-head"><strong>ACCIÓN ADMINISTRATIVA</strong><span class="requirement-type required">Permiso administrativo requerido</span></div>
+      <div class="readiness-body">
+        <div class="scopy" style="margin:0 0 9px">Ocultar una ficha pública la retirará del catálogo. Esta acción depende de los permisos de la sesión y exige una razón obligatoria.</div>
+        <button class="btn btn-danger public-only" id="hideBtn" type="button" style="width:100%"><i data-lucide="eye-off" class="icon-sm"></i>Ocultar ficha</button>
+        <button class="btn btn-danger draft-only" type="button" disabled style="width:100%">Disponible solo desde PÚBLICO</button>
+        <button class="btn btn-danger hidden-only" type="button" disabled style="width:100%">Ficha ya oculta</button>
+      </div>
+    </section>
+  </aside>
+</div>
+</div>
+
+<div class="mobile-actions">
+  <button class="btn edit-only" id="mobileSaveBtn" type="button">Guardar</button>
+  <button class="btn btn-primary draft-only edit-only" id="mobilePublishBtn" type="button">Publicar</button>
+  <button class="btn btn-primary create-only" id="mobileCreateBtn" type="button">Crear borrador</button>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<aside class="drawer" id="conflictDrawer" role="dialog" aria-modal="true" aria-labelledby="conflictTitle">
+  <div class="drawer-head">
+    <div><div class="drawer-kicker">ExpectedVersion conflict</div><div class="drawer-title" id="conflictTitle">Revisión de versión</div><div class="drawer-sub">Otra sesión guardó cambios antes que esta sesión.</div></div>
+    <button class="drawer-close" data-close-drawer type="button" aria-label="Cerrar"><i data-lucide="x" class="icon"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="compare-pair">
+      <div class="compare-card"><div class="compare-label">Tu sesión</div><div class="compare-value">v7</div></div>
+      <div class="compare-card"><div class="compare-label">Versión actual</div><div class="compare-value">v8</div></div>
+    </div>
+    <div class="diff-list">
+      <div class="diff-row"><span>Título</span><strong>Crimson Horizon</strong><span class="diff-status">Sin cambios</span></div>
+      <div class="diff-row"><span>Sinopsis</span><strong>Texto actualizado</strong><span class="diff-status changed">Modificada</span></div>
+      <div class="diff-row"><span>Géneros</span><strong>5 géneros actuales</strong><span class="diff-status plus">+1</span></div>
+      <div class="diff-row"><span>Creadores</span><strong>2 contribuciones</strong><span class="diff-status">Sin cambios</span></div>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn" id="reviewChangesBtn" type="button">Revisar mis cambios</button>
+      <button class="btn btn-warning" id="reloadVersionBtn" type="button">Recargar versión actual</button>
+    </div>
+  </div>
+</aside>
+
+<aside class="drawer" id="duplicateDrawer" role="dialog" aria-modal="true" aria-labelledby="duplicateTitle">
+  <div class="drawer-head">
+    <div><div class="drawer-kicker">Identity collision review</div><div class="drawer-title" id="duplicateTitle">Posible manga duplicado</div><div class="drawer-sub">Se detectó una coincidencia de título o título alternativo equivalente.</div></div>
+    <button class="drawer-close" data-close-drawer type="button" aria-label="Cerrar"><i data-lucide="x" class="icon"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="duplicate-vs">
+      <div class="vs-card"><div class="vs-cover"></div><strong>TU FICHA</strong><small>Crimson Horizon<br>BORRADOR</small></div>
+      <div class="vs-word">VS.</div>
+      <div class="vs-card alt"><div class="vs-cover"></div><strong>FICHA EXISTENTE</strong><small>Crimson Horizon: Afterglow<br>PÚBLICO</small></div>
+    </div>
+    <div class="match-box"><strong>Coincidencia detectada</strong><br>“Horizon Rouge” ↔ “horizon rouge”</div>
+    <div class="drawer-actions">
+      <button class="btn" type="button">Revisar ficha existente</button>
+      <button class="btn" data-close-drawer type="button">Cancelar</button>
+    </div>
+    <div class="admin-exception" id="adminOverride">
+      <strong>Excepción administrativa · homónimo legítimo</strong>
+      <p><span class="requirement-type required">Permiso administrativo requerido</span><br><br>Solo debe utilizarse cuando se confirme que son obras distintas aunque compartan título o título alternativo equivalente.</p>
+      <button class="btn btn-warning" id="homonymBtn" type="button">Crear como homónimo legítimo</button>
+    </div>
+  </div>
+</aside>
+
+<div class="review-modal" id="publishReview" role="dialog" aria-modal="true" aria-labelledby="publishReviewTitle">
+  <div class="review-sheet">
+    <div class="review-head">
+      <div class="review-kicker">Review before publish</div>
+      <div class="review-title" id="publishReviewTitle">REVISIÓN DE PUBLICACIÓN</div>
+      <div class="review-copy">Comprueba la ficha editorial antes de hacer visible esta versión en MangaZone.</div>
+    </div>
+    <div class="review-body">
+      <div class="review-columns" id="reviewColumns"></div>
+      <div class="review-version">Versión a publicar: <strong id="publishVersion">7</strong><br>La ficha será visible públicamente.</div>
+    </div>
+    <div class="review-actions">
+      <button class="btn" id="cancelPublishReview" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="confirmPublishReview" type="button">Publicar versión 7</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="reasonModal" role="dialog" aria-modal="true" aria-labelledby="reasonTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-icon"><i data-lucide="shield-alert" class="icon-lg"></i></div>
+      <h2 id="reasonTitle">Acción sensible</h2>
+      <p id="reasonCopy"></p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="reasonInfo"></div>
+      <div style="margin-top:11px">
+        <div class="field-label-row"><label for="reasonInput">Razón <span class="req">*</span></label></div>
+        <textarea class="reason" id="reasonInput" maxlength="2000" placeholder="Describe la razón de esta acción…"></textarea>
+        <div class="counter"><span id="reasonCount">0</span> / 2000</div>
+        <div class="error-text" id="reasonError">La razón es obligatoria.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelReason" type="button">Cancelar</button>
+      <button class="btn btn-danger" id="confirmReason" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="circle-check" class="icon-sm"></i><span id="toastText">Cambios guardados.</span></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+const state={
+  mode:"edit",
+  editorial:"draft",
+  scenario:"normal",
+  previewMode:"desktop",
+  workMode:"edit",
+  aliases:["Akai Chihei","Horizon Rouge"],
+  genres:["Acción","Drama","Sobrenatural","Misterio"],
+  genreCatalog:["Acción","Aventura","Comedia","Drama","Fantasía","Horror","Misterio","Psicológico","Romance","Sci-Fi","Sobrenatural","Thriller"],
+  creators:[
+    {name:"Akira Mori",role:"Historia",meta:"Creador existente · #CR-042"},
+    {name:"Mika Sato",role:"Arte",meta:"Creadora existente · #CR-117"}
+  ],
+  creatorCatalog:["Akira Mori","Mika Sato","Ren Takeda","Noa Fujimoto","Haru Aoki"],
+  coverUrl:null,
+  bannerUrl:null,
+  coverRemoved:false,
+  bannerRemoved:false,
+  activeDrawer:null,
+  lastFocus:null,
+  reasonAction:null
+};
+
+function icons(){if(window.lucide)lucide.createIcons()}
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function norm(v){return v.trim().toLocaleLowerCase("es").replace(/\s+/g," ")}
+function initials(n){return n.split(/\s+/).map(x=>x[0]).slice(0,2).join("").toUpperCase()}
+function ratingLabel(v){return v==="General"?"Todo público":v==="Teen"?"Adolescentes":"Maduro"}
+
+function toast(text,error=false){
+  $("#toastText").textContent=text;$("#toast").style.borderColor=error?"#6c2932":"#38414c";$("#toast").classList.add("show");
+  clearTimeout(window.__toast);window.__toast=setTimeout(()=>$("#toast").classList.remove("show"),2400);icons();
+}
+function saveIndicator(kind,text){
+  $("#saveIndicator").className="save-indicator"+(kind?" "+kind:"");$("#saveText").textContent=text;
+}
+function markDirty(){saveIndicator("","Cambios sin guardar")}
+
+/* TÍTULOS ALTERNATIVOS */
+function renderAliases(){
+  $("#aliasList").innerHTML=state.aliases.map((a,i)=>`
+    <div class="alias-row">
+      <div class="grip"><i data-lucide="grip-vertical" class="icon-sm"></i></div>
+      <input type="text" value="${esc(a)}" data-alias-input="${i}" aria-label="Título alternativo ${i+1}">
+      <button class="remove" type="button" data-remove-alias="${i}" aria-label="Eliminar título alternativo ${esc(a)}"><i data-lucide="x" class="icon-sm"></i></button>
+    </div>`).join("");
+
+  $$("[data-remove-alias]").forEach(btn=>btn.onclick=()=>{
+    state.aliases.splice(Number(btn.dataset.removeAlias),1);
+    renderAliases();updatePreview();updateReadiness();markDirty();
+  });
+
+  $$("[data-alias-input]").forEach(inp=>inp.oninput=()=>{
+    state.aliases[Number(inp.dataset.aliasInput)]=inp.value;
+    validateAliases();updatePreview();updateReadiness();markDirty();
+  });
+  icons();
+}
+function validateAliases(){
+  const title=norm($("#titleInput").value),vals=state.aliases.map(norm).filter(Boolean);
+  const bad=vals.some(v=>v===title)||new Set(vals).size!==vals.length;
+  $("#aliasError").classList.toggle("show",bad);
+  return !bad;
+}
+function addAlias(){
+  const v=$("#aliasInput").value.trim();if(!v)return;
+  if(norm(v)===norm($("#titleInput").value)||state.aliases.some(a=>norm(a)===norm(v))){$("#aliasError").classList.add("show");return}
+  state.aliases.push(v);$("#aliasInput").value="";$("#aliasError").classList.remove("show");
+  renderAliases();updatePreview();updateReadiness();markDirty();
+}
+
+/* GÉNEROS */
+function renderGenres(){
+  $("#genreChips").innerHTML=state.genres.map(g=>`<span class="genre-chip">${esc(g)}<button type="button" data-remove-genre="${esc(g)}" aria-label="Quitar ${esc(g)}"><i data-lucide="x" class="icon-sm"></i></button></span>`).join("");
+  $$("[data-remove-genre]").forEach(btn=>btn.onclick=()=>{
+    state.genres=state.genres.filter(g=>g!==btn.dataset.removeGenre);
+    renderGenres();updatePreview();updateReadiness();markDirty();
+  });
+  icons();
+}
+function renderGenrePopover(q=""){
+  const nq=norm(q);
+  const items=state.genreCatalog.filter(g=>!state.genres.includes(g)&&(!nq||norm(g).includes(nq)));
+  $("#genrePopover").innerHTML=items.slice(0,9).map(g=>`<button class="genre-option" type="button" data-add-genre="${esc(g)}">${esc(g)}</button>`).join("")||`<div class="help" style="padding:8px">No hay opciones disponibles.</div>`;
+  $$("[data-add-genre]").forEach(btn=>btn.onclick=()=>{
+    state.genres.push(btn.dataset.addGenre);$("#genreSearch").value="";$("#genrePicker").classList.remove("open");
+    renderGenres();updatePreview();updateReadiness();markDirty();
+  });
+}
+
+/* CRÉDITOS */
+function renderCreators(){
+  $("#creatorList").innerHTML=state.creators.map((c,i)=>`
+    <div class="credit-row">
+      <div class="person">
+        <div class="person-avatar">${initials(c.name)}</div>
+        <div><div class="person-name">${esc(c.name)}</div><div class="person-meta">${esc(c.meta)}</div></div>
+      </div>
+      <select data-creator-role="${i}" aria-label="Rol de ${esc(c.name)}">
+        ${["Historia","Arte","Guion","Arte y guion"].map(r=>`<option ${r===c.role?"selected":""}>${r}</option>`).join("")}
+      </select>
+      <button class="remove" type="button" data-remove-creator="${i}" aria-label="Eliminar ${esc(c.name)}"><i data-lucide="x" class="icon-sm"></i></button>
+    </div>`).join("");
+
+  $$("[data-remove-creator]").forEach(btn=>btn.onclick=()=>{
+    state.creators.splice(Number(btn.dataset.removeCreator),1);
+    renderCreators();updatePreview();updateReadiness();markDirty();
+  });
+  $$("[data-creator-role]").forEach(sel=>sel.onchange=()=>{
+    state.creators[Number(sel.dataset.creatorRole)].role=sel.value;updatePreview();markDirty();
+  });
+  icons();
+}
+function addCreator(){
+  const raw=$("#creatorSearch").value.trim();
+  const match=state.creatorCatalog.find(c=>norm(c)===norm(raw));
+  if(!match||state.creators.some(c=>c.name===match)){$("#creatorError").classList.add("show");return}
+  state.creators.push({name:match,role:$("#creatorRole").value,meta:"Creador existente · demo"});
+  $("#creatorSearch").value="";$("#creatorError").classList.remove("show");
+  renderCreators();updatePreview();updateReadiness();markDirty();
+}
+
+/* MULTIMEDIA LOCAL */
+function setBackground(el,url){
+  if(url){
+    el.style.backgroundImage=`url("${url}")`;
+    el.classList.add("has-image");
+  }else{
+    el.style.backgroundImage="";
+    el.classList.remove("has-image");
+  }
+}
+function refreshMediaVisuals(){
+  const coverAvailable=!state.coverRemoved;
+  const bannerAvailable=!state.bannerRemoved;
+
+  $("#mediaCoverPreview").style.display=coverAvailable?"block":"none";
+  $("#mediaCoverPlaceholder").style.display=coverAvailable?"none":"grid";
+  $("#coverSelectLabel").textContent=coverAvailable?"Reemplazar":"Seleccionar imagen";
+  $("#removeCoverBtn").disabled=!coverAvailable;
+
+  $("#mediaBannerPreview").style.display=bannerAvailable?"block":"none";
+  $("#mediaBannerPlaceholder").style.display=bannerAvailable?"none":"grid";
+  $("#bannerSelectLabel").textContent=bannerAvailable?"Reemplazar":"Seleccionar imagen";
+  $("#removeBannerBtn").disabled=!bannerAvailable;
+
+  ["#mediaCoverPreview","#identityCover","#previewCover","#cardCover"].forEach(sel=>setBackground($(sel),state.coverUrl));
+  ["#mediaBannerPreview","#identityBanner","#previewHero"].forEach(sel=>setBackground($(sel),state.bannerUrl));
+
+  $("#identityCover").style.display=coverAvailable?"block":"none";
+  if(state.mode!=="create") $("#identityNoCover").style.display=coverAvailable?"none":"grid";
+  $("#previewCover").style.display=coverAvailable?"block":"none";
+  $("#previewNoCover").style.display=coverAvailable?"none":"grid";
+  $("#cardCover").style.display=coverAvailable?"block":"none";
+  $("#cardCoverPlaceholder").style.display=coverAvailable?"none":"grid";
+
+  if(!bannerAvailable){
+    $("#identityBanner").style.backgroundImage="";
+    $("#previewHero").style.backgroundImage="";
+  }
+
+  updateReadiness();
+}
+function useLocalImage(input,kind){
+  const file=input.files&&input.files[0];if(!file)return;
+  if(!file.type.startsWith("image/")){toast("Selecciona un archivo de imagen válido.",true);return}
+  const url=URL.createObjectURL(file);
+  if(kind==="cover"){
+    if(state.coverUrl)URL.revokeObjectURL(state.coverUrl);
+    state.coverUrl=url;state.coverRemoved=false;
+  }else{
+    if(state.bannerUrl)URL.revokeObjectURL(state.bannerUrl);
+    state.bannerUrl=url;state.bannerRemoved=false;
+  }
+  refreshMediaVisuals();updatePreview();markDirty();
+}
+function removeMedia(kind){
+  if(kind==="cover"){if(state.coverUrl)URL.revokeObjectURL(state.coverUrl);state.coverUrl=null;state.coverRemoved=true;$("#coverFile").value=""}
+  else{if(state.bannerUrl)URL.revokeObjectURL(state.bannerUrl);state.bannerUrl=null;state.bannerRemoved=true;$("#bannerFile").value=""}
+  refreshMediaVisuals();updatePreview();markDirty();
+}
+
+/* PREVIEW */
+function updatePreview(){
+  const title=$("#titleInput").value.trim()||"Sin título";
+  const rating=ratingLabel($("#ratingSelect").value);
+  const demography=$("#demographySelect").value;
+  const type=$("#typeSelect").value;
+  const workState=$("#workStateSelect").value;
+
+  $("#identityTitle").textContent=title.toUpperCase();
+  $("#identityType").textContent=type;
+  $("#identityDemography").textContent=demography;
+  $("#identityDemography2").textContent=demography;
+  $("#identityRating").textContent=rating;
+  $("#identityWorkState").textContent=workState;
+
+  $("#previewTitle").textContent=title;
+  $("#previewAltTitles").textContent=state.aliases.filter(Boolean).join(" · ")||"Sin títulos alternativos";
+  $("#previewGenres").innerHTML=state.genres.map(g=>`<span class="preview-tag">${esc(g)}</span>`).join("");
+  $("#previewType").textContent=type;
+  $("#previewDemography").textContent=demography;
+  $("#previewRating").textContent=rating;
+  $("#previewWorkState").textContent=workState;
+  $("#previewSynopsis").textContent=$("#synopsisInput").value||"Sin sinopsis";
+  $("#previewCredits").innerHTML=state.creators.map(c=>`<span>${esc(c.name)} · ${esc(c.role)}</span>`).join("");
+
+  $("#cardTitle").textContent=title;
+  $("#cardType").textContent=type;
+  $("#cardDemography").textContent=demography;
+  $("#cardWorkState").textContent=workState;
+  $("#workspaceWorkState").textContent=workState;
+
+  refreshMediaVisuals();
+}
+
+/* READINESS */
+function readinessData(){
+  return [
+    {label:"Título",ok:!!$("#titleInput").value.trim(),kind:"required"},
+    {label:"Tipo",ok:!!$("#typeSelect").value,kind:"required"},
+    {label:"Demografía",ok:!!$("#demographySelect").value,kind:"required"},
+    {label:"Clasificación",ok:["General","Teen","Mature"].includes($("#ratingSelect").value),kind:"required"},
+    {label:"Sinopsis",ok:!!$("#synopsisInput").value.trim(),kind:"required"},
+    {label:"Géneros",ok:state.genres.length>0,kind:"required"},
+    {label:"Creadores",ok:state.creators.length>0,kind:"required"},
+    {label:"Portada",ok:!state.coverRemoved,kind:"required"},
+    {label:"Banner",ok:!state.bannerRemoved,kind:"recommended"},
+    {label:"Sin conflictos de identidad",ok:state.scenario!=="duplicate",kind:"required"}
+  ];
+}
+function updateReadiness(){
+  const data=readinessData();
+  const required=data.filter(x=>x.kind==="required");
+  const done=required.filter(x=>x.ok).length;
+  $("#readinessCount").textContent=`${done} / ${required.length}`;
+  $("#readinessBody").innerHTML=data.map(x=>`
+    <div class="requirement ${x.ok?"ok":x.kind==="recommended"?"warn":""}">
+      <span class="req-icon"><i data-lucide="${x.ok?"check":x.kind==="recommended"?"minus":"x"}" class="icon-sm"></i></span>
+      <span>${x.label}</span>
+      <span class="requirement-type ${x.kind}">${x.kind==="required"?"Requisito":"Recomendado"}</span>
+    </div>`).join("");
+  $("#readinessBar").style.width=`${done/required.length*100}%`;
+  icons();
+}
+
+/* STATES */
+function setEditorial(v){
+  state.editorial=v;
+  document.body.classList.toggle("public-state",v==="public");
+  document.body.classList.toggle("hidden-state",v==="hidden");
+  $("#draftNode").classList.toggle("current",v==="draft");
+  $("#publicNode").classList.toggle("current",v==="public");
+  $("#hiddenNode").classList.toggle("current",v==="hidden");
+  const label=v==="draft"?"BORRADOR":v==="public"?"PÚBLICO":"OCULTO";
+  $("#identityEditorial").textContent=label;$("#workspaceEditorial").textContent=label;
+  $("#identityKicker").textContent=v==="public"?"Catálogo editorial · ficha pública":v==="hidden"?"Catálogo editorial · ficha oculta":"Catálogo editorial · ficha canónica";
+  updateReadiness();icons();
+}
+function setMode(v){
+  state.mode=v;document.body.classList.toggle("create-mode",v==="create");
+  if(v==="create"){
+    $("#identityVersion").textContent="1";$("#workspaceVersion").textContent="1";state.coverRemoved=true;state.bannerRemoved=true;setEditorial("draft");
+  }else{
+    $("#identityVersion").textContent=state.scenario==="conflict"?"7 → 8":"7";$("#workspaceVersion").textContent=state.scenario==="conflict"?"7 → 8":"7";
+    if(state.scenario!=="create"){if(state.coverRemoved&&state.coverUrl===null)state.coverRemoved=false;if(state.bannerRemoved&&state.bannerUrl===null)state.bannerRemoved=false}
+  }
+  refreshMediaVisuals();updatePreview();updateReadiness();icons();
+}
+function setPreviewMode(v){
+  state.previewMode=v;
+  $("#publicPreview").classList.toggle("mobile",v==="mobile");
+  $("#publicPreview").style.display=v==="card"?"none":"block";
+  $("#cardPreviewWrap").classList.toggle("active",v==="card");
+  $$("[data-previewmode]").forEach(btn=>btn.classList.toggle("active",btn.dataset.previewmode===v));
+}
+function setWorkMode(v){
+  state.workMode=v;document.body.classList.toggle("preview-mode",v==="preview");
+  $$("[data-workmode]").forEach(btn=>btn.classList.toggle("active",btn.dataset.workmode===v));
+  if(v==="preview"&&innerWidth<720)window.scrollTo({top:document.querySelector(".preview-dock").offsetTop-70,behavior:"smooth"});
+}
+
+/* SAVE / CREATE */
+function simulateSave(){
+  saveIndicator("saving","Guardando…");
+  setTimeout(()=>{saveIndicator("success","Cambios guardados");toast("Cambios guardados en el prototipo.");setTimeout(()=>saveIndicator("","Cambios sin guardar"),1700)},850);
+}
+function slugify(v){return v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
+function createDraft(){
+  if(!$("#titleInput").value.trim()){setScenario("validation");toast("El título es obligatorio para crear el borrador.",true);return}
+  saveIndicator("saving","Creando borrador…");
+  setTimeout(()=>{
+    state.mode="edit";document.body.classList.remove("create-mode");
+    const slug=slugify($("#titleInput").value);$("#identitySlug").textContent="/manga/"+slug;
+    $("#identityVersion").textContent="1";$("#workspaceVersion").textContent="1";
+    saveIndicator("success","Borrador creado");toast("Borrador creado en el prototipo.");refreshMediaVisuals();updateReadiness();icons();
+  },800);
+}
+
+/* VALIDATION */
+function validateAliases(){
+  const t=norm($("#titleInput").value),vals=state.aliases.map(norm).filter(Boolean);
+  const bad=vals.some(v=>v===t)||new Set(vals).size!==vals.length;
+  $("#aliasError").classList.toggle("show",bad);return !bad;
+}
+function validateForm(force=false){
+  let ok=true;
+  const titleBad=!$("#titleInput").value.trim();$("#titleField").classList.toggle("error",force&&titleBad);if(titleBad)ok=false;
+  if(!validateAliases())ok=false;
+  const ratingOk=["General","Teen","Mature"].includes($("#ratingSelect").value);$("#ratingField").classList.toggle("error",force&&!ratingOk);if(!ratingOk)ok=false;
+  if(!$("#synopsisInput").value.trim())ok=false;
+  if(!state.genres.length){$("#genreError").classList.toggle("show",force);ok=false}else $("#genreError").classList.remove("show");
+  if(!state.creators.length){$("#creatorError").classList.toggle("show",force);ok=false}else $("#creatorError").classList.remove("show");
+  if(state.coverRemoved)ok=false;
+  if(state.scenario==="duplicate")ok=false;
+  return ok;
+}
+
+/* DRAWERS */
+function openDrawer(id){
+  closeDrawers(false);state.activeDrawer=id;state.lastFocus=document.activeElement;
+  $("#drawerOverlay").classList.add("open");$("#"+id).classList.add("open");setTimeout(()=>$("#"+id+" .drawer-close")?.focus(),0);
+}
+function closeDrawers(returnFocus=true){
+  $(".drawer.open")?.classList.remove("open");$("#drawerOverlay").classList.remove("open");
+  if(returnFocus&&state.lastFocus?.focus)state.lastFocus.focus();state.activeDrawer=null;
+}
+
+/* PUBLISH REVIEW */
+function buildPublishReview(){
+  const bannerOk=!state.bannerRemoved;
+  $("#reviewColumns").innerHTML=`
+    <div class="review-group">
+      <h3>INFORMACIÓN</h3>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Título válido</div>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Tipo · ${esc($("#typeSelect").value)}</div>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Demografía · ${esc($("#demographySelect").value)}</div>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Clasificación · ${esc(ratingLabel($("#ratingSelect").value))}</div>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Títulos alternativos válidos</div>
+    </div>
+    <div class="review-group">
+      <h3>MULTIMEDIA</h3>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Portada disponible</div>
+      <div class="review-item"><i data-lucide="${bannerOk?"check":"minus"}" class="icon-sm ${bannerOk?"ok":"warn"}"></i>${bannerOk?"Banner disponible":"Banner pendiente · recomendado"}</div>
+    </div>
+    <div class="review-group">
+      <h3>DESCUBRIMIENTO</h3>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>${state.genres.length} géneros seleccionados</div>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>Slug estable</div>
+    </div>
+    <div class="review-group">
+      <h3>CRÉDITOS</h3>
+      <div class="review-item"><i data-lucide="check" class="icon-sm ok"></i>${state.creators.length} creadores asignados</div>
+    </div>`;
+  icons();
+}
+function openPublishReview(){
+  if(!validateForm(true)){toast("Faltan requisitos obligatorios para publicar.",true);updateReadiness();return}
+  state.lastFocus=document.activeElement;buildPublishReview();
+  const version=state.mode==="create"?"1":"7";$("#publishVersion").textContent=version;$("#confirmPublishReview").textContent=`Publicar versión ${version}`;
+  $("#publishReview").classList.add("open");setTimeout(()=>$("#cancelPublishReview").focus(),0);
+}
+function closePublishReview(){
+  $("#publishReview").classList.remove("open");if(state.lastFocus?.focus)state.lastFocus.focus();
+}
+function confirmPublish(){
+  closePublishReview();setEditorial("public");setScenarioButtons("published");saveIndicator("success","Cambios guardados");toast("Ficha publicada en el prototipo.");
+}
+
+/* SENSITIVE REASON MODAL */
+function openReasonModal(action){
+  state.reasonAction=action;state.lastFocus=document.activeElement;$("#reasonInput").value="";$("#reasonCount").textContent="0";$("#reasonError").classList.remove("show");
+  if(action==="hide"){
+    $("#reasonTitle").textContent="Ocultar ficha";$("#reasonCopy").textContent="Acción administrativa sensible · permiso administrativo requerido.";
+    $("#reasonInfo").textContent="Ocultar una ficha la retirará del catálogo público.";$("#confirmReason").textContent="Ocultar ficha";$("#confirmReason").className="btn btn-danger";
+  }else{
+    $("#reasonTitle").textContent="Crear como homónimo legítimo";$("#reasonCopy").textContent="Excepción administrativa · permiso administrativo requerido.";
+    $("#reasonInfo").textContent="Confirma que se trata de dos obras distintas aunque compartan título o título alternativo equivalente.";$("#confirmReason").textContent="Confirmar excepción";$("#confirmReason").className="btn btn-warning";
+  }
+  $("#reasonModal").classList.add("open");setTimeout(()=>$("#reasonInput").focus(),0);icons();
+}
+function closeReasonModal(){
+  $("#reasonModal").classList.remove("open");state.reasonAction=null;if(state.lastFocus?.focus)state.lastFocus.focus();
+}
+function confirmReasonAction(){
+  const reason=$("#reasonInput").value.trim();
+  if(reason.length<1||reason.length>2000){$("#reasonError").classList.add("show");$("#reasonInput").focus();return}
+  if(state.reasonAction==="hide"){closeReasonModal();setEditorial("hidden");setScenarioButtons("hidden");toast("Ficha ocultada en el prototipo.")}
+  else{closeReasonModal();closeDrawers(false);toast("Override ADMIN registrado en el prototipo.")}
+}
+
+/* SCENARIOS */
+function setScenarioButtons(v){$$(".demo-btn").forEach(b=>b.classList.toggle("active",b.dataset.scenario===v))}
+function resetDemoMedia(){
+  if(state.coverUrl){URL.revokeObjectURL(state.coverUrl);state.coverUrl=null}
+  if(state.bannerUrl){URL.revokeObjectURL(state.bannerUrl);state.bannerUrl=null}
+  state.coverRemoved=false;state.bannerRemoved=false;$("#coverFile").value="";$("#bannerFile").value="";
+}
+function setScenario(v){
+  state.scenario=v;setScenarioButtons(v);
+  $("#titleField").classList.remove("error");$("#ratingField").classList.remove("error");$("#aliasError").classList.remove("show");
+
+  if(v==="normal"){resetDemoMedia();setMode("edit");setEditorial("draft");saveIndicator("","Cambios sin guardar");closeDrawers(false)}
+  else if(v==="validation"){setMode("edit");setEditorial("draft");$("#titleField").classList.add("error");$("#aliasError").classList.add("show");$("#ratingField").classList.add("error");toast("Estado de validación activado.",true)}
+  else if(v==="conflict"){setMode("edit");setEditorial("draft");$("#identityVersion").textContent="7 → 8";$("#workspaceVersion").textContent="7 → 8";openDrawer("conflictDrawer")}
+  else if(v==="duplicate"){setMode("edit");setEditorial("draft");openDrawer("duplicateDrawer")}
+  else if(v==="saving"){saveIndicator("saving","Guardando…")}
+  else if(v==="published"){setMode("edit");setEditorial("public");saveIndicator("success","Cambios guardados")}
+  else if(v==="create"){resetDemoMedia();setMode("create");setEditorial("draft");saveIndicator("","Nueva ficha sin guardar")}
+  else if(v==="hidden"){setMode("edit");setEditorial("hidden");saveIndicator("success","Cambios guardados")}
+
+  refreshMediaVisuals();updateReadiness();icons();
+}
+
+/* ACTIVE RAIL */
+const railLinks=$$(".rail-item");
+const sections=["sectionInformation","sectionMultimedia","sectionDiscovery","sectionCredits","sectionPublication"].map(id=>$("#"+id));
+const io=new IntersectionObserver(entries=>{
+  const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+  if(!visible)return;
+  railLinks.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+visible.target.id));
+},{rootMargin:"-20% 0px -60% 0px",threshold:[.05,.2,.5]});
+sections.forEach(s=>io.observe(s));
+
+/* EVENTS */
+$("#addAliasBtn").onclick=addAlias;
+$("#aliasInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addAlias()}});
+$("#genreSearch").onfocus=()=>{$("#genrePicker").classList.add("open");renderGenrePopover($("#genreSearch").value)};
+$("#genreSearch").oninput=e=>{$("#genrePicker").classList.add("open");renderGenrePopover(e.target.value)};
+document.addEventListener("click",e=>{if(!$("#genrePicker").contains(e.target))$("#genrePicker").classList.remove("open")});
+$("#addCreatorBtn").onclick=addCreator;$("#creatorSearch").oninput=()=>$("#creatorError").classList.remove("show");
+
+["titleInput","typeSelect","demographySelect","ratingSelect","workStateSelect"].forEach(id=>{
+  $("#"+id).addEventListener(id==="titleInput"?"input":"change",()=>{updatePreview();updateReadiness();markDirty()});
+});
+$("#synopsisInput").oninput=e=>{$("#synopsisCount").textContent=e.target.value.length;updatePreview();updateReadiness();markDirty()};
+
+$("#coverFile").onchange=e=>useLocalImage(e.target,"cover");
+$("#bannerFile").onchange=e=>useLocalImage(e.target,"banner");
+$("#removeCoverBtn").onclick=()=>removeMedia("cover");
+$("#removeBannerBtn").onclick=()=>removeMedia("banner");
+
+$$("[data-previewmode]").forEach(btn=>btn.onclick=()=>setPreviewMode(btn.dataset.previewmode));
+$$("[data-workmode]").forEach(btn=>btn.onclick=()=>setWorkMode(btn.dataset.workmode));
+$$(".demo-btn").forEach(btn=>btn.onclick=()=>setScenario(btn.dataset.scenario));
+
+$("#saveBtn").onclick=$("#mobileSaveBtn").onclick=simulateSave;
+$("#createDraftBtn").onclick=$("#mobileCreateBtn").onclick=createDraft;
+$("#publishBtn").onclick=$("#mobilePublishBtn").onclick=openPublishReview;
+$("#hideBtn").onclick=()=>openReasonModal("hide");
+$("#homonymBtn").onclick=()=>openReasonModal("homonym");
+
+$("#cancelPublishReview").onclick=closePublishReview;
+$("#confirmPublishReview").onclick=confirmPublish;
+$("#publishReview").onclick=e=>{if(e.target===$("#publishReview"))closePublishReview()};
+
+$("#cancelReason").onclick=closeReasonModal;
+$("#confirmReason").onclick=confirmReasonAction;
+$("#reasonModal").onclick=e=>{if(e.target===$("#reasonModal"))closeReasonModal()};
+$("#reasonInput").oninput=e=>{$("#reasonCount").textContent=e.target.value.length;$("#reasonError").classList.remove("show")};
+
+$("#drawerOverlay").onclick=()=>closeDrawers();
+$$("[data-close-drawer]").forEach(btn=>btn.onclick=()=>closeDrawers());
+$("#reloadVersionBtn").onclick=()=>{closeDrawers();state.scenario="normal";setScenarioButtons("normal");$("#identityVersion").textContent="8";$("#workspaceVersion").textContent="8";toast("Versión actual recargada en el prototipo.")};
+$("#reviewChangesBtn").onclick=()=>toast("Revisión conceptual disponible. No existe merge automático.");
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    if($("#reasonModal").classList.contains("open"))closeReasonModal();
+    else if($("#publishReview").classList.contains("open"))closePublishReview();
+    else if(state.activeDrawer)closeDrawers();
+  }
+  if(e.key==="Tab"){
+    const container=$("#reasonModal").classList.contains("open")?$("#reasonModal"):$("#publishReview").classList.contains("open")?$("#publishReview"):state.activeDrawer?$("#"+state.activeDrawer):null;
+    if(!container)return;
+    const f=[...container.querySelectorAll("button,input,textarea,select")].filter(x=>x.offsetParent!==null&&!x.disabled);
+    if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+
+/* INIT */
+renderAliases();renderGenres();renderGenrePopover();renderCreators();updatePreview();updateReadiness();setPreviewMode("desktop");setWorkMode("edit");icons();
+</script>
+</body>
+</html>

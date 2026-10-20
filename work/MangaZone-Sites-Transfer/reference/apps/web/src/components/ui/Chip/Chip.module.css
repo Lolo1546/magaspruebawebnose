@@ -1,0 +1,49 @@
+.chip {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  gap: var(--mz-space-1);
+  padding-inline: var(--mz-space-2);
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-full);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.default {
+  background: var(--mz-card);
+  color: var(--mz-text-secondary);
+}
+
+.danger {
+  border-color: rgb(232 25 44 / 28%);
+  background: var(--mz-red-soft);
+  color: var(--mz-red-hover);
+}
+
+.success {
+  border-color: rgb(34 197 94 / 24%);
+  background: var(--mz-success-soft);
+  color: var(--mz-success);
+}
+
+.warning {
+  border-color: rgb(245 158 11 / 25%);
+  background: var(--mz-warning-soft);
+  color: var(--mz-warning);
+}
+
+.gold {
+  border-color: rgb(245 197 24 / 24%);
+  background: var(--mz-gold-soft);
+  color: var(--mz-gold);
+}
+
+.glass {
+  border-color: var(--mz-glass-border);
+  background: var(--mz-glass);
+  color: var(--mz-text-secondary);
+}

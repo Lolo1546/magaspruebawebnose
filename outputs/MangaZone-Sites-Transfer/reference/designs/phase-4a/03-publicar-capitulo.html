@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MangaZone — Publicar capítulo</title>
+<meta name="description" content="Editor operativo de ChapterRelease para MangaZone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#07090d;--bg2:#0b0e13;--surface:#10141a;--surface2:#151a22;--surface3:#1a2029;
+  --line:#262d37;--line2:#343d49;--text:#f6f2ed;--muted:#989ea8;--muted2:#68717c;
+  --red:#e8192c;--red2:#ff3547;--redsoft:rgba(232,25,44,.12);
+  --gold:#b99b68;--goldsoft:rgba(185,155,104,.10);
+  --green:#45c984;--greensoft:rgba(69,201,132,.12);
+  --yellow:#d9ad5c;--yellowsoft:rgba(217,173,92,.12);
+  --blue:#72a8e4;--bluesoft:rgba(114,168,228,.12);
+  --violet:#9b82df;--violetsoft:rgba(155,130,223,.12);
+  --shadow:0 26px 80px rgba(0,0,0,.42);--softshadow:0 14px 42px rgba(0,0,0,.24);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark;scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 92% -8%,rgba(232,25,44,.10),transparent 29rem),
+    radial-gradient(circle at -5% 66%,rgba(185,155,104,.045),transparent 27rem),
+    linear-gradient(180deg,#080a0e 0%,#07090d 65%,#080a0f 100%);
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.17;
+  background-image:
+    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.010) 1px,transparent 1px);
+  background-size:38px 38px;mask-image:linear-gradient(to bottom,#000,transparent 80%);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.icon{width:18px;height:18px;stroke-width:2}.icon-sm{width:15px;height:15px}.icon-lg{width:22px;height:22px}
+.app{min-height:100vh;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{
+  height:68px;position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:0 20px;
+  background:rgba(8,10,14,.90);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(18px);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+.brandmark{
+  width:35px;height:42px;border-radius:5px 9px 5px 9px;display:grid;place-items:center;position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#ef2436,#9d0d1a);border:1px solid rgba(255,255,255,.11);box-shadow:0 9px 24px rgba(232,25,44,.22);
+  font-family:"Bebas Neue";font-size:19px;letter-spacing:.7px
+}
+.brandmark::after{content:"";position:absolute;right:-8px;bottom:-9px;width:26px;height:36px;border:1px solid rgba(255,255,255,.15);transform:rotate(17deg)}
+.brandname{font-family:"Bebas Neue";font-size:23px;letter-spacing:1.25px;line-height:1}
+.brandcontext{margin-top:3px;color:#b69b6e;font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.14em}
+.top-sep{width:1px;height:30px;background:#232a33;margin:0 4px}
+.backbtn{
+  min-height:36px;padding:0 10px;border:1px solid #292f38;border-radius:8px;background:#0f1318;
+  display:inline-flex;align-items:center;gap:7px;color:#b9bec6;font-size:11px;font-weight:700
+}
+.backbtn:hover{background:#151a21;color:#fff}
+.breadcrumb{display:flex;align-items:center;gap:6px;color:#6f7781;font-size:10px;font-weight:700;white-space:nowrap;min-width:0}
+.breadcrumb span,.breadcrumb strong{overflow:hidden;text-overflow:ellipsis}.breadcrumb strong{color:#c8cdd4}.breadcrumb i{color:#464e58;flex:none}
+.top-spacer{flex:1}
+.sync-indicator{
+  min-height:32px;padding:0 10px;border:1px solid #29313a;border-radius:17px;background:#0e1217;
+  display:flex;align-items:center;gap:7px;color:#979ea8;font-size:10px;white-space:nowrap
+}
+.sync-indicator .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 9px rgba(69,201,132,.38)}
+.sync-indicator.busy .dot{background:var(--gold);animation:pulse 1s infinite}.sync-indicator.warn .dot{background:var(--yellow)}.sync-indicator.error .dot{background:var(--red)}
+@keyframes pulse{50%{opacity:.35}}
+.profile{display:flex;align-items:center;gap:9px;min-height:38px;padding:4px 8px 4px 10px;border:1px solid #29313b;border-radius:9px;background:#10151b}
+.profile-copy{text-align:right}.profile-copy strong{display:block;font-size:11px}.profile-copy span{display:block;margin-top:2px;color:#777f89;font-size:10px}
+.avatar{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;border:1px solid #4b3b41;background:linear-gradient(145deg,#352429,#1d222a);color:#f1d4d8;font-size:10px;font-weight:800}
+
+/* RELEASE STATE VIEW */
+.state-strip{
+  width:min(1640px,100%);margin:0 auto;padding:9px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.05)
+}
+.state-strip-label{font-size:10px;color:#636b75;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.state-tabs{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.state-tab{
+  min-height:30px;padding:0 10px;border:1px solid #29313a;border-radius:7px;background:#10151b;color:#838b95;
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em
+}
+.state-tab.active{color:#fff;border-color:#5a3037;background:rgba(232,25,44,.075)}
+.state-tab[data-state="published"].active{border-color:#2c6549;background:rgba(69,201,132,.075)}
+.state-tab[data-state="withdrawn"].active{border-color:#573239;background:rgba(232,25,44,.055)}
+.state-tab[data-state="replacement"].active{border-color:#5c4927;background:rgba(217,173,92,.07)}
+
+/* BUTTONS / BADGES */
+.btn{
+  min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#11161c;color:#e5e9ee;
+  font-size:12px;font-weight:800;transition:.16s ease
+}
+.btn:hover{transform:translateY(-1px);border-color:#3f4855}
+.btn-primary{border-color:var(--red);background:linear-gradient(180deg,#ef2134,#c81223);box-shadow:0 8px 22px rgba(232,25,44,.17);color:#fff}
+.btn-secondary{background:#11161c}.btn-warning{border-color:#5c4927;background:#211b12;color:#f0cb7d}
+.btn-danger{border-color:#9a222e;background:linear-gradient(180deg,#cc1b2b,#98151f);color:#fff}
+.btn-ghost{background:transparent}.btn:disabled,.btn.disabled{opacity:.42;cursor:not-allowed;transform:none}
+.badge{
+  min-height:26px;padding:0 8px;border:1px solid #343c47;border-radius:14px;display:inline-flex;align-items:center;gap:5px;
+  background:#11161c;color:#c9ced5;font-size:10px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;white-space:nowrap
+}
+.badge.draft{color:#e5c37d;border-color:#5d4c2b;background:rgba(217,173,92,.08)}
+.badge.published{color:#84dfa9;border-color:#2c6549;background:rgba(69,201,132,.08)}
+.badge.withdrawn{color:#d39aa2;border-color:#573239;background:rgba(232,25,44,.055)}
+.badge.replacement{color:#e4c078;border-color:#5d4b2b;background:rgba(217,173,92,.07)}
+.badge.verified{color:#9ecaff;border-color:#35526f;background:rgba(114,168,228,.08)}
+.badge.ready{color:#84dfa9;border-color:#2c6549;background:rgba(69,201,132,.08)}
+.badge.processing{color:#9fc5ec;border-color:#34506c;background:rgba(114,168,228,.08)}
+.badge.error{color:#ff9ca6;border-color:#6d2a34;background:rgba(232,25,44,.08)}
+.badge.muted{color:#9da4ad;border-color:#333b46;background:#10151b}
+
+/* MAIN */
+.main{width:min(1640px,100%);margin:0 auto;padding:24px 20px 72px}
+
+/* RELEASE HEADER */
+.release-hero{
+  position:relative;overflow:hidden;min-height:258px;border:1px solid #2a313b;border-radius:18px;
+  background:
+    linear-gradient(100deg,rgba(9,11,15,.98) 0%,rgba(9,11,15,.91) 38%,rgba(9,11,15,.62) 70%,rgba(9,11,15,.38) 100%),
+    radial-gradient(circle at 82% 38%,rgba(232,25,44,.26),transparent 22rem),
+    linear-gradient(135deg,#1b1116,#171c25 54%,#13161d);
+  box-shadow:var(--shadow);display:grid;grid-template-columns:160px minmax(0,1fr) 380px
+}
+.release-hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(126deg,transparent 0 20px,rgba(255,255,255,.018) 21px 22px)}
+.hero-number{position:absolute;right:18px;top:-29px;font-family:"Bebas Neue";font-size:130px;line-height:1;color:rgba(255,255,255,.032);letter-spacing:-3px}
+.cover-zone{display:flex;align-items:center;justify-content:center;padding:20px 10px 20px 20px;position:relative;z-index:2}
+.cover{
+  width:120px;aspect-ratio:2/3;border-radius:7px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.13);
+  background:linear-gradient(155deg,rgba(255,255,255,.13),transparent 22%),radial-gradient(circle at 65% 18%,rgba(228,221,180,.18),transparent 30%),linear-gradient(160deg,#191f2b,#0f1218 51%,#25304a);
+  box-shadow:0 24px 50px rgba(0,0,0,.5)
+}
+.cover::before{content:"KAGE NO\A SHIORI";white-space:pre;position:absolute;left:10px;bottom:12px;font-family:"Bebas Neue";font-size:23px;line-height:.88;letter-spacing:.85px}
+.cover::after{content:"VOL. 04";position:absolute;right:9px;top:9px;color:#d5d9de;font-size:10px;font-weight:800;letter-spacing:.1em}
+.hero-main{padding:27px 24px 24px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.kicker{display:flex;align-items:center;gap:8px;color:#cfb482;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.17em}
+.kicker::before{content:"";width:24px;height:1px;background:#9b825b}
+.hero-manga{margin-top:8px;color:#a7aeb7;font-size:12px;font-weight:700}
+.hero-title{margin:5px 0 7px;font-family:"Bebas Neue";font-size:48px;line-height:.92;letter-spacing:1.15px}
+.hero-release-line{display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:#8b929c;font-size:11px}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.hero-aside{padding:24px 28px 22px 20px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.hero-aside::before{content:"";position:absolute;left:0;top:24px;bottom:24px;width:1px;background:linear-gradient(transparent,#343b46,transparent)}
+.context-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.context-card{padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(9,12,16,.48)}
+.context-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.context-value{margin-top:4px;font-family:"Bebas Neue";font-size:20px;line-height:1.05;letter-spacing:.5px}
+.context-sub{margin-top:4px;color:#848b95;font-size:10px;line-height:1.4}
+.hero-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.hero-stat{padding:8px 9px;border-top:1px solid rgba(255,255,255,.08);font-size:10px;color:#737b85}.hero-stat strong{display:block;margin-top:3px;color:#dde1e6;font-size:11px}
+.lock-banner,.replacement-banner,.withdrawn-banner{
+  margin-top:14px;padding:10px 12px;border-radius:9px;border-left:2px solid var(--gold);background:rgba(185,155,104,.06);
+  color:#aaa190;font-size:11px;line-height:1.5
+}
+.replacement-banner{border-left-color:var(--yellow);background:rgba(217,173,92,.06);color:#c3ae83}
+.withdrawn-banner{border-left-color:#7b323c;background:rgba(232,25,44,.05);color:#bc959b}
+
+/* WORK STATUS ALERT */
+.work-alert{
+  display:none;margin-top:12px;padding:10px 12px;border:1px solid #5a482a;border-radius:9px;background:rgba(217,173,92,.06);
+  color:#d1b36f;font-size:11px;line-height:1.45;align-items:center;gap:8px
+}
+.work-alert.show{display:flex}
+
+/* CONTENT LAYOUT */
+.content-grid{margin-top:15px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:15px;align-items:start}
+.stack{display:grid;gap:15px}
+.panel{border:1px solid #292f38;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 33%),#10141a;box-shadow:var(--softshadow);overflow:hidden;min-width:0}
+.panel-head{min-height:60px;padding:13px 15px;border-bottom:1px solid #252c35;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel-title{font-size:13px;font-weight:800}.panel-sub{margin-top:3px;color:#777f89;font-size:10px;line-height:1.45}
+.panel-body{padding:14px}.panel-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+
+/* RELEASE CONTEXT */
+.release-fields{display:grid;grid-template-columns:1.1fr .75fr 1fr;gap:11px}
+.field{min-width:0}
+.field-label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;color:#cfd4da;font-size:11px;font-weight:700}
+.field-help{color:#6e7680;font-size:10px;font-weight:500}
+select,input[type=text]{
+  width:100%;height:42px;border:1px solid #2b333d;border-radius:8px;background:#0c1015;color:#f2f4f7;padding:0 11px;font-size:12px;outline:0
+}
+select:focus,input[type=text]:focus{border-color:#65333b;box-shadow:0 0 0 3px rgba(232,25,44,.055)}
+select:disabled,input:disabled{opacity:.52;cursor:not-allowed}
+.responsible-group{
+  display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 9px;border:1px solid #2b333d;border-radius:8px;background:#0d1116
+}
+.group-logo{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;border:1px solid #39424d;background:linear-gradient(145deg,#2b323d,#171c23);font-family:"Bebas Neue";font-size:13px}
+.group-data strong{font-size:11px}.group-data span{display:block;margin-top:2px;color:#747c86;font-size:10px}
+.group-data .verified{color:#94c3f4}
+.group-authority{margin-left:auto;color:#78808b;font-size:10px;text-align:right}
+.group-authority strong{display:block;color:#d2d6dc;font-size:11px}
+.readonly-card{min-height:42px;padding:9px 11px;border:1px solid #2b333d;border-radius:8px;background:#0c1015;color:#e5e9ee}
+.readonly-card strong{display:block;font-size:12px;line-height:1.35}.readonly-card span{display:block;margin-top:3px;color:#747c86;font-size:10px;line-height:1.4}
+
+/* CHAPTER THUMBNAIL */
+.chapter-thumbnail-layout{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
+.chapter-thumbnail-preview{
+  width:132px;aspect-ratio:16/10;border:1px solid rgba(255,255,255,.11);border-radius:9px;position:relative;overflow:hidden;
+  background:linear-gradient(155deg,rgba(255,255,255,.11),transparent 23%),linear-gradient(160deg,#191f2b,#0f1218 52%,#25304a);
+  background-size:cover;background-position:center;box-shadow:0 12px 28px rgba(0,0,0,.28)
+}
+.chapter-thumbnail-preview::after{content:"KAGE NO SHIORI";position:absolute;left:8px;bottom:7px;font-family:"Bebas Neue";font-size:15px;letter-spacing:.55px;color:#f0f1f3;text-shadow:0 1px 8px rgba(0,0,0,.75)}
+.chapter-thumbnail-preview.has-image::after{display:none}
+.thumbnail-fallback{position:absolute;right:6px;top:6px;min-height:21px;padding:0 6px;border:1px solid #3a424d;border-radius:11px;background:rgba(8,11,15,.86);display:inline-flex;align-items:center;color:#aab1ba;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.chapter-thumbnail-info{min-width:0;display:grid;gap:9px}
+.thumbnail-status{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.thumbnail-stat{padding:8px 9px;border:1px solid #29313a;border-radius:8px;background:#0d1116}
+.thumbnail-stat span{display:block;color:#707883;font-size:10px}.thumbnail-stat strong{display:block;margin-top:3px;color:#dfe3e8;font-size:11px;line-height:1.35}
+.thumbnail-priority{padding:9px 10px;border-left:2px solid var(--gold);background:rgba(185,155,104,.055);color:#aea38f;font-size:10px;line-height:1.5}
+.thumbnail-priority strong{color:#e0c58e}
+.thumbnail-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.thumbnail-actions .btn{min-height:38px}
+.thumbnail-help{color:#717985;font-size:10px;line-height:1.5}
+.thumbnail-admin-note{display:flex;gap:7px;align-items:flex-start;padding-top:8px;border-top:1px solid #242b34;color:#787f89;font-size:10px;line-height:1.45}
+.thumbnail-admin-note i{flex:none;margin-top:1px}
+
+/* UPLOAD */
+.upload-panel{position:relative}
+.upload-sticky{
+  position:sticky;top:68px;z-index:22;padding:11px 14px;border-bottom:1px solid #252c35;background:rgba(13,17,22,.94);backdrop-filter:blur(14px)
+}
+.upload-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.summary-stats{display:flex;gap:6px;flex-wrap:wrap}
+.summary-chip{min-height:28px;padding:0 8px;border:1px solid #333b46;border-radius:14px;background:#11161c;display:inline-flex;align-items:center;gap:5px;color:#b5bbc3;font-size:10px;font-weight:700}
+.summary-chip.ready{color:#84dfa9;border-color:#2c6549}.summary-chip.uploading{color:#9ecaff;border-color:#35526f}.summary-chip.finalizing{color:#e1be76;border-color:#5c4927}.summary-chip.error{color:#ff9ca6;border-color:#6d2a34}
+.progress-track{height:6px;border-radius:6px;background:#252b34;overflow:hidden;margin-top:9px}.progress-bar{height:100%;width:86%;background:linear-gradient(90deg,var(--red),#bd1726);transition:.2s}
+.upload-zone{
+  margin:14px;border:1px dashed #46505c;border-radius:12px;min-height:128px;padding:16px;display:flex;align-items:center;justify-content:center;text-align:center;
+  background:radial-gradient(circle at 50% 0%,rgba(232,25,44,.055),transparent 16rem),#0c1015;transition:.18s
+}
+.upload-zone.dragover{border-color:var(--red);background:rgba(232,25,44,.055)}
+.upload-zone.disabled{opacity:.48;pointer-events:none}
+.upload-zone h3{margin:7px 0 4px;font-size:13px}.upload-zone p{margin:0;color:#7a828c;font-size:11px;line-height:1.5}
+.upload-zone .formats{margin-top:8px;color:#656e79;font-size:10px}
+.file-input{display:none}
+.upload-items{display:grid;gap:7px;padding:0 14px 14px}
+.upload-item{
+  min-height:58px;padding:9px 10px;border:1px solid #29313a;border-radius:9px;background:#0d1116;
+  display:grid;grid-template-columns:34px minmax(0,1fr) 150px auto;gap:9px;align-items:center
+}
+.file-icon{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:#171d25;border:1px solid #303844;color:#89929d}
+.file-name{font-size:11px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-detail{margin-top:3px;color:#737b85;font-size:10px}
+.file-progress{min-width:0}.mini-progress{height:5px;background:#242b34;border-radius:5px;overflow:hidden}.mini-progress span{display:block;height:100%;background:linear-gradient(90deg,#6589ad,#83b5e8);width:50%}
+.file-state{margin-top:4px;color:#8f97a1;font-size:10px}.file-state.good{color:#74d49e}.file-state.bad{color:#f08b96}.file-state.wait{color:#d4b46e}
+.file-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.file-actions .btn{min-height:31px;padding:0 8px;font-size:11px}
+
+/* PAGES */
+.pages-panel{overflow:visible}
+.pages-toolbar{
+  position:sticky;top:68px;z-index:21;padding:10px 14px;border-bottom:1px solid #252c35;background:rgba(13,17,22,.95);backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap
+}
+.pages-toolbar-left,.pages-toolbar-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.selection-info{color:#868e98;font-size:11px}
+.order-state{display:flex;align-items:center;gap:6px;color:#7c848e;font-size:10px}
+.order-state.dirty{color:#d1b36f}.order-state.saved{color:#7fd9a5}
+.pages-grid{
+  padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:10px;align-items:start
+}
+.page-card{
+  min-width:0;border:1px solid #2a313b;border-radius:10px;background:#0d1116;overflow:hidden;transition:.16s;position:relative
+}
+.page-card:hover{border-color:#3a444f;transform:translateY(-1px)}
+.page-card.dragging{opacity:.42;transform:scale(.98);border-color:var(--red)}
+.page-card.drop-before{box-shadow:-3px 0 0 var(--red)}
+.page-card.selected{border-color:#6b3a43;box-shadow:0 0 0 1px rgba(232,25,44,.15)}
+.page-top{
+  min-height:36px;padding:6px 7px;display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid #242b34
+}
+.page-num{display:flex;align-items:center;gap:6px;font-family:"Bebas Neue";font-size:18px;letter-spacing:.5px}
+.drag-handle{width:28px;height:28px;border:0;border-radius:6px;background:#151a21;color:#737b85;display:grid;place-items:center;cursor:grab}
+.page-select{width:18px;height:18px;accent-color:var(--red)}
+.thumb{
+  aspect-ratio:3/4.35;position:relative;overflow:hidden;background:
+    linear-gradient(145deg,rgba(255,255,255,.09),transparent 24%),
+    linear-gradient(160deg,#202833,#11151b 54%,#343d49);
+}
+.thumb::before{content:"";position:absolute;inset:8% 14%;border:1px solid rgba(255,255,255,.09);transform:skew(-4deg)}
+.thumb::after{content:"";position:absolute;left:12%;right:12%;bottom:12%;height:18%;background:repeating-linear-gradient(180deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);opacity:.45}
+.page-card:nth-child(4n+2) .thumb{background:linear-gradient(155deg,#24232c,#11151a 54%,#44242b)}
+.page-card:nth-child(4n+3) .thumb{background:linear-gradient(155deg,#1b2830,#10141a 54%,#243e46)}
+.page-card:nth-child(4n) .thumb{background:linear-gradient(155deg,#29251e,#11151a 54%,#443829)}
+.thumb.local-image{background-size:cover;background-position:center}
+.thumb-status{
+  position:absolute;left:6px;bottom:6px;min-height:21px;padding:0 6px;border-radius:11px;border:1px solid #36404b;background:rgba(8,11,15,.86);
+  display:inline-flex;align-items:center;color:#b7bdc5;font-size:9px;font-weight:800;text-transform:uppercase
+}
+.thumb-status.ready{color:#83dda8;border-color:#2e6248}.thumb-status.uploading{color:#9ecaff;border-color:#35526f}.thumb-status.error{color:#f49aa5;border-color:#6d2a34}.thumb-status.finalizing{color:#dfbd76;border-color:#5c4927}.thumb-status.pending{color:#b1b7bf}
+.page-body{padding:8px}.page-file{font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.page-meta{margin-top:3px;color:#707883;font-size:10px;line-height:1.35}
+.page-progress{height:4px;border-radius:4px;background:#242b34;overflow:hidden;margin-top:7px}.page-progress span{display:block;height:100%;width:50%;background:linear-gradient(90deg,#648ab0,#8cc0ef)}
+.page-actions{padding:7px;border-top:1px solid #242b34;display:flex;gap:4px;flex-wrap:wrap}
+.icon-btn{width:34px;height:34px;border:1px solid #2d3540;border-radius:7px;background:#11161c;color:#939aa4;display:grid;place-items:center}
+.icon-btn:hover{border-color:#46515e;color:#fff}.icon-btn:disabled{opacity:.34;cursor:not-allowed}
+.page-error-box{margin-top:7px;padding:7px;border-left:2px solid #7e2b35;background:rgba(232,25,44,.055);color:#e29ca4;font-size:10px;line-height:1.4}
+.page-inline-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.page-inline-actions .btn{min-height:30px;padding:0 8px;font-size:11px}
+.locked-pages{
+  display:none;margin:14px;padding:11px 12px;border:1px solid #3b3932;border-radius:9px;background:rgba(185,155,104,.055);color:#ada493;font-size:11px;line-height:1.5
+}
+
+/* RIGHT RAIL */
+.right-rail{position:sticky;top:84px;display:grid;gap:12px}
+.rail-card{border:1px solid #292f38;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 33%),#10141a;box-shadow:var(--softshadow);overflow:hidden}
+.rail-head{padding:12px 13px;border-bottom:1px solid #252c35;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rail-head strong{font-size:12px}.rail-body{padding:11px 12px}
+.readiness-list{display:grid}.ready-row{min-height:35px;display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:center;border-bottom:1px solid #222832;color:#a2a8b0;font-size:11px}
+.ready-row:last-child{border-bottom:0}.ready-icon{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;border:1px solid #3b434d;color:#737c86}
+.ready-row.ok .ready-icon{border-color:#2e684a;background:rgba(69,201,132,.08);color:#78dba2}.ready-row.warn .ready-icon{border-color:#5c4927;background:rgba(217,173,92,.07);color:#dfbd76}.ready-row.bad .ready-icon{border-color:#6d2a34;background:rgba(232,25,44,.07);color:#f49aa5}
+.permission-list{display:grid}.permission{min-height:34px;display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:center;border-bottom:1px solid #222832;color:#a2a8b0;font-size:11px}.permission:last-child{border-bottom:0}
+.permission-icon{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;border:1px solid #3b434d;color:#737c86}.permission.allowed .permission-icon{border-color:#2e684a;background:rgba(69,201,132,.08);color:#78dba2}.permission.denied .permission-icon{border-color:#4a4040;background:#151114;color:#95777c}
+.permission small{display:block;margin-top:2px;color:#6d7580;font-size:10px}
+.authority-note{margin-top:9px;padding:8px 9px;border-left:2px solid #765f39;background:rgba(185,155,104,.05);color:#9f9686;font-size:10px;line-height:1.45}
+.rail-summary{display:grid}.rail-summary-row{min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:9px;border-bottom:1px solid #222832;font-size:10px}.rail-summary-row:last-child{border-bottom:0}.rail-summary-row span{color:#707883}.rail-summary-row strong{font-size:11px;text-align:right}
+.cta-stack{display:grid;gap:7px}.cta-stack .btn{width:100%;min-height:40px}
+.state-explainer{margin-top:8px;color:#747c86;font-size:10px;line-height:1.45}
+
+/* REPLACEMENT LINEAGE */
+.lineage-card{
+  display:none;margin-bottom:15px;border:1px solid #55482d;border-radius:12px;background:linear-gradient(90deg,rgba(217,173,92,.07),rgba(217,173,92,.02));overflow:hidden
+}
+.lineage-card.show{display:block}
+.lineage-head{padding:11px 13px;border-bottom:1px solid rgba(185,155,104,.15);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lineage-head strong{font-size:12px;color:#e0c58e}.lineage-body{padding:12px}
+.lineage-flow{display:grid;grid-template-columns:1fr 42px 1fr;gap:8px;align-items:center}
+.lineage-node{padding:10px;border:1px solid #3c3d39;border-radius:9px;background:#0d1116}.lineage-node strong{display:block;font-size:11px}.lineage-node span{display:block;margin-top:4px;color:#787f89;font-size:10px;line-height:1.4}
+.lineage-arrow{display:grid;place-items:center;color:#7e6943}
+.swap-copy{margin-top:9px;padding:9px;border-left:2px solid var(--yellow);background:rgba(217,173,92,.04);color:#b7a785;font-size:10px;line-height:1.5}
+
+/* PREVIEW DRAWER */
+.overlay{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.60);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.2s}.overlay.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;right:0;top:68px;bottom:0;z-index:75;width:min(620px,96vw);
+  background:linear-gradient(180deg,#12171e,#0c1015);border-left:1px solid #303844;box-shadow:-28px 0 80px rgba(0,0,0,.5);
+  transform:translateX(105%);transition:.24s ease;display:flex;flex-direction:column
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:18px;border-bottom:1px solid #252c35;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.drawer-kicker{color:#c6a978;font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}.drawer-title{margin-top:5px;font-family:"Bebas Neue";font-size:28px;letter-spacing:.8px}.drawer-sub{margin-top:4px;color:#7d848e;font-size:10px;line-height:1.45}
+.drawer-close{width:36px;height:36px;border-radius:8px;border:1px solid #303844;background:#11161c;color:#aab1ba;display:grid;place-items:center}.drawer-body{padding:16px;overflow:auto}
+.private-notice{padding:9px 10px;border-left:2px solid #765f39;background:rgba(185,155,104,.05);color:#aba08d;font-size:10px;line-height:1.45;margin-bottom:12px}
+.reader{display:grid;gap:10px}.reader-page{width:min(460px,100%);margin:auto;aspect-ratio:3/4.35;border:1px solid #2d3540;border-radius:4px;background:linear-gradient(155deg,#232b35,#0e1217 58%,#38434f);position:relative;overflow:hidden}
+.reader-page::after{content:attr(data-page);position:absolute;right:8px;bottom:7px;color:rgba(255,255,255,.45);font-family:"Bebas Neue";font-size:14px}.reader-page:nth-child(2n){background:linear-gradient(155deg,#2b2528,#0f1217 58%,#49323a)}
+.reader-page:nth-child(3n){background:linear-gradient(155deg,#202d32,#0f1217 58%,#2f4951)}
+
+/* MODALS */
+.modalbg{position:fixed;inset:0;z-index:90;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.76);backdrop-filter:blur(7px)}
+.modalbg.open{display:grid}.modal{width:min(520px,100%);overflow:hidden;border:1px solid #39424d;border-radius:14px;background:linear-gradient(180deg,#141920,#0f1318);box-shadow:0 36px 110px rgba(0,0,0,.65)}
+.modal-head{padding:18px 19px 12px;border-top:2px solid var(--red)}.modal-icon{width:38px;height:38px;margin-bottom:10px;display:grid;place-items:center;border:1px solid rgba(232,25,44,.2);border-radius:9px;background:rgba(232,25,44,.1);color:#ff8490}
+.modal h2{margin:0;font-family:"Bebas Neue";font-size:24px;letter-spacing:.7px}.modal p{margin:5px 0 0;color:#9299a3;font-size:11px;line-height:1.55}
+.modal-body{padding:0 19px 16px}.modal-info{padding:10px;border:1px solid #2b323c;border-radius:8px;background:#0b0f14;color:#b4bac3;font-size:10px;line-height:1.55}
+.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.confirm-item{padding:8px;border:1px solid #2a313b;border-radius:8px;background:#0d1116}.confirm-item span{display:block;color:#6f7781;font-size:10px}.confirm-item strong{display:block;margin-top:3px;font-size:11px}
+.modal-warning{margin-top:10px;padding:9px;border-left:2px solid var(--yellow);background:rgba(217,173,92,.055);color:#baa983;font-size:10px;line-height:1.5}
+.modal-actions{display:flex;justify-content:flex-end;gap:7px;padding:13px 19px 17px;border-top:1px solid #252c35;background:#0c1015}
+
+/* BANNERS / EMPTY VARIANTS */
+.inline-banner{display:none;margin-bottom:14px;padding:11px 12px;border-radius:10px;border:1px solid #5b4a2d;background:rgba(217,173,92,.06);color:#d0b16d;font-size:11px;line-height:1.45}
+.inline-banner.show{display:flex;align-items:flex-start;gap:8px}.inline-banner.error{border-color:#692d36;background:rgba(232,25,44,.06);color:#e29aa3}
+.empty-variant{display:none;padding:34px 20px;text-align:center}.empty-variant i{color:#565f6a}.empty-variant strong{display:block;margin-top:10px;font-size:13px}.empty-variant span{display:block;margin:5px auto 0;max-width:390px;color:#747c86;font-size:11px;line-height:1.5}
+
+/* TOAST */
+.toast{position:fixed;right:18px;bottom:18px;z-index:110;display:none;align-items:center;gap:8px;max-width:390px;padding:11px 13px;border:1px solid #38414c;border-radius:10px;background:#171d25;box-shadow:var(--shadow);font-size:11px;line-height:1.4}.toast.show{display:flex}
+
+/* MOBILE CTA */
+.mobile-actions{display:none}
+
+/* LIFECYCLE VISUAL MODES */
+body.state-published .draft-only,
+body.state-published .replacement-only,
+body.state-published .withdrawn-only{display:none!important}
+body.state-published .published-only{display:inline-flex!important}
+body.state-withdrawn .draft-only,
+body.state-withdrawn .replacement-only,
+body.state-withdrawn .published-only{display:none!important}
+body.state-withdrawn .withdrawn-only{display:inline-flex!important}
+body.state-replacement .draft-only,
+body.state-replacement .published-only,
+body.state-replacement .withdrawn-only{display:none!important}
+body.state-replacement .replacement-only{display:inline-flex!important}
+body.state-draft .published-only,
+body.state-draft .withdrawn-only,
+body.state-draft .replacement-only{display:none!important}
+body.state-draft .draft-only{display:inline-flex!important}
+.published-only,.withdrawn-only,.replacement-only{display:none!important}
+body.state-replacement .lineage-card{display:block}
+body.state-published .locked-pages,body.state-withdrawn .locked-pages{display:block}
+body.state-published .draft-editable,body.state-withdrawn .draft-editable{display:none!important}
+
+/* RESPONSIVE */
+@media(max-width:1280px){
+  .release-hero{grid-template-columns:145px minmax(0,1fr) 335px}.hero-title{font-size:44px}
+  .content-grid{grid-template-columns:minmax(0,1fr) 315px}
+  .pages-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr))}
+}
+@media(max-width:1080px){
+  .breadcrumb{display:none}.content-grid{grid-template-columns:1fr}.right-rail{position:static;grid-template-columns:1fr 1fr}.right-rail .rail-card:last-child{grid-column:1/-1}
+  .release-hero{grid-template-columns:135px minmax(0,1fr) 290px}.release-fields{grid-template-columns:1fr 1fr}.release-fields .group-field{grid-column:1/-1}
+}
+@media(max-width:840px){
+  .topbar{padding:0 12px}.brandcontext,.profile-copy{display:none}.top-sep{display:none}
+  .release-hero{grid-template-columns:120px minmax(0,1fr)}.hero-aside{grid-column:1/-1;padding:0 18px 18px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.hero-aside::before{display:none}
+  .context-pair{grid-column:1/-1}.hero-meta{grid-column:1/-1}.lock-banner,.replacement-banner,.withdrawn-banner{grid-column:1/-1}
+  .release-fields{grid-template-columns:1fr}.release-fields .group-field{grid-column:auto}
+  .chapter-thumbnail-layout{grid-template-columns:112px minmax(0,1fr)}.chapter-thumbnail-preview{width:112px}
+  .upload-item{grid-template-columns:34px 1fr auto}.file-progress{grid-column:2/-1}.file-actions{grid-column:2/-1;justify-content:flex-start}
+  .right-rail{grid-template-columns:1fr}
+  .right-rail .rail-card:last-child{grid-column:auto}
+}
+@media(max-width:680px){
+  .topbar{height:62px}.brandname{display:none}.backbtn span{display:none}.backbtn{width:36px;padding:0;justify-content:center}.sync-indicator span:last-child{display:none}.profile{padding:4px}
+  .state-strip{display:block;padding:8px 10px}.state-tabs{justify-content:flex-start;margin-top:7px;overflow:auto;flex-wrap:nowrap}.state-tab{flex:0 0 auto}
+  .main{padding:15px 10px 96px}
+  .release-hero{display:block;min-height:0}.cover-zone{justify-content:flex-start;padding:17px 17px 0}.cover{width:96px}.hero-main{padding:13px 17px 17px}.hero-title{font-size:37px}.hero-aside{padding:0 17px 17px}
+  .content-grid{display:block}.stack{gap:12px}.right-rail{margin-top:12px}
+  .panel-head{align-items:flex-start}.panel-actions{width:100%;justify-content:flex-start}
+  .upload-sticky,.pages-toolbar{top:62px}
+  .chapter-thumbnail-layout{grid-template-columns:1fr}.chapter-thumbnail-preview{width:96px}.thumbnail-status{grid-template-columns:1fr}.thumbnail-actions .btn{min-height:44px}
+  .upload-zone{margin:10px;min-height:136px}.upload-items{padding:0 10px 10px}
+  .upload-item{grid-template-columns:34px minmax(0,1fr)}.file-progress,.file-actions{grid-column:1/-1}.file-actions{justify-content:flex-start}
+  .pages-grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px;gap:8px}.page-actions{gap:5px}.icon-btn{width:38px;height:38px}
+  .lineage-flow{grid-template-columns:1fr}.lineage-arrow{transform:rotate(90deg)}
+  .right-rail{display:grid;grid-template-columns:1fr}
+  .drawer{top:62px;width:100%;border-left:0}.modalbg{align-items:end;padding:0}.modal{width:100%;border-radius:16px 16px 0 0;max-height:90vh;overflow:auto}
+  .mobile-actions{
+    display:grid;grid-template-columns:1fr 1fr;gap:7px;position:fixed;left:0;right:0;bottom:0;z-index:58;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(8,10,14,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)
+  }
+  .mobile-actions .btn{min-height:44px;font-size:12px}
+}
+@media(max-width:430px){
+  .hero-aside{grid-template-columns:1fr}.context-pair,.hero-meta{grid-template-columns:1fr}
+  .pages-grid{grid-template-columns:1fr 1fr}.page-file{font-size:10px}.page-meta{font-size:10px}
+  .summary-stats{gap:4px}.summary-chip{font-size:10px}
+  .confirm-grid{grid-template-columns:1fr}
+}
+@media(max-width:350px){
+  .pages-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body class="state-draft">
+<div class="app">
+<header class="topbar">
+  <div class="brand">
+    <div class="brandmark">MZ</div>
+    <div><div class="brandname">MangaZone</div><div class="brandcontext">Publicación editorial</div></div>
+  </div>
+  <div class="top-sep"></div>
+  <button class="backbtn" id="backProjectBtn" type="button" aria-label="Volver al proyecto"><i data-lucide="arrow-left" class="icon-sm"></i><span>Volver al proyecto</span></button>
+  <nav class="breadcrumb" aria-label="Ruta actual">
+    <span>MangaZone</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <span>Proyectos editoriales</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <span>Proyecto de traducción</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <span>Capítulo 12</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <strong>Publicación</strong>
+  </nav>
+  <div class="top-spacer"></div>
+  <div class="sync-indicator" id="syncIndicator"><span class="dot"></span><span id="syncText">Cambios guardados</span></div>
+  <div class="profile">
+    <div class="profile-copy"><strong>@SoraEdit</strong><span id="profileRole">ADMIN · Akari Scan</span></div>
+    <div class="avatar">SE</div>
+  </div>
+</header>
+
+<div class="state-strip">
+  <div class="state-strip-label">Vista de estado</div>
+  <div class="state-tabs">
+    <button class="state-tab active" data-state="draft" type="button">Borrador</button>
+    <button class="state-tab" data-state="published" type="button">Publicado</button>
+    <button class="state-tab" data-state="replacement" type="button">Reemplazo en borrador</button>
+    <button class="state-tab" data-state="withdrawn" type="button">Retirado</button>
+  </div>
+</div>
+
+<main class="main">
+  <section class="release-hero">
+    <div class="hero-number">12</div>
+    <div class="cover-zone"><div class="cover" aria-label="Portada ficticia de Kage no Shiori"></div></div>
+
+    <div class="hero-main">
+      <div class="kicker">Editor de publicación</div>
+      <div class="hero-manga">Kage no Shiori</div>
+      <h1 class="hero-title">Capítulo 12 — El eco bajo la lluvia</h1>
+      <div class="hero-release-line"><span>Español</span><span>·</span><span id="heroGroup">Akari Scan</span><span>·</span><span id="heroPages">24 páginas</span></div>
+      <div class="hero-badges">
+        <span class="badge draft draft-only"><i data-lucide="file-pen-line" class="icon-sm"></i>Borrador</span>
+        <span class="badge published published-only"><i data-lucide="circle-check" class="icon-sm"></i>Publicado</span>
+        <span class="badge replacement replacement-only"><i data-lucide="git-branch-plus" class="icon-sm"></i>Reemplazo en borrador</span>
+        <span class="badge withdrawn withdrawn-only"><i data-lucide="archive-x" class="icon-sm"></i>Retirado</span>
+        <span class="badge muted"><i data-lucide="languages" class="icon-sm"></i>Español</span>
+        <span class="badge verified"><i data-lucide="badge-check" class="icon-sm"></i><span id="heroVerifiedGroup">Akari Scan · Verificado</span></span>
+      </div>
+    </div>
+
+    <div class="hero-aside">
+      <div class="context-pair">
+        <div class="context-card">
+          <div class="context-label">Capítulo</div>
+          <div class="context-value">12</div>
+          <div class="context-sub">Estructura lógica · El eco bajo la lluvia</div>
+        </div>
+        <div class="context-card">
+          <div class="context-label">Publicación</div>
+          <div class="context-value" id="releaseContextState">BORRADOR</div>
+          <div class="context-sub"><span id="releaseContextLanguage">Español</span> · <span id="releaseContextGroup">Akari Scan</span></div>
+        </div>
+      </div>
+
+      <div class="hero-meta">
+        <div class="hero-stat">Páginas<strong id="heroPageCount">24</strong></div>
+        <div class="hero-stat">Última actualización<strong>Hace 6 min</strong></div>
+        <div class="hero-stat">Tipo<strong id="releaseTypeLabel">Publicación original</strong></div>
+        <div class="hero-stat">Sincronización<strong id="heroSync">Guardada</strong></div>
+      </div>
+
+      <div class="lock-banner published-only"><strong>Publicación bloqueada.</strong> Las publicaciones realizadas son inmutables. Para corregirla, crea un reemplazo.</div>
+      <div class="replacement-banner replacement-only"><strong>Reemplazo en borrador.</strong> Esta publicación reemplazará a la publicación actual del Capítulo 12. La original permanece intacta durante la preparación.</div>
+      <div class="withdrawn-banner withdrawn-only"><strong>Publicación retirada.</strong> El historial y sus páginas se conservan y ya no son visibles públicamente.</div>
+    </div>
+  </section>
+
+  <div class="work-alert" id="workAlert"><i data-lucide="triangle-alert" class="icon"></i><span id="workAlertText">Hay cambios en curso.</span></div>
+
+  <div class="content-grid">
+    <div class="stack">
+      <section class="lineage-card" id="replacementLineage">
+        <div class="lineage-head"><strong>Esta publicación reemplazará a la publicación actual del Capítulo 12.</strong><span class="badge published">Publicación anterior</span></div>
+        <div class="lineage-body">
+          <div class="lineage-flow">
+            <div class="lineage-node"><strong>Publicación original</strong><span>Capítulo 12 · Español · Akari Scan · Publicado</span></div>
+            <div class="lineage-arrow"><i data-lucide="arrow-right" class="icon"></i></div>
+            <div class="lineage-node"><strong>Reemplazo en borrador</strong><span>Capítulo 12 · Español · Akari Scan · editable hasta publicar</span></div>
+          </div>
+          <div class="swap-copy">Al publicar esta versión, la publicación anterior se retirará automáticamente y esta pasará a ser la versión vigente.</div>
+        </div>
+      </section>
+
+      <div class="inline-banner" id="conflictBanner">
+        <i data-lucide="refresh-cw-off" class="icon"></i>
+        <div><strong>La publicación cambió mientras estabas trabajando.</strong><br>Recarga los cambios o revisa el estado actual antes de continuar.</div>
+        <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn" type="button" id="reloadChangesBtn">Recargar cambios</button>
+          <button class="btn" type="button" id="reviewCurrentBtn">Revisar estado actual</button>
+        </div>
+      </div>
+
+      <!-- Contexto de la publicación -->
+      <section class="panel" id="contextPanel">
+        <div class="panel-head">
+          <div><div class="panel-title">Contexto de la publicación</div><div class="panel-sub">Esta publicación ya fue creada. El capítulo, idioma y grupo responsable se muestran como datos fijos.</div></div>
+          <span class="badge muted"><i data-lucide="link-2" class="icon-sm"></i>Manga → Proyecto → Capítulo → Publicación</span>
+        </div>
+        <div class="panel-body">
+          <div class="release-fields">
+            <div class="field">
+              <div class="field-label"><span>Capítulo</span><span class="field-help">Solo lectura</span></div>
+              <div class="readonly-card"><strong>Capítulo 12 — El eco bajo la lluvia</strong><span>Estructura lógica del proyecto editorial</span></div>
+            </div>
+            <div class="field">
+              <div class="field-label"><span>Idioma</span><span class="field-help">Solo lectura</span></div>
+              <div class="readonly-card"><strong>Español</strong><span>Idioma de esta publicación</span></div>
+            </div>
+            <div class="field group-field">
+              <div class="field-label"><span>Grupo responsable</span><span class="field-help">Solo lectura</span></div>
+              <div class="responsible-group" id="responsibleGroupCard">
+                <div class="group-logo" id="groupLogo">AS</div>
+                <div class="group-data"><strong id="groupName">Akari Scan</strong><span class="verified">VERIFICADO · participante del proyecto</span></div>
+                <div class="group-authority"><span>Tu autoridad</span><strong id="groupAuthority">ADMIN</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Miniatura del capítulo -->
+      <section class="panel" id="chapterThumbnailPanel">
+        <div class="panel-head">
+          <div><div class="panel-title">Miniatura del capítulo</div><div class="panel-sub">Información visual compartida por el Capítulo 12. Se usa en la lista de capítulos del detalle del manga, independientemente del grupo elegido para leer.</div></div>
+          <span class="badge muted"><i data-lucide="image" class="icon-sm"></i>Capítulo 12</span>
+        </div>
+        <div class="panel-body">
+          <div class="chapter-thumbnail-layout">
+            <div class="chapter-thumbnail-preview" id="chapterThumbnailPreview" aria-label="Miniatura actual del Capítulo 12">
+              <span class="thumbnail-fallback" id="thumbnailFallbackBadge">Portada del manga</span>
+            </div>
+            <div class="chapter-thumbnail-info">
+              <div class="thumbnail-status">
+                <div class="thumbnail-stat"><span>Estado actual</span><strong id="thumbnailStateLabel">Portada de respaldo</strong></div>
+                <div class="thumbnail-stat"><span>Definida por</span><strong id="thumbnailDefinedBy">Aún no definida</strong></div>
+              </div>
+              <div class="thumbnail-priority" id="thumbnailPriorityBox"><strong id="thumbnailPriorityTitle">Prioridad pendiente</strong><br><span id="thumbnailPriorityCopy">Se asignará al primer grupo que publique una publicación válida de este capítulo.</span></div>
+              <div class="thumbnail-actions">
+                <label class="btn btn-primary" id="thumbnailUploadLabel" for="chapterThumbnailFile" style="display:none"><i data-lucide="image-plus" class="icon-sm"></i><span id="thumbnailUploadText">Subir miniatura</span></label>
+                <button class="btn" id="thumbnailChangeRequestBtn" type="button" style="display:none"><i data-lucide="send" class="icon-sm"></i>Solicitar cambio</button>
+                <input class="file-input" id="chapterThumbnailFile" type="file" accept="image/jpeg,image/png,image/webp">
+                <span class="badge muted" id="thumbnailPriorityBadge">Datos del capítulo</span>
+                <span class="badge draft" id="thumbnailRequestStatus" style="display:none"><i data-lucide="clock-3" class="icon-sm"></i>Solicitud pendiente</span>
+              </div>
+              <div class="thumbnail-help">JPEG · PNG · WebP. Usa una imagen clara que represente el capítulo. Si no existe una miniatura personalizada, MangaZone muestra automáticamente la portada del manga.</div>
+              <div class="thumbnail-help">La prioridad avanza en ventanas de 72 horas según la fecha de publicación de las publicaciones disponibles del mismo capítulo. Si un grupo define una miniatura válida, no cambia automáticamente cuando otro grupo publica después.</div>
+              <div class="thumbnail-help" id="thumbnailFixedHelp" style="display:none">La miniatura actual queda fijada. Si necesitas modificarla, puedes enviar una solicitud de cambio para revisión. La miniatura actual seguirá visible hasta que un cambio sea aprobado.</div>
+              <div class="thumbnail-admin-note"><i data-lucide="shield-check" class="icon-sm"></i><span>Un ADMIN global conserva la capacidad de corrección editorial excepcional cuando existe una solicitud real de cambio que requiere revisión; no forma parte de la gestión habitual de cada capítulo.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cola de carga -->
+      <section class="panel upload-panel" id="uploadPanel">
+        <div class="panel-head">
+          <div><div class="panel-title">Cola de carga</div><div class="panel-sub">Los archivos en proceso todavía no son páginas de la publicación. Cada archivo se finaliza de forma independiente.</div></div>
+          <div class="panel-actions">
+            <label class="btn btn-primary draft-editable" for="pageFiles"><i data-lucide="images" class="icon-sm"></i>Seleccionar archivos</label>
+            <input class="file-input" id="pageFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+          </div>
+        </div>
+
+        <div class="upload-sticky">
+          <div class="upload-summary">
+            <div class="summary-stats">
+              <span class="summary-chip ready"><i data-lucide="images" class="icon-sm"></i><span id="persistedSummary">24 páginas en la publicación</span></span>
+              <span class="summary-chip"><i data-lucide="files" class="icon-sm"></i><span id="queueSummary">4 archivos en cola</span></span>
+              <span class="summary-chip uploading"><i data-lucide="upload-cloud" class="icon-sm"></i><span id="uploadingSummary">1 subiendo</span></span>
+              <span class="summary-chip finalizing"><i data-lucide="loader-circle" class="icon-sm"></i><span id="finalizingSummary">1 finalizando</span></span>
+              <span class="summary-chip error"><i data-lucide="triangle-alert" class="icon-sm"></i><span id="errorSummary">1 error</span></span>
+              <span class="summary-chip"><i data-lucide="clock-3" class="icon-sm"></i><span id="pendingSummary">1 pendiente</span></span>
+            </div>
+            <div class="selection-info"><strong id="overallSummary">4 archivos por resolver</strong></div>
+          </div>
+          <div class="progress-track"><div class="progress-bar" id="overallProgress"></div></div>
+        </div>
+
+        <div class="upload-zone draft-editable" id="dropzone" tabindex="0" role="button" aria-label="Arrastrar o seleccionar páginas">
+          <div>
+            <i data-lucide="cloud-upload" class="icon-lg"></i>
+            <h3>Arrastra páginas aquí o selecciona archivos</h3>
+            <p>Un archivo se incorpora a la publicación únicamente cuando finaliza correctamente. Puedes seguir trabajando mientras la cola avanza.</p>
+            <div class="formats">JPEG · PNG · WebP · máximo 20 MiB por página · imágenes estáticas</div>
+          </div>
+        </div>
+
+        <div class="upload-items" id="uploadItems"></div>
+        <div class="locked-pages published-only"><i data-lucide="lock-keyhole" class="icon-sm"></i> La publicación está realizada. No se pueden subir ni reemplazar páginas en esta versión.</div>
+        <div class="locked-pages withdrawn-only"><i data-lucide="lock-keyhole" class="icon-sm"></i> La publicación fue retirada. Sus páginas permanecen bloqueadas y se conservan para historial.</div>
+      </section>
+
+      <!-- Pages -->
+      <section class="panel pages-panel" id="pagesPanel">
+        <div class="panel-head">
+          <div><div class="panel-title">Páginas de la publicación</div><div class="panel-sub">Aquí aparecen únicamente páginas ya finalizadas y persistidas. Orden denso 1..N.</div></div>
+          <div class="panel-actions">
+            <button class="btn draft-editable" id="saveOrderBtn" type="button"><i data-lucide="list-checks" class="icon-sm"></i>Guardar orden</button>
+            <button class="btn" id="previewBtnTop" type="button"><i data-lucide="eye" class="icon-sm"></i>Vista previa</button>
+          </div>
+        </div>
+
+        <div class="pages-toolbar">
+          <div class="pages-toolbar-left">
+            <span class="selection-info"><strong id="pageCountLabel">24 páginas</strong></span>
+            <span class="selection-info" id="selectionCount">0 seleccionadas</span>
+            <button class="btn btn-ghost" id="clearSelectionBtn" type="button" disabled>Limpiar selección</button>
+          </div>
+          <div class="pages-toolbar-right">
+            <span class="order-state saved" id="orderState"><i data-lucide="circle-check" class="icon-sm"></i>Orden guardado</span>
+          </div>
+        </div>
+
+        <div class="pages-grid" id="pagesGrid" aria-label="Páginas ordenadas de la publicación"></div>
+      </section>
+    </div>
+
+    <!-- Right rail -->
+    <aside class="right-rail">
+      <section class="rail-card">
+        <div class="rail-head"><strong>Estado de publicación</strong><span id="railStateBadge" class="badge draft">Borrador</span></div>
+        <div class="rail-body">
+          <div class="rail-summary">
+            <div class="rail-summary-row"><span>Capítulo</span><strong>12 · El eco bajo la lluvia</strong></div>
+            <div class="rail-summary-row"><span>Idioma</span><strong id="railLanguage">Español</strong></div>
+            <div class="rail-summary-row"><span>Grupo</span><strong id="railGroup">Akari Scan</strong></div>
+            <div class="rail-summary-row"><span>Páginas</span><strong id="railPages">24</strong></div>
+            <div class="rail-summary-row"><span>Autoridad</span><strong id="railAuthority">ADMIN</strong></div>
+          </div>
+          <div class="state-explainer draft-only">La publicación está en preparación y admite cambios mientras siga en borrador.</div>
+          <div class="state-explainer published-only">La publicación está bloqueada. Las publicaciones realizadas son inmutables.</div>
+          <div class="state-explainer replacement-only">Esta versión es editable y reemplazará a una publicación anterior.</div>
+          <div class="state-explainer withdrawn-only">La publicación está retirada y conserva su historial.</div>
+        </div>
+      </section>
+
+      <section class="rail-card">
+        <div class="rail-head"><strong>Lista para publicar</strong><span class="badge muted" id="readinessScore">5 / 7</span></div>
+        <div class="rail-body"><div class="readiness-list" id="readinessList"></div></div>
+      </section>
+
+      <section class="rail-card">
+        <div class="rail-head"><strong>Tus permisos</strong><span class="badge verified" id="permissionRoleBadge">ADMIN</span></div>
+        <div class="rail-body">
+          <div class="permission-list" id="permissionList"></div>
+          <div class="authority-note" id="authorityNote">ADMIN en Akari Scan permite preparar, publicar y retirar publicaciones asociadas a ese grupo.</div>
+        </div>
+      </section>
+
+      <section class="rail-card">
+        <div class="rail-head"><strong>Acciones</strong><span class="badge muted">Publicación actual</span></div>
+        <div class="rail-body">
+          <div class="cta-stack" id="ctaStack">
+            <button class="btn" id="previewBtn" type="button"><i data-lucide="eye" class="icon-sm"></i>Vista previa privada</button>
+            <button class="btn btn-primary draft-only" id="publishBtn" type="button" disabled><i data-lucide="send" class="icon-sm"></i>Continuar preparación</button>
+            <button class="btn btn-primary replacement-only" id="publishReplacementBtn" type="button" disabled><i data-lucide="git-branch-plus" class="icon-sm"></i>Continuar preparación</button>
+            <button class="btn published-only" id="viewPublicationBtn" type="button"><i data-lucide="external-link" class="icon-sm"></i>Ver publicación</button>
+            <button class="btn published-only" id="createReplacementBtn" type="button"><i data-lucide="copy-plus" class="icon-sm"></i>Crear reemplazo</button>
+            <button class="btn btn-danger published-only" id="withdrawBtn" type="button"><i data-lucide="archive-x" class="icon-sm"></i>Retirar publicación</button>
+            <button class="btn withdrawn-only" id="historyBtn" type="button"><i data-lucide="history" class="icon-sm"></i>Ver historial</button>
+            <button class="btn withdrawn-only" id="backFromWithdrawnBtn" type="button"><i data-lucide="arrow-left" class="icon-sm"></i>Volver al proyecto</button>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- hidden empty state variants -->
+  <section class="panel" hidden aria-hidden="true">
+    <div class="empty-variant" id="emptyNoPages"><i data-lucide="images" class="icon-lg"></i><strong>Publicación sin páginas</strong><span>Sube las primeras páginas para comenzar a preparar esta publicación.</span></div>
+    <div class="empty-variant" id="emptyAllFailed"><i data-lucide="triangle-alert" class="icon-lg"></i><strong>No se pudo procesar ninguna página</strong><span>Revisa los archivos y reintenta los errores recuperables.</span></div>
+    <div class="empty-variant" id="emptyNoPublishAuthority"><i data-lucide="lock-keyhole" class="icon-lg"></i><strong>Sin autoridad de publicación</strong><span>Puedes continuar con las acciones permitidas por tu rol, pero la publicación permanece bloqueada.</span></div>
+  </section>
+</main>
+</div>
+
+<div class="mobile-actions">
+  <button class="btn" id="mobilePreviewBtn" type="button"><i data-lucide="eye" class="icon-sm"></i>Vista previa</button>
+  <button class="btn btn-primary draft-only" id="mobilePublishBtn" type="button" disabled>Continuar preparación</button>
+  <button class="btn btn-primary replacement-only" id="mobilePublishReplacementBtn" type="button" disabled>Continuar preparación</button>
+  <button class="btn btn-primary published-only" id="mobileViewPublicationBtn" type="button">Ver publicación</button>
+  <button class="btn btn-primary withdrawn-only" id="mobileBackProjectBtn" type="button">Volver al proyecto</button>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer" id="previewDrawer" role="dialog" aria-modal="true" aria-labelledby="previewDrawerTitle">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-kicker">Vista previa privada</div>
+      <div class="drawer-title" id="previewDrawerTitle">Capítulo 12 · Español</div>
+      <div class="drawer-sub">Solo miembros autorizados del proyecto. Las páginas persistidas se muestran en el orden actual.</div>
+    </div>
+    <button class="drawer-close" data-close-drawer type="button" aria-label="Cerrar vista previa"><i data-lucide="x" class="icon"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="private-notice"><i data-lucide="shield-check" class="icon-sm"></i> Vista editorial privada. Solo miembros autorizados del proyecto.</div>
+    <div class="reader" id="readerPages"></div>
+  </div>
+</aside>
+
+<div class="modalbg" id="confirmModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-head">
+      <div class="modal-icon"><i data-lucide="shield-check" class="icon-lg"></i></div>
+      <h2 id="confirmTitle">Confirmar acción</h2>
+      <p id="confirmCopy"></p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="confirmInfo"></div>
+      <div class="confirm-grid" id="confirmGrid"></div>
+      <div class="modal-warning" id="confirmWarning"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="cancelModalBtn" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="confirmModalBtn" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modalbg" id="leaveModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
+    <div class="modal-head">
+      <div class="modal-icon"><i data-lucide="triangle-alert" class="icon-lg"></i></div>
+      <h2 id="leaveTitle">Hay cambios en curso</h2>
+      <p>Algunos archivos siguen procesándose o el orden aún no se ha guardado.</p>
+    </div>
+    <div class="modal-body"><div class="modal-info">Puedes permanecer en la publicación hasta que finalicen los cambios o salir de esta vista.</div></div>
+    <div class="modal-actions">
+      <button class="btn" id="stayBtn" type="button">Permanecer</button>
+      <button class="btn btn-warning" id="leaveAnywayBtn" type="button">Salir de todos modos</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="circle-check" class="icon-sm"></i><span id="toastText">Acción completada.</span></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+const state={
+  releaseState:"draft",
+  chapter:"Capítulo 12 — El eco bajo la lluvia",
+  language:"Español",
+  group:"Akari Scan",
+  orderDirty:false,
+  activeDrawer:null,
+  lastFocus:null,
+  modalAction:null,
+  selected:new Set(),
+  pages:[],
+  queue:[],
+  chapterThumbnailUrl:null,
+  chapterThumbnailDefinedBy:null,
+  chapterThumbnailChangeRequestPending:false
+};
+
+const currentAuthority={role:"ADMIN",prepare:true,publish:true,withdraw:true,logo:"AS"};
+
+function icons(){if(window.lucide)lucide.createIcons()}
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function toast(text,error=false){
+  $("#toastText").textContent=text;
+  $("#toast").style.borderColor=error?"#6c2932":"#38414c";
+  $("#toast").classList.add("show");
+  clearTimeout(window.__toast);window.__toast=setTimeout(()=>$("#toast").classList.remove("show"),2600);icons();
+}
+function setSync(kind,text){
+  $("#syncIndicator").className="sync-indicator"+(kind?" "+kind:"");
+  $("#syncText").textContent=text;
+  $("#heroSync").textContent=text==="Cambios guardados"?"Guardada":text;
+}
+function authority(){return currentAuthority}
+function canManageChapterThumbnail(){return ["FOUNDER","ADMIN"].includes(authority().role)}
+function isEditableState(){return state.releaseState==="draft"||state.releaseState==="replacement"}
+function pageLabel(n){return String(n).padStart(2,"0")}
+
+function buildInitialData(){
+  state.pages=[];state.queue=[];
+  for(let i=1;i<=24;i++) state.pages.push({id:`pg-${i}`,file:`page-${String(i).padStart(3,"0")}.${i%3===0?"png":i%2===0?"webp":"jpg"}`,url:null});
+  state.queue=[
+    {id:"q25",file:"page-025.webp",status:"uploading",progress:74,errorType:null,url:null},
+    {id:"q26",file:"page-026.png",status:"finalizing",progress:92,errorType:null,url:null},
+    {id:"q27",file:"page-027.jpg",status:"error",progress:48,errorType:"Error de validación",url:null},
+    {id:"q28",file:"page-028.webp",status:"pending",progress:0,errorType:null,url:null}
+  ];
+}
+function buildResolvedPages(count=28){
+  state.pages=[];state.queue=[];
+  for(let i=1;i<=count;i++) state.pages.push({id:`pg-${i}`,file:`page-${String(i).padStart(3,"0")}.${i%3===0?"png":i%2===0?"webp":"jpg"}`,url:null});
+}
+function queueStats(){
+  const s={uploading:0,finalizing:0,error:0,pending:0};
+  state.queue.forEach(q=>s[q.status]=(s[q.status]||0)+1);return s;
+}
+function updateUploadSummary(){
+  const s=queueStats(),queueCount=state.queue.length,pagesCount=state.pages.length;
+  $("#persistedSummary").textContent=`${pagesCount} páginas en la publicación`;
+  $("#queueSummary").textContent=`${queueCount} archivo${queueCount===1?"":"s"} en cola`;
+  $("#uploadingSummary").textContent=`${s.uploading} subiendo`;
+  $("#finalizingSummary").textContent=`${s.finalizing} verificando`;
+  $("#errorSummary").textContent=`${s.error} ${s.error===1?"error":"errores"}`;
+  $("#pendingSummary").textContent=`${s.pending} ${s.pending===1?"pendiente":"pendientes"}`;
+  $("#overallSummary").textContent=queueCount?`${queueCount} archivo${queueCount===1?"":"s"} por resolver`:"Cola vacía";
+  const completedWork=queueCount?((s.finalizing*.9+s.uploading*.65)/(queueCount))*100:100;
+  $("#overallProgress").style.width=`${Math.max(queueCount?8:100,Math.round(completedWork))}%`;
+  $("#heroPages").textContent=`${pagesCount} páginas`;$("#heroPageCount").textContent=pagesCount;$("#railPages").textContent=pagesCount;$("#pageCountLabel").textContent=`${pagesCount} páginas`;
+  updateWorkAlert();updateReadiness();updateCTAs();
+}
+function renderQueue(){
+  $("#uploadItems").innerHTML=state.queue.map(q=>{
+    const statusCopy=q.status==="uploading"?`Subiendo ${q.progress} %`:q.status==="finalizing"?"Verificando resultado…":q.status==="error"?(q.errorType||"Error"):"Pendiente";
+    const stateClass=q.status==="error"?"bad":q.status==="finalizing"?"wait":"";
+    const editable=isEditableState()&&authority().prepare;
+    return `<div class="upload-item" data-queue-id="${q.id}">
+      <div class="file-icon"><i data-lucide="${q.status==="error"?"triangle-alert":q.status==="finalizing"?"loader-circle":q.status==="uploading"?"upload-cloud":"file-image"}" class="icon"></i></div>
+      <div><div class="file-name">${esc(q.file)}</div><div class="file-detail">Archivo en cola · todavía no es una página persistida</div></div>
+      <div class="file-progress"><div class="mini-progress"><span style="width:${q.progress}%"></span></div><div class="file-state ${stateClass}">${statusCopy}</div></div>
+      <div class="file-actions">
+        ${q.status==="uploading"&&editable?`<button class="btn" data-continue-upload="${q.id}" type="button">Continuar</button>`:""}
+        ${q.status==="finalizing"&&editable?`<button class="btn" data-check-finalize="${q.id}" type="button">Comprobar</button>`:""}
+        ${q.status==="error"&&editable?`<button class="btn" data-retry="${q.id}" type="button">Reintentar</button><label class="btn" for="replace-${q.id}">Reemplazar archivo</label><input class="file-input" id="replace-${q.id}" data-replace="${q.id}" type="file" accept="image/jpeg,image/png,image/webp">`:""}
+        ${q.status==="pending"&&editable?`<button class="btn" data-start-upload="${q.id}" type="button">Iniciar</button><button class="btn" data-cancel-queue="${q.id}" type="button">Cancelar</button>`:""}
+      </div>
+    </div>`;
+  }).join("") || `<div style="padding:0 14px 14px;color:#767e88;font-size:11px">No hay archivos en cola.</div>`;
+  $$('[data-continue-upload]').forEach(b=>b.onclick=()=>startUpload(b.dataset.continueUpload));
+  $$('[data-check-finalize]').forEach(b=>b.onclick=()=>finalizeQueueItem(b.dataset.checkFinalize));
+  $$('[data-retry]').forEach(b=>b.onclick=()=>retryQueueItem(b.dataset.retry));
+  $$('[data-start-upload]').forEach(b=>b.onclick=()=>startUpload(b.dataset.startUpload));
+  $$('[data-cancel-queue]').forEach(b=>b.onclick=()=>cancelQueueItem(b.dataset.cancelQueue));
+  $$('[data-replace]').forEach(input=>input.onchange=e=>replaceQueueFile(input.dataset.replace,e.target.files[0]));icons();
+}
+function thumbStyle(p,index){
+  if(p.url)return `background-image:url("${p.url}")`;
+  const palettes=["linear-gradient(155deg,#202833,#11151b 54%,#343d49)","linear-gradient(155deg,#2b2528,#11151a 54%,#44242b)","linear-gradient(155deg,#1b2830,#10141a 54%,#243e46)","linear-gradient(155deg,#29251e,#11151a 54%,#443829)"];
+  return `background-image:${palettes[index%palettes.length]}`;
+}
+function renderPages(){
+  const editable=isEditableState()&&authority().prepare;
+  $("#pagesGrid").innerHTML=state.pages.map((p,index)=>{
+    const selected=state.selected.has(p.id);
+    return `<article class="page-card ${selected?"selected":""}" draggable="${editable}" data-page-id="${p.id}" tabindex="0">
+      <div class="page-top"><div class="page-num"><button class="drag-handle" type="button" aria-label="Arrastrar página ${index+1}" ${editable?"":"disabled"}><i data-lucide="grip-vertical" class="icon-sm"></i></button>${pageLabel(index+1)}</div><input class="page-select" type="checkbox" aria-label="Seleccionar página ${index+1}" data-select="${p.id}" ${selected?"checked":""}></div>
+      <div class="thumb ${p.url?"local-image":""}" style='${thumbStyle(p,index)}'><span class="thumb-status ready">LISTA</span></div>
+      <div class="page-body"><div class="page-file">${esc(p.file)}</div><div class="page-meta">Página persistida · lista para ordenar</div></div>
+      <div class="page-actions">
+        <button class="icon-btn" type="button" data-move-up="${p.id}" aria-label="Mover página ${index+1} arriba" ${!editable||index===0?"disabled":""}><i data-lucide="arrow-up" class="icon-sm"></i></button>
+        <button class="icon-btn" type="button" data-move-down="${p.id}" aria-label="Mover página ${index+1} abajo" ${!editable||index===state.pages.length-1?"disabled":""}><i data-lucide="arrow-down" class="icon-sm"></i></button>
+        <button class="icon-btn" type="button" data-inspect="${p.id}" aria-label="Inspeccionar página ${index+1}"><i data-lucide="zoom-in" class="icon-sm"></i></button>
+      </div>
+    </article>`;
+  }).join("");
+  $$('[data-select]').forEach(cb=>cb.onchange=()=>{cb.checked?state.selected.add(cb.dataset.select):state.selected.delete(cb.dataset.select);updateSelection();cb.closest('.page-card').classList.toggle('selected',cb.checked)});
+  $$('[data-move-up]').forEach(b=>b.onclick=()=>movePage(b.dataset.moveUp,-1));
+  $$('[data-move-down]').forEach(b=>b.onclick=()=>movePage(b.dataset.moveDown,1));
+  $$('[data-inspect]').forEach(b=>b.onclick=()=>inspectPage(b.dataset.inspect));
+  $$('.page-card[draggable="true"]').forEach(card=>{
+    card.addEventListener('dragstart',e=>{card.classList.add('dragging');e.dataTransfer.setData('text/plain',card.dataset.pageId);e.dataTransfer.effectAllowed='move'});
+    card.addEventListener('dragend',()=>$$('.page-card').forEach(c=>c.classList.remove('dragging','drop-before')));
+    card.addEventListener('dragover',e=>{e.preventDefault();card.classList.add('drop-before');e.dataTransfer.dropEffect='move'});
+    card.addEventListener('dragleave',()=>card.classList.remove('drop-before'));
+    card.addEventListener('drop',e=>{e.preventDefault();card.classList.remove('drop-before');reorderByIds(e.dataTransfer.getData('text/plain'),card.dataset.pageId)});
+  });
+  updateSelection();icons();
+}
+function movePage(id,delta){
+  const idx=state.pages.findIndex(p=>p.id===id),next=idx+delta;if(idx<0||next<0||next>=state.pages.length)return;
+  [state.pages[idx],state.pages[next]]=[state.pages[next],state.pages[idx]];markOrderDirty();renderPages();
+}
+function reorderByIds(from,to){
+  if(from===to)return;const fromIdx=state.pages.findIndex(p=>p.id===from),toIdx=state.pages.findIndex(p=>p.id===to);if(fromIdx<0||toIdx<0)return;
+  const [item]=state.pages.splice(fromIdx,1);state.pages.splice(toIdx,0,item);markOrderDirty();renderPages();
+}
+function markOrderDirty(){
+  state.orderDirty=true;$("#orderState").className="order-state dirty";$("#orderState").innerHTML='<i data-lucide="circle-alert" class="icon-sm"></i>Orden sin guardar';
+  setSync('warn','Cambios en curso');updateWorkAlert();updateReadiness();updateCTAs();icons();
+}
+function saveOrder(){
+  if(!isEditableState()||!authority().prepare||!state.orderDirty)return;
+  $("#orderState").className="order-state";$("#orderState").innerHTML='<i data-lucide="loader-circle" class="icon-sm"></i>Guardando orden…';setSync('busy','Guardando cambios');icons();
+  setTimeout(()=>{state.orderDirty=false;$("#orderState").className="order-state saved";$("#orderState").innerHTML='<i data-lucide="circle-check" class="icon-sm"></i>Orden guardado';setSync('','Cambios guardados');toast('Orden guardado.');updateWorkAlert();updateReadiness();updateCTAs();icons()},650);
+}
+function updateSelection(){
+  $("#selectionCount").textContent=`${state.selected.size} seleccionada${state.selected.size===1?"":"s"}`;$("#clearSelectionBtn").disabled=state.selected.size===0;
+}
+function inspectPage(id){state.selected.add(id);updateSelection();renderPages();openPreview(id)}
+
+function validateFile(file){
+  const allowed=['image/jpeg','image/png','image/webp'];if(!allowed.includes(file.type))return {ok:false,error:'Formato no admitido. Usa JPEG, PNG o WebP.'};
+  if(file.size>20*1024*1024)return {ok:false,error:'Archivo demasiado grande. El máximo es 20 MiB por página.'};return {ok:true};
+}
+function addFiles(files){
+  if(!isEditableState()||!authority().prepare){toast('No tienes autoridad para añadir archivos a esta publicación.',true);return}
+  [...files].forEach((file,i)=>{const result=validateFile(file),id=`local-${Date.now()}-${i}`;state.queue.push({id,file:file.name,status:result.ok?'pending':'error',progress:0,errorType:result.ok?null:result.error,url:result.ok?URL.createObjectURL(file):null})});
+  renderAll();setSync('warn','Cambios en curso');
+}
+function startUpload(id){
+  const q=state.queue.find(x=>x.id===id);if(!q||!isEditableState()||!authority().prepare)return;
+  q.status='uploading';q.progress=Math.max(12,q.progress||12);q.errorType=null;renderAll();
+  const steps=[36,61,82,94];let i=0;
+  const timer=setInterval(()=>{const item=state.queue.find(x=>x.id===id);if(!item){clearInterval(timer);return}item.progress=steps[i++]||94;if(item.progress>=94){clearInterval(timer);item.status='finalizing';renderAll();setTimeout(()=>finalizeQueueItem(id),800)}else renderAll(false)},420);
+}
+function finalizeQueueItem(id){
+  const idx=state.queue.findIndex(x=>x.id===id);if(idx<0)return;const [q]=state.queue.splice(idx,1);
+  state.pages.push({id:`pg-${Date.now()}-${state.pages.length+1}`,file:q.file,url:q.url||null});
+  renderAll();toast(`${q.file} se añadió como página ${state.pages.length}.`);setSync('warn','Cambios en curso');
+}
+function retryQueueItem(id){const q=state.queue.find(x=>x.id===id);if(!q)return;q.status='pending';q.progress=0;q.errorType=null;renderAll();startUpload(id)}
+function replaceQueueFile(id,file){
+  if(!file)return;const q=state.queue.find(x=>x.id===id);if(!q)return;const result=validateFile(file);
+  if(!result.ok){q.status='error';q.errorType=result.error;q.progress=0;renderAll();return}
+  if(q.url)URL.revokeObjectURL(q.url);q.file=file.name;q.url=URL.createObjectURL(file);q.status='pending';q.progress=0;q.errorType=null;renderAll();
+}
+function cancelQueueItem(id){
+  const idx=state.queue.findIndex(x=>x.id===id);if(idx<0)return;const [q]=state.queue.splice(idx,1);if(q.url)URL.revokeObjectURL(q.url);renderAll();toast('Archivo retirado de la cola.')
+}
+function updateWorkAlert(){
+  const s=queueStats(),show=isEditableState()&&(state.queue.length>0||state.orderDirty);$("#workAlert").classList.toggle('show',show);
+  const parts=[];if(state.queue.length)parts.push(`${state.queue.length} archivo${state.queue.length===1?'':'s'} en cola`);if(s.uploading)parts.push(`${s.uploading} subiendo`);if(s.finalizing)parts.push(`${s.finalizing} verificando`);if(state.orderDirty)parts.push('orden sin guardar');
+  $("#workAlertText").textContent=show?`Hay cambios en curso: ${parts.join(' · ')}.`:'';icons();
+}
+function chapterThumbnailPriority(){
+  if(state.chapterThumbnailDefinedBy){
+    return {mode:'defined',group:state.chapterThumbnailDefinedBy,time:null};
+  }
+  if(state.releaseState==='published'||state.releaseState==='replacement'){
+    return {mode:'priority',group:'Akari Scan',time:'2 días 8 h'};
+  }
+  if(state.releaseState==='withdrawn'){
+    return {mode:'waiting',group:null,time:null};
+  }
+  return {mode:'unassigned',group:null,time:null};
+}
+function renderChapterThumbnail(){
+  const priority=chapterThumbnailPriority();
+  const preview=$("#chapterThumbnailPreview"),fallback=$("#thumbnailFallbackBadge"),uploadLabel=$("#thumbnailUploadLabel");
+  const requestBtn=$("#thumbnailChangeRequestBtn"),requestStatus=$("#thumbnailRequestStatus"),fixedHelp=$("#thumbnailFixedHelp");
+  if(!preview)return;
+
+  const hasCustomThumbnail=!!state.chapterThumbnailUrl;
+  const canManage=canManageChapterThumbnail();
+
+  if(hasCustomThumbnail){
+    preview.style.backgroundImage=`url("${state.chapterThumbnailUrl}")`;
+    preview.style.backgroundSize="cover";preview.style.backgroundPosition="center";preview.classList.add("has-image");fallback.style.display="none";
+    $("#thumbnailStateLabel").textContent="Miniatura actual";$("#thumbnailDefinedBy").textContent=state.chapterThumbnailDefinedBy||"Akari Scan";
+  }else{
+    preview.style.backgroundImage="";preview.classList.remove("has-image");fallback.style.display="inline-flex";
+    $("#thumbnailStateLabel").textContent="Portada de respaldo";$("#thumbnailDefinedBy").textContent="Aún no definida";
+  }
+
+  uploadLabel.style.display="none";
+  requestBtn.style.display="none";
+  requestStatus.style.display="none";
+  fixedHelp.style.display=hasCustomThumbnail?"block":"none";
+
+  if(hasCustomThumbnail){
+    $("#thumbnailPriorityBadge").textContent="Miniatura fijada";
+
+    if(state.chapterThumbnailChangeRequestPending){
+      $("#thumbnailPriorityTitle").textContent="Solicitud de cambio enviada";
+      $("#thumbnailPriorityCopy").textContent="Pendiente de revisión. La miniatura actual seguirá visible hasta que un cambio sea aprobado.";
+      requestStatus.style.display="inline-flex";
+    }else{
+      $("#thumbnailPriorityTitle").textContent=`Miniatura definida por ${state.chapterThumbnailDefinedBy||"Akari Scan"}`;
+      $("#thumbnailPriorityCopy").textContent="La miniatura pertenece al capítulo lógico, queda fijada y no rota automáticamente cuando otros grupos publican después.";
+      if(canManage)requestBtn.style.display="inline-flex";
+    }
+  }else if(priority.mode==="priority"){
+    $("#thumbnailPriorityTitle").textContent=`Prioridad actual: ${priority.group}`;
+    $("#thumbnailPriorityCopy").textContent=`Tiempo restante: ${priority.time}. Durante esta ventana el primer grupo publicado con prioridad puede definir la miniatura.`;
+    $("#thumbnailPriorityBadge").textContent="Ventana de 72 h";
+    if(canManage&&priority.group==="Akari Scan")uploadLabel.style.display="inline-flex";
+  }else if(priority.mode==="waiting"){
+    $("#thumbnailPriorityTitle").textContent="Sin prioridad editable en esta vista";
+    $("#thumbnailPriorityCopy").textContent="La prioridad se determina entre publicaciones publicadas del mismo capítulo. Esta publicación está retirada.";
+    $("#thumbnailPriorityBadge").textContent="Solo lectura";
+  }else{
+    $("#thumbnailPriorityTitle").textContent="Prioridad pendiente";
+    $("#thumbnailPriorityCopy").textContent="Se asignará al primer grupo que publique una publicación válida del Capítulo 12. Su ventana comenzará desde su fecha de publicación y, si no la usa en 72 horas, pasará al siguiente grupo publicado según la fecha de publicación.";
+    $("#thumbnailPriorityBadge").textContent="Portada de respaldo activa";
+  }
+  icons();
+}
+function setChapterThumbnail(file){
+  if(!file)return;
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){toast("La miniatura debe ser JPEG, PNG o WebP.",true);return}
+  if(!canManageChapterThumbnail()){toast("Solo FOUNDER o ADMIN del grupo pueden definir la miniatura cuando existe prioridad.",true);return}
+  if(state.chapterThumbnailUrl||state.chapterThumbnailDefinedBy){
+    toast("La miniatura actual está fijada. Usa “Solicitar cambio”.",true);return;
+  }
+  const priority=chapterThumbnailPriority();
+  if(priority.mode!=="priority"||priority.group!=="Akari Scan"){toast("El grupo actual no tiene prioridad para definir la miniatura.",true);return}
+  state.chapterThumbnailUrl=URL.createObjectURL(file);
+  state.chapterThumbnailDefinedBy="Akari Scan";
+  state.chapterThumbnailChangeRequestPending=false;
+  renderChapterThumbnail();toast("Miniatura del capítulo definida localmente.");
+}
+function requestChapterThumbnailChange(){
+  if(!state.chapterThumbnailUrl||!state.chapterThumbnailDefinedBy){toast("Primero debe existir una miniatura personalizada.",true);return}
+  if(!canManageChapterThumbnail()){toast("Solo FOUNDER o ADMIN del grupo pueden solicitar un cambio de miniatura.",true);return}
+  if(state.chapterThumbnailChangeRequestPending){toast("Ya existe una solicitud de cambio pendiente.",true);return}
+  state.chapterThumbnailChangeRequestPending=true;
+  renderChapterThumbnail();
+  toast("Solicitud de cambio enviada. Pendiente de revisión.");
+}
+
+function permissionData(){
+  const a=authority();return [
+    {label:'Subir archivos',allowed:a.prepare,copy:`Permitido por ${a.role}`},
+    {label:'Reordenar páginas',allowed:a.prepare,copy:`Permitido por ${a.role}`},
+    {label:'Vista previa',allowed:a.prepare||a.publish,copy:'Permitido'},
+    {label:'Publicar',allowed:a.publish,copy:a.publish?`Permitido por ${a.role}`:'Requiere FOUNDER, ADMIN o global ADMIN'},
+    {label:'Retirar',allowed:a.withdraw,copy:a.withdraw?`Permitido por ${a.role}`:'Requiere FOUNDER, ADMIN o global ADMIN'}
+  ];
+}
+function renderPermissions(){
+  const a=authority();$("#permissionRoleBadge").textContent=a.role;
+  $("#permissionList").innerHTML=permissionData().map(x=>`<div class="permission ${x.allowed?'allowed':'denied'}"><span class="permission-icon"><i data-lucide="${x.allowed?'check':'lock-keyhole'}" class="icon-sm"></i></span><div>${x.label}<small>${x.copy}</small></div></div>`).join('');
+  $("#authorityNote").textContent=`ADMIN en Akari Scan permite preparar, publicar y retirar publicaciones asociadas a ese grupo.`;$("#profileRole").textContent=`${a.role} · Akari Scan`;$("#railAuthority").textContent=a.role;icons();
+}
+function readinessData(){
+  const a=authority(),queueCount=state.queue.length,pagesCount=state.pages.length;
+  return [
+    {label:'Capítulo activo',ok:true},
+    {label:'Grupo responsable válido',ok:true},
+    {label:'Idioma configurado',ok:true},
+    {label:`${pagesCount} páginas listas`,ok:pagesCount>0},
+    {label:queueCount?`${queueCount} archivo${queueCount===1?'':'s'} todavía en cola`:'Sin archivos en cola',ok:queueCount===0,warn:queueCount>0},
+    {label:'Orden válido y guardado',ok:!state.orderDirty},
+    {label:'Permiso para publicar',ok:a.publish,bad:!a.publish}
+  ];
+}
+function updateReadiness(){
+  const data=readinessData(),ok=data.filter(x=>x.ok).length;$("#readinessScore").textContent=`${ok} / ${data.length}`;
+  $("#readinessList").innerHTML=data.map(x=>`<div class="ready-row ${x.ok?'ok':x.bad?'bad':'warn'}"><span class="ready-icon"><i data-lucide="${x.ok?'check':x.bad?'lock-keyhole':'triangle-alert'}" class="icon-sm"></i></span><span>${x.label}</span></div>`).join('');icons();
+}
+function isReadyToPublish(){return readinessData().every(x=>x.ok)}
+function updateCTAs(){
+  const ready=isReadyToPublish(),a=authority(),editable=isEditableState();
+  if(state.releaseState==='draft'){
+    $("#publishBtn").disabled=!ready;$("#mobilePublishBtn").disabled=!ready;
+    $("#publishBtn").innerHTML=ready?'<i data-lucide="send" class="icon-sm"></i>Publicar capítulo':'<i data-lucide="settings-2" class="icon-sm"></i>Continuar preparación';$("#mobilePublishBtn").textContent=ready?'Publicar capítulo':'Continuar preparación';
+  }
+  if(state.releaseState==='replacement'){
+    $("#publishReplacementBtn").disabled=!ready;$("#mobilePublishReplacementBtn").disabled=!ready;
+    $("#publishReplacementBtn").innerHTML=ready?'<i data-lucide="git-branch-plus" class="icon-sm"></i>Publicar reemplazo':'<i data-lucide="settings-2" class="icon-sm"></i>Continuar preparación';$("#mobilePublishReplacementBtn").textContent=ready?'Publicar reemplazo':'Continuar preparación';
+  }
+  $("#saveOrderBtn").disabled=!editable||!a.prepare||!state.orderDirty;$("#pageFiles").disabled=!editable||!a.prepare;$("#dropzone").classList.toggle('disabled',!editable||!a.prepare);$("#withdrawBtn").disabled=state.releaseState!=='published'||!a.withdraw;icons();
+}
+function setReleaseState(next){
+  state.releaseState=next;document.body.className=`state-${next}`;$$('.state-tab').forEach(b=>b.classList.toggle('active',b.dataset.state===next));
+  const labels={draft:'BORRADOR',published:'PUBLICADO',replacement:'REEMPLAZO EN BORRADOR',withdrawn:'RETIRADO'};$("#releaseContextState").textContent=labels[next];
+  const badge=$("#railStateBadge");badge.className=`badge ${next==='replacement'?'replacement':next}`;badge.textContent=labels[next][0]+labels[next].slice(1).toLowerCase();
+  $("#releaseTypeLabel").textContent=next==='replacement'?'Reemplazo':'Publicación original';
+  if(next==='published'||next==='withdrawn'){state.orderDirty=false;$("#orderState").className='order-state saved';$("#orderState").innerHTML='<i data-lucide="lock-keyhole" class="icon-sm"></i>Orden bloqueado';setSync('','Cambios guardados')}
+  if(next==='replacement'){state.orderDirty=false;$("#orderState").className='order-state saved';$("#orderState").innerHTML='<i data-lucide="circle-check" class="icon-sm"></i>Orden guardado'}
+  updateAll();renderChapterThumbnail();
+}
+function setStateFromTab(v){
+  state.selected.clear();state.orderDirty=false;
+  if(v==='draft'){buildInitialData();setReleaseState('draft')}
+  else{buildResolvedPages(28);setReleaseState(v)}
+}
+function renderReader(){
+  $("#readerPages").innerHTML=state.pages.map((p,i)=>`<div class="reader-page" data-page="${pageLabel(i+1)}" aria-label="Página ${i+1}"></div>`).join('');
+}
+function openPreview(focusId=null){
+  state.lastFocus=document.activeElement;renderReader();$("#overlay").classList.add('open');$("#previewDrawer").classList.add('open');state.activeDrawer='previewDrawer';setTimeout(()=>$("#previewDrawer .drawer-close").focus(),0);
+  if(focusId){const idx=state.pages.findIndex(p=>p.id===focusId),target=$("#readerPages").children[idx];if(target)setTimeout(()=>target.scrollIntoView({block:'center'}),180)}
+}
+function closeDrawer(){$("#overlay").classList.remove('open');$('.drawer.open')?.classList.remove('open');state.activeDrawer=null;if(state.lastFocus?.focus)state.lastFocus.focus()}
+function openConfirm(action){
+  state.modalAction=action;state.lastFocus=document.activeElement;$("#confirmModalBtn").className='btn btn-primary';
+  $("#confirmGrid").innerHTML=`<div class="confirm-item"><span>Capítulo</span><strong>12 · El eco bajo la lluvia</strong></div><div class="confirm-item"><span>Idioma</span><strong>Español</strong></div><div class="confirm-item"><span>Grupo</span><strong>Akari Scan</strong></div><div class="confirm-item"><span>Páginas listas</span><strong>${state.pages.length}</strong></div>`;
+  if(action==='publish'){
+    $("#confirmTitle").textContent='Publicar capítulo';$("#confirmCopy").textContent='Confirma la publicación de esta versión del Capítulo 12.';$("#confirmInfo").textContent='La publicación usará el idioma, grupo responsable y páginas persistidas actuales.';$("#confirmWarning").textContent='Después de publicar, las páginas de esta publicación ya no podrán editarse. Para corregirla deberás crear un reemplazo.';$("#confirmModalBtn").textContent='Publicar';
+  }else if(action==='replacement'){
+    $("#confirmTitle").textContent='Publicar reemplazo';$("#confirmCopy").textContent='Esta nueva publicación pasará a ser la vigente del Capítulo 12.';$("#confirmInfo").textContent='Al publicar esta versión, la publicación anterior del Capítulo 12 se retirará automáticamente y esta pasará a ser la publicación vigente.';$("#confirmWarning").textContent='La publicación anterior permanecerá intacta en el historial y esta versión quedará inmutable después de publicar.';$("#confirmModalBtn").textContent='Publicar reemplazo';
+  }else{
+    $("#confirmTitle").textContent='Retirar publicación';$("#confirmCopy").textContent='La publicación dejará de estar visible públicamente.';$("#confirmInfo").textContent='El historial y las páginas se conservarán. Esta publicación no podrá republicarse directamente.';$("#confirmWarning").textContent='Después de retirarla, solo podrás consultar su historial y volver al proyecto.';$("#confirmModalBtn").textContent='Retirar publicación';$("#confirmModalBtn").className='btn btn-danger';
+  }
+  $("#confirmModal").classList.add('open');setTimeout(()=>$("#cancelModalBtn").focus(),0);icons();
+}
+function closeConfirm(){$("#confirmModal").classList.remove('open');state.modalAction=null;if(state.lastFocus?.focus)state.lastFocus.focus()}
+function executeConfirm(){
+  const action=state.modalAction;closeConfirm();
+  if(action==='publish'){setReleaseState('published');toast('Publicación realizada correctamente.')}
+  else if(action==='replacement'){setReleaseState('published');toast('Nueva versión publicada. La publicación anterior fue retirada automáticamente.')}
+  else if(action==='withdraw'){setReleaseState('withdrawn');toast('Publicación retirada. El historial y sus páginas se conservaron.')}
+}
+function hasWorkInProgress(){return isEditableState()&&(state.queue.length>0||state.orderDirty)}
+function openLeaveModal(){state.lastFocus=document.activeElement;$("#leaveModal").classList.add('open');setTimeout(()=>$("#stayBtn").focus(),0)}
+function closeLeaveModal(){$("#leaveModal").classList.remove('open');if(state.lastFocus?.focus)state.lastFocus.focus()}
+function showConflict(){$("#conflictBanner").classList.add('show');setSync('error','Revisión necesaria');icons()}
+function renderAll(light=false){updateUploadSummary();renderQueue();renderPages();if(!light){renderPermissions();updateReadiness();updateCTAs()}}
+function updateAll(){renderAll();updateWorkAlert();renderChapterThumbnail()}
+
+$("#chapterThumbnailFile").onchange=e=>{setChapterThumbnail(e.target.files&&e.target.files[0]);e.target.value=''};
+$("#thumbnailChangeRequestBtn").onclick=requestChapterThumbnailChange;
+$("#pageFiles").onchange=e=>{addFiles(e.target.files);e.target.value=''};
+$("#dropzone").onclick=()=>{if(isEditableState()&&authority().prepare)$("#pageFiles").click()};
+$("#dropzone").onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&isEditableState()&&authority().prepare){e.preventDefault();$("#pageFiles").click()}};
+$("#dropzone").ondragover=e=>{if(!isEditableState()||!authority().prepare)return;e.preventDefault();$("#dropzone").classList.add('dragover')};
+$("#dropzone").ondragleave=()=>$("#dropzone").classList.remove('dragover');
+$("#dropzone").ondrop=e=>{if(!isEditableState()||!authority().prepare)return;e.preventDefault();$("#dropzone").classList.remove('dragover');addFiles(e.dataTransfer.files)};
+$("#saveOrderBtn").onclick=saveOrder;
+$("#clearSelectionBtn").onclick=()=>{state.selected.clear();renderPages()};
+$("#previewBtn").onclick=$("#previewBtnTop").onclick=$("#mobilePreviewBtn").onclick=()=>openPreview();
+$("#overlay").onclick=closeDrawer;$$('[data-close-drawer]').forEach(b=>b.onclick=closeDrawer);
+$("#publishBtn").onclick=$("#mobilePublishBtn").onclick=()=>isReadyToPublish()?openConfirm('publish'):toast('La publicación todavía no está lista.',true);
+$("#publishReplacementBtn").onclick=$("#mobilePublishReplacementBtn").onclick=()=>isReadyToPublish()?openConfirm('replacement'):toast('El reemplazo todavía no está listo.',true);
+$("#withdrawBtn").onclick=()=>authority().withdraw?openConfirm('withdraw'):toast('No tienes autoridad para retirar esta publicación.',true);
+$("#createReplacementBtn").onclick=()=>{buildResolvedPages(28);setReleaseState('replacement');toast('Reemplazo en borrador creado a partir de la publicación vigente del Capítulo 12.')};
+$("#viewPublicationBtn").onclick=$("#mobileViewPublicationBtn").onclick=()=>toast('Vista de publicación abierta.');
+$("#historyBtn").onclick=()=>toast('Historial de la publicación disponible.');
+$("#backFromWithdrawnBtn").onclick=$("#mobileBackProjectBtn").onclick=()=>toast('Regreso conceptual al proyecto editorial.');
+$("#cancelModalBtn").onclick=closeConfirm;$("#confirmModalBtn").onclick=executeConfirm;$("#confirmModal").onclick=e=>{if(e.target===$("#confirmModal"))closeConfirm()};
+$("#backProjectBtn").onclick=()=>hasWorkInProgress()?openLeaveModal():toast('Regreso conceptual al proyecto editorial.');
+$("#stayBtn").onclick=closeLeaveModal;$("#leaveAnywayBtn").onclick=()=>{closeLeaveModal();toast('Regreso conceptual al proyecto editorial.')};$("#leaveModal").onclick=e=>{if(e.target===$("#leaveModal"))closeLeaveModal()};
+$$('.state-tab').forEach(b=>b.onclick=()=>setStateFromTab(b.dataset.state));
+$("#reloadChangesBtn").onclick=()=>{$("#conflictBanner").classList.remove('show');setSync('','Cambios guardados');toast('Estado actual recargado.')};
+$("#reviewCurrentBtn").onclick=()=>toast('Estado actual revisado. Los cambios locales no se fusionan automáticamente.');
+$("#syncIndicator").onclick=e=>{if(e.shiftKey)showConflict()};
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if($("#confirmModal").classList.contains('open'))closeConfirm();else if($("#leaveModal").classList.contains('open'))closeLeaveModal();else if(state.activeDrawer)closeDrawer()}
+  if(e.key==='Tab'){
+    const container=$("#confirmModal").classList.contains('open')?$("#confirmModal"):$("#leaveModal").classList.contains('open')?$("#leaveModal"):state.activeDrawer?$("#"+state.activeDrawer):null;if(!container)return;
+    const f=[...container.querySelectorAll('button,input,textarea,select,a')].filter(x=>x.offsetParent!==null&&!x.disabled);if(!f.length)return;const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+
+buildInitialData();updateAll();icons();
+</script>
+</body>
+</html>

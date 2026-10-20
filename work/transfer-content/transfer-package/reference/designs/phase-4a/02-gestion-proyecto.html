@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MangaZone — Gestión de Proyecto Editorial</title>
+<meta name="description" content="Gestión editorial de un ScanlationProject existente en MangaZone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#07090d;--bg2:#0b0e13;--surface:#10141a;--surface2:#151a22;--surface3:#1a2029;
+  --line:#262d37;--line2:#343d49;--text:#f6f2ed;--muted:#989ea8;--muted2:#68717c;
+  --red:#e8192c;--red2:#ff3547;--redsoft:rgba(232,25,44,.12);
+  --gold:#b99b68;--goldsoft:rgba(185,155,104,.10);
+  --green:#45c984;--greensoft:rgba(69,201,132,.12);
+  --yellow:#d9ad5c;--yellowsoft:rgba(217,173,92,.12);
+  --blue:#72a8e4;--bluesoft:rgba(114,168,228,.12);
+  --violet:#9b82df;--violetsoft:rgba(155,130,223,.12);
+  --shadow:0 26px 80px rgba(0,0,0,.42);--softshadow:0 14px 42px rgba(0,0,0,.24);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark;scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 92% -8%,rgba(232,25,44,.10),transparent 29rem),
+    radial-gradient(circle at -5% 66%,rgba(185,155,104,.045),transparent 27rem),
+    linear-gradient(180deg,#080a0e 0%,#07090d 65%,#080a0f 100%);
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.17;
+  background-image:
+    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.010) 1px,transparent 1px);
+  background-size:38px 38px;mask-image:linear-gradient(to bottom,#000,transparent 80%);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.icon{width:18px;height:18px;stroke-width:2}.icon-sm{width:15px;height:15px}.icon-lg{width:22px;height:22px}
+.app{min-height:100vh;display:flex;flex-direction:column}
+
+/* Top command bar */
+.topbar{
+  height:68px;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:0 20px;
+  background:rgba(8,10,14,.88);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(18px);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}
+.brandmark{
+  width:35px;height:42px;border-radius:5px 9px 5px 9px;display:grid;place-items:center;position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#ef2436,#9d0d1a);border:1px solid rgba(255,255,255,.11);box-shadow:0 9px 24px rgba(232,25,44,.22);
+  font-family:"Bebas Neue";font-size:19px;letter-spacing:.7px;
+}
+.brandmark::after{content:"";position:absolute;right:-8px;bottom:-9px;width:26px;height:36px;border:1px solid rgba(255,255,255,.15);transform:rotate(17deg)}
+.brandname{font-family:"Bebas Neue";font-size:23px;letter-spacing:1.25px;line-height:1}
+.brandcontext{margin-top:3px;color:#b69b6e;font-size:8px;text-transform:uppercase;font-weight:800;letter-spacing:.14em}
+.top-sep{width:1px;height:30px;background:#232a33;margin:0 4px}
+.backbtn{
+  min-height:36px;padding:0 10px;border:1px solid #292f38;border-radius:8px;background:#0f1318;
+  display:inline-flex;align-items:center;gap:7px;color:#b9bec6;font-size:9px;font-weight:700;
+}
+.backbtn:hover{background:#151a21;color:#fff}
+.breadcrumb{display:flex;align-items:center;gap:6px;color:#6f7781;font-size:8px;font-weight:700;white-space:nowrap}
+.breadcrumb strong{color:#c8cdd4}.breadcrumb i{color:#464e58}
+.top-spacer{flex:1}
+.profile{
+  display:flex;align-items:center;gap:9px;min-height:38px;padding:4px 8px 4px 10px;border:1px solid #29313b;border-radius:9px;background:#10151b;
+}
+.profile-copy{text-align:right}.profile-copy strong{display:block;font-size:9px}.profile-copy span{display:block;margin-top:2px;color:#777f89;font-size:7px}
+.avatar{
+  width:30px;height:30px;border-radius:7px;display:grid;place-items:center;
+  border:1px solid #4b3b41;background:linear-gradient(145deg,#352429,#1d222a);color:#f1d4d8;font-size:10px;font-weight:800;
+}
+
+/* Buttons and badges */
+.btn{
+  min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#11161c;color:#e5e9ee;font-size:9px;font-weight:800;transition:.16s ease;
+}
+.btn:hover{transform:translateY(-1px);border-color:#3f4855}
+.btn-primary{border-color:var(--red);background:linear-gradient(180deg,#ef2134,#c81223);box-shadow:0 8px 22px rgba(232,25,44,.17);color:#fff}
+.btn-secondary{background:#11161c}.btn-ghost{background:transparent}.btn-warning{border-color:#5c4927;background:#211b12;color:#f0cb7d}
+.btn-danger{border-color:#7e232c;background:#251117;color:#ee9ba4}
+.btn:disabled,.btn.disabled{opacity:.43;cursor:not-allowed;transform:none}
+.badge{
+  min-height:25px;padding:0 8px;border:1px solid #343c47;border-radius:14px;
+  display:inline-flex;align-items:center;gap:5px;background:#11161c;color:#c9ced5;font-size:7px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;white-space:nowrap;
+}
+.badge.active{color:#81dca9;border-color:#2c6448;background:rgba(69,201,132,.08)}
+.badge.verified{color:#9ecaff;border-color:#35526f;background:rgba(114,168,228,.08)}
+.badge.draft{color:#e5c37d;border-color:#5d4c2b;background:rgba(217,173,92,.08)}
+.badge.published{color:#84dfa9;border-color:#2c6549;background:rgba(69,201,132,.08)}
+.badge.withdrawn{color:#c99298;border-color:#573239;background:rgba(232,25,44,.055)}
+.badge.role{color:#c6b4f0;border-color:#4c4069;background:rgba(155,130,223,.08)}
+.badge.muted{color:#8e959f;border-color:#333b46;background:#10151b}
+.badge.locked{color:#a09b91;border-color:#484237;background:rgba(185,155,104,.05)}
+
+/* Main wrapper */
+.main{width:min(1580px,100%);margin:0 auto;padding:25px 20px 64px}
+
+/* Project hero */
+.project-hero{
+  position:relative;overflow:hidden;min-height:272px;border:1px solid #2a313b;border-radius:18px;
+  background:
+    linear-gradient(100deg,rgba(9,11,15,.98) 0%,rgba(9,11,15,.91) 34%,rgba(9,11,15,.60) 68%,rgba(9,11,15,.35) 100%),
+    radial-gradient(circle at 82% 38%,rgba(232,25,44,.28),transparent 22rem),
+    linear-gradient(135deg,#1b1116,#171c25 54%,#13161d);
+  box-shadow:var(--shadow);display:grid;grid-template-columns:170px minmax(0,1fr) 360px;
+}
+.project-hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(126deg,transparent 0 20px,rgba(255,255,255,.018) 21px 22px)
+}
+.hero-number{position:absolute;right:18px;top:-26px;font-family:"Bebas Neue";font-size:128px;line-height:1;color:rgba(255,255,255,.032);letter-spacing:-3px}
+.cover-zone{display:flex;align-items:center;justify-content:center;padding:20px 10px 20px 20px;position:relative;z-index:2}
+.cover{
+  width:128px;aspect-ratio:2/3;border-radius:7px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.13);
+  background:
+    linear-gradient(155deg,rgba(255,255,255,.13),transparent 22%),
+    radial-gradient(circle at 65% 18%,rgba(228,221,180,.18),transparent 30%),
+    linear-gradient(160deg,#191f2b,#0f1218 51%,#25304a);
+  box-shadow:0 24px 50px rgba(0,0,0,.5);
+}
+.cover::before{
+  content:"KAGE NO\A SHIORI";white-space:pre;position:absolute;left:10px;bottom:12px;
+  font-family:"Bebas Neue";font-size:24px;line-height:.88;letter-spacing:.85px
+}
+.cover::after{content:"VOL. 04";position:absolute;right:9px;top:9px;color:#d5d9de;font-size:10px;font-weight:800;letter-spacing:.1em}
+.hero-main{padding:29px 24px 25px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.kicker{display:flex;align-items:center;gap:8px;color:#cfb482;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.17em}
+.kicker::before{content:"";width:24px;height:1px;background:#9b825b}
+.project-title{margin:9px 0 3px;font-family:"Bebas Neue";font-size:48px;line-height:.93;letter-spacing:1.25px}
+.manga-link{
+  display:flex;align-items:center;gap:7px;margin-top:5px;color:#aab1ba;font-size:9px;font-weight:700;
+}
+.manga-link span{color:#727a85;font-weight:500}
+.alt-title{margin-top:6px;color:#707883;font-size:8px}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:17px}
+.group-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.group-chip{
+  min-height:27px;padding:0 8px;border:1px solid #303844;border-radius:14px;background:rgba(15,19,24,.8);
+  display:inline-flex;align-items:center;gap:6px;color:#b8bec6;font-size:7px;font-weight:700;
+}
+.group-dot{width:6px;height:6px;border-radius:2px;background:#566170}
+.hero-aside{padding:26px 28px 24px 20px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;z-index:2}
+.hero-aside::before{content:"";position:absolute;left:0;top:25px;bottom:25px;width:1px;background:linear-gradient(transparent,#343b46,transparent)}
+.hero-stat{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:8px}.hero-stat span{color:#777f89}.hero-stat strong{font-size:8px}
+.hero-note{margin-top:12px;color:#69717c;font-size:8px;line-height:1.5}
+.hero-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.hero-actions .btn-primary{min-width:132px}
+
+/* Stats strip */
+.stats{
+  margin-top:14px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px
+}
+.stat{
+  min-height:74px;padding:11px 12px;border:1px solid #272e38;border-radius:11px;background:linear-gradient(180deg,rgba(255,255,255,.017),transparent),#0f1318;
+  box-shadow:var(--softshadow);position:relative;overflow:hidden
+}
+.stat::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#282f39}
+.stat:nth-child(1)::after{background:linear-gradient(90deg,var(--red),transparent)}
+.stat:nth-child(2)::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.stat:nth-child(3)::after{background:linear-gradient(90deg,#6c8cac,transparent)}
+.stat:nth-child(4)::after{background:linear-gradient(90deg,var(--green),transparent)}
+.stat:nth-child(5)::after{background:linear-gradient(90deg,#72414a,transparent)}
+.stat-label{color:#737b86;font-size:7px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}
+.stat-value{margin-top:4px;font-family:"Bebas Neue";font-size:26px;line-height:1;letter-spacing:.6px}
+.stat-meta{margin-top:4px;color:#5f6772;font-size:7px}
+
+/* Content grid */
+.content-grid{margin-top:15px;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:15px;align-items:start}
+.stack{display:grid;gap:15px}
+.panel{
+  border:1px solid #292f38;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 33%),#10141a;
+  box-shadow:var(--softshadow);overflow:hidden
+}
+.panel-head{min-height:58px;padding:13px 15px;border-bottom:1px solid #252c35;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-title{font-size:10px;font-weight:800}.panel-sub{margin-top:3px;color:#777f89;font-size:8px;line-height:1.4}
+.panel-body{padding:14px}.panel-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+
+/* Manga summary */
+.manga-summary{
+  display:grid;grid-template-columns:86px minmax(0,1fr) auto;gap:12px;align-items:center
+}
+.mini-cover{
+  width:86px;aspect-ratio:2/3;border-radius:6px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.1);
+  background:linear-gradient(155deg,rgba(255,255,255,.12),transparent 22%),linear-gradient(160deg,#191f2b,#0f1218 52%,#25304a);
+}
+.mini-cover::after{content:"KAGE NO\A SHIORI";white-space:pre;position:absolute;left:7px;bottom:8px;font-family:"Bebas Neue";font-size:15px;line-height:.88}
+.manga-name{font-family:"Bebas Neue";font-size:25px;line-height:.95;letter-spacing:.7px}
+.manga-alt{margin-top:4px;color:#777f89;font-size:8px}
+.manga-facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.fact{padding:5px 7px;border:1px solid #303844;border-radius:11px;color:#aeb5bd;font-size:7px}
+.manga-counts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.countbox{padding:7px 8px;border:1px solid #272e38;border-radius:8px;background:#0d1116}.countbox span{display:block;color:#6f7781;font-size:7px}.countbox strong{display:block;margin-top:3px;font-size:9px}
+.manga-actions{display:grid;gap:7px;min-width:130px}
+
+/* Groups */
+.groups-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.group-card{
+  min-height:206px;padding:12px;border:1px solid #292f38;border-radius:11px;background:#0d1116;display:flex;flex-direction:column
+}
+.group-top{display:flex;align-items:center;gap:9px}.group-logo{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;border:1px solid #39424d;background:linear-gradient(145deg,#2b323d,#171c23);font-family:"Bebas Neue";font-size:15px;color:#dde1e7}
+.group-card:nth-child(2) .group-logo{background:linear-gradient(145deg,#382a3d,#181c23)}.group-card:nth-child(3) .group-logo{background:linear-gradient(145deg,#293a37,#171c23)}
+.group-name{font-size:9px;font-weight:800}.group-handle{margin-top:2px;color:#69717c;font-size:7px}
+.group-status{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}.your-role{margin-top:10px;padding-top:9px;border-top:1px solid #242b34}.your-role small{display:block;color:#68717c;font-size:7px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}.your-role strong{display:block;margin-top:4px;font-size:9px}
+.capabilities{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.cap{padding:4px 6px;border-radius:9px;border:1px solid #333b46;color:#9fa6af;font-size:6px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.cap.on{border-color:#2d6147;color:#80d9a6;background:rgba(69,201,132,.06)}.cap.off{border-color:#3b3533;color:#77716d}
+.group-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:10px}.group-actions .btn{min-height:31px;padding:0 9px;font-size:7px}
+.lock-note{display:flex;align-items:center;gap:5px;margin-top:6px;color:#6c747e;font-size:6px;line-height:1.4}
+
+/* Releases / chapters */
+.release-toolbar{
+  padding:11px 14px;border-bottom:1px solid #252c35;background:#0d1116;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap
+}
+.release-filters{display:flex;gap:6px;flex-wrap:wrap}.filter-btn{min-height:29px;padding:0 9px;border:1px solid #2c343e;border-radius:7px;background:#11161c;color:#858d97;font-size:7px;font-weight:800}.filter-btn.active{color:#fff;border-color:#5a3037;background:rgba(232,25,44,.07)}
+.release-list{display:grid}.release-row{
+  display:grid;grid-template-columns:64px minmax(170px,.9fr) 100px minmax(130px,.8fr) 105px 90px minmax(250px,1.2fr);gap:10px;align-items:center;
+  padding:13px 14px;border-bottom:1px solid #222832;transition:.14s
+}
+.release-row:last-child{border-bottom:0}.release-row:hover{background:rgba(255,255,255,.012)}
+.chapter-no{font-family:"Bebas Neue";font-size:20px;letter-spacing:.5px}.chapter-title{font-size:8px;font-weight:750}.chapter-lineage{margin-top:4px;display:flex;align-items:center;gap:5px;color:#747c86;font-size:7px;line-height:1.35}
+.cell-label{display:none;color:#626a75;font-size:6px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}
+.release-cell{min-width:0}.release-main{font-size:8px;font-weight:700}.release-sub{margin-top:3px;color:#6f7781;font-size:7px;line-height:1.35}
+.release-actions{display:flex;gap:5px;flex-wrap:wrap}.release-actions .btn{min-height:30px;padding:0 8px;font-size:7px}
+.release-actions .primary-action{border-color:#4c3b24;background:rgba(217,173,92,.06);color:#e0bd76}
+.permissions-inline{display:flex;gap:5px;align-items:center;color:#737b85;font-size:7px}
+
+/* Right rail */
+.right-rail{position:sticky;top:84px;display:grid;gap:12px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.quick{
+  min-height:72px;padding:10px;border:1px solid #292f38;border-radius:9px;background:#0d1116;display:flex;flex-direction:column;justify-content:space-between;transition:.15s
+}
+.quick:hover{border-color:#3c4652;background:#12171e}.quick i{color:#8c949e}.quick strong{font-size:8px}.quick span{color:#68717c;font-size:7px;line-height:1.3}
+.quick.primary{border-color:#563038;background:linear-gradient(180deg,rgba(232,25,44,.08),rgba(232,25,44,.025))}
+.permission-list{display:grid}.permission{
+  min-height:34px;display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:center;border-bottom:1px solid #222832;font-size:8px
+}
+.permission:last-child{border-bottom:0}.permission-icon{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;border:1px solid #39414b;color:#737b85}
+.permission.allowed .permission-icon{border-color:#2d684a;background:rgba(69,201,132,.08);color:#76d7a0}
+.permission.denied .permission-icon{border-color:#4b3d36;background:rgba(185,155,104,.05);color:#9c8d7a}
+.permission small{display:block;margin-top:2px;color:#68717c;font-size:6px}
+.authority-source{margin-top:10px;padding:9px;border-left:2px solid #765f39;background:rgba(185,155,104,.05);color:#9c9587;font-size:7px;line-height:1.45}
+.restricted-example{margin-top:8px;padding:9px;border:1px dashed #3a414b;border-radius:8px;color:#747c86;font-size:7px;line-height:1.4}
+
+/* Empty variants */
+.empty-variants{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.empty-card{min-height:116px;padding:12px;border:1px dashed #343c46;border-radius:10px;background:#0c1015;text-align:center;display:grid;place-items:center}
+.empty-card i{color:#555e69}.empty-card strong{display:block;margin-top:7px;font-size:8px}.empty-card span{display:block;margin-top:4px;color:#68717c;font-size:7px;line-height:1.4}
+
+/* Drawers and modal */
+.overlay{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.2s}.overlay.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;right:0;top:68px;bottom:0;z-index:75;width:min(560px,96vw);
+  background:linear-gradient(180deg,#12171e,#0c1015);border-left:1px solid #303844;box-shadow:-28px 0 80px rgba(0,0,0,.5);
+  transform:translateX(105%);transition:.24s ease;display:flex;flex-direction:column
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:18px;border-bottom:1px solid #252c35;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.drawer-kicker{color:#c6a978;font-size:8px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}.drawer-title{margin-top:5px;font-family:"Bebas Neue";font-size:26px;letter-spacing:.8px}.drawer-sub{margin-top:4px;color:#7d848e;font-size:8px;line-height:1.45}.drawer-body{padding:17px;overflow:auto}.drawer-close{width:34px;height:34px;border-radius:8px;border:1px solid #303844;background:#11161c;color:#aab1ba;display:grid;place-items:center}
+.manage-group-row{padding:12px 0;border-bottom:1px solid #232a33;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:9px;align-items:center}.manage-group-row:last-child{border-bottom:0}.manage-group-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.manage-group-actions .btn{min-height:30px;padding:0 8px;font-size:7px}
+.drawer-note{padding:10px;border-left:2px solid #765f39;background:rgba(185,155,104,.05);color:#9c9587;font-size:7px;line-height:1.5;margin-bottom:12px}
+.lineage{
+  padding:10px;border:1px solid #2a313b;border-radius:9px;background:#0d1116;margin-bottom:9px
+}
+.lineage-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.lineage-head strong{font-size:9px}.lineage p{margin:6px 0 0;color:#757d87;font-size:7px;line-height:1.45}
+.lineage-flow{display:flex;align-items:center;gap:6px;margin-top:9px}.node{padding:6px 8px;border:1px solid #333b46;border-radius:8px;color:#aab1ba;font-size:7px}.node.current{border-color:#2d6549;color:#82dca7;background:rgba(69,201,132,.06)}.node.old{opacity:.65}
+
+.modalbg{position:fixed;inset:0;z-index:90;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.76);backdrop-filter:blur(7px)}.modalbg.open{display:grid}
+.modal{width:min(470px,100%);overflow:hidden;border:1px solid #39424d;border-radius:14px;background:linear-gradient(180deg,#141920,#0f1318);box-shadow:0 36px 110px rgba(0,0,0,.65)}
+.modal-head{padding:18px 19px 12px;border-top:2px solid var(--red)}.modal-icon{width:38px;height:38px;margin-bottom:10px;display:grid;place-items:center;border:1px solid rgba(232,25,44,.2);border-radius:9px;background:rgba(232,25,44,.1);color:#ff8490}.modal h2{margin:0;font-family:"Bebas Neue";font-size:23px;letter-spacing:.7px}.modal p{margin:5px 0 0;color:#9299a3;font-size:9px;line-height:1.55}.modal-body{padding:0 19px 16px}.modal-info{padding:9px 10px;border:1px solid #2b323c;border-radius:8px;background:#0b0f14;color:#b4bac3;font-size:8px;line-height:1.5}.modal-actions{display:flex;justify-content:flex-end;gap:7px;padding:13px 19px 17px;border-top:1px solid #252c35;background:#0c1015}
+
+/* Toast */
+.toast{position:fixed;right:18px;bottom:18px;z-index:110;display:none;align-items:center;gap:8px;max-width:360px;padding:10px 12px;border:1px solid #38414c;border-radius:10px;background:#171d25;box-shadow:var(--shadow);font-size:9px}.toast.show{display:flex}
+
+/* Mobile CTA bar */
+.mobile-actions{display:none}
+
+/* Responsive */
+@media(max-width:1280px){
+  .project-hero{grid-template-columns:155px minmax(0,1fr) 300px}.project-title{font-size:44px}
+  .content-grid{grid-template-columns:minmax(0,1fr) 320px}
+  .release-row{grid-template-columns:58px minmax(160px,.85fr) 90px minmax(120px,.7fr) 95px 80px minmax(220px,1.1fr)}
+}
+@media(max-width:1080px){
+  .breadcrumb{display:none}.content-grid{grid-template-columns:1fr}.right-rail{position:static;grid-template-columns:1fr 1fr}.right-rail .panel:last-child{grid-column:1/-1}
+  .project-hero{grid-template-columns:150px minmax(0,1fr) 260px}.groups-grid{grid-template-columns:1fr 1fr}.release-row{grid-template-columns:58px 1fr 90px 120px 95px minmax(230px,1fr)}.release-row .datecell{display:none}
+}
+@media(max-width:840px){
+  .topbar{padding:0 12px}.brandcontext,.profile-copy{display:none}.top-sep{display:none}
+  .project-hero{grid-template-columns:130px minmax(0,1fr)}.hero-aside{grid-column:1/-1;padding:0 20px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.hero-aside::before{display:none}.hero-stat{display:block;padding:8px;border:1px solid rgba(255,255,255,.07);border-radius:8px;background:rgba(8,10,14,.38)}.hero-stat strong{display:block;margin-top:4px}.hero-note,.hero-actions{grid-column:1/-1}
+  .stats{grid-template-columns:repeat(3,1fr)}.manga-summary{grid-template-columns:78px 1fr}.manga-actions{grid-column:1/-1;grid-template-columns:1fr 1fr}.groups-grid{grid-template-columns:1fr}
+  .release-toolbar{align-items:flex-start}.release-list{padding:9px;gap:8px}.release-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:11px;border:1px solid #292f38;border-radius:10px;background:#0d1116}.release-row:hover{background:#0d1116}.release-cell{padding:0}.cell-label{display:block;margin-bottom:3px}.release-row .release-title-cell,.release-row .release-actions{grid-column:1/-1}.release-row .datecell{display:block}.release-actions{padding-top:8px;border-top:1px solid #242b34}
+  .right-rail{grid-template-columns:1fr}
+  .right-rail .panel:last-child{grid-column:auto}.empty-variants{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .topbar{height:62px}.brandname{display:none}.backbtn span{display:none}.backbtn{width:36px;padding:0;justify-content:center}
+  .profile{padding:4px}.main{padding:15px 10px 92px}.project-hero{display:block;min-height:0}.cover-zone{justify-content:flex-start;padding:17px 17px 0}.cover{width:104px}.hero-main{padding:14px 17px 17px}.project-title{font-size:38px}.hero-aside{padding:0 17px 17px;grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.stat{min-height:68px}
+  .panel-head{align-items:flex-start}.panel-actions{width:100%;justify-content:flex-start}.panel-head{flex-wrap:wrap}
+  .manga-summary{grid-template-columns:70px 1fr}.manga-actions{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr 1fr}.release-row{grid-template-columns:1fr}.release-row .release-title-cell,.release-row .release-actions{grid-column:auto}.release-actions{grid-column:1!important}.datecell{display:block!important}
+  .mobile-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;position:fixed;left:0;right:0;bottom:0;z-index:55;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(8,10,14,.93);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)}.mobile-actions .btn{min-height:42px}
+  .drawer{top:62px;width:100%;border-left:0}.manage-group-row{grid-template-columns:38px 1fr}.manage-group-actions{grid-column:1/-1;justify-content:flex-start}
+}
+@media(max-width:430px){
+  .hero-aside{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.group-card{min-height:190px}
+}
+
+/* Legibility correction — compact but product-readable */
+.backbtn{font-size:11px}.breadcrumb{font-size:10px}.brandcontext{font-size:10px}
+.profile-copy strong{font-size:11px}.profile-copy span{font-size:10px}
+.btn{font-size:11px}.badge{font-size:10px}.kicker{font-size:10px}.manga-link{font-size:11px}.alt-title{font-size:10px}
+.group-chip{font-size:10px}.hero-stat{font-size:10px}.hero-stat strong{font-size:11px}.hero-note{font-size:10px;line-height:1.55}
+.stat-label{font-size:10px}.stat-meta{font-size:10px}.panel-title{font-size:13px}.panel-sub{font-size:10px;line-height:1.45}
+.manga-alt{font-size:10px}.fact{font-size:10px}.countbox span{font-size:10px}.countbox strong{font-size:12px}
+.group-name{font-size:12px}.group-handle{font-size:10px}.your-role small{font-size:10px}.your-role strong{font-size:12px}
+.cap{font-size:10px}.group-actions .btn{font-size:11px}.lock-note{font-size:10px;line-height:1.45}
+.filter-btn{font-size:11px}.permissions-inline{font-size:10px}.cell-label{font-size:10px}.chapter-title{font-size:12px}.chapter-lineage{font-size:10px}
+.release-main{font-size:11px}.release-sub{font-size:10px}.release-actions .btn{font-size:11px}.quick strong{font-size:11px}.quick span{font-size:10px;line-height:1.4}
+.permission{font-size:11px}.permission small{font-size:10px}.authority-source,.restricted-example{font-size:10px;line-height:1.5}
+.drawer-kicker{font-size:10px}.drawer-sub{font-size:10px}.drawer-note{font-size:10px;line-height:1.5}.manage-group-actions .btn{font-size:11px}
+.lineage p{font-size:10px}.node{font-size:10px}.modal p{font-size:11px}.modal-info{font-size:10px;line-height:1.5}.toast{font-size:11px}
+.empty-card strong{font-size:11px}.empty-card span{font-size:10px}.requirement-type{font-size:10px}
+.release-row,.group-card,.panel,.quick{min-width:0}
+.release-actions,.panel-actions,.group-actions{min-width:0}
+@media(max-width:620px){
+  .btn{font-size:12px}.badge{font-size:10px}.panel-title{font-size:13px}.panel-sub{font-size:11px}
+  .group-name{font-size:13px}.group-handle,.lock-note,.cap,.release-sub,.chapter-lineage,.authority-source,.restricted-example{font-size:10px}
+  .release-main,.release-actions .btn,.filter-btn,.permission,.quick strong{font-size:11px}
+  .mobile-actions .btn{min-height:44px;font-size:12px}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand">
+    <div class="brandmark">MZ</div>
+    <div><div class="brandname">MangaZone</div><div class="brandcontext">Proyecto editorial</div></div>
+  </div>
+  <div class="top-sep"></div>
+  <button class="backbtn" type="button"><i data-lucide="arrow-left" class="icon-sm"></i><span>Volver a proyectos</span></button>
+  <nav class="breadcrumb" aria-label="Ruta actual">
+    <span>MangaZone</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <span>Proyectos editoriales</span><i data-lucide="chevron-right" class="icon-sm"></i>
+    <strong>Kage no Shiori · Español</strong>
+  </nav>
+  <div class="top-spacer"></div>
+  <div class="profile">
+    <div class="profile-copy"><strong>@SoraEdit</strong><span>ADMIN · Akari Scan</span></div>
+    <div class="avatar">SE</div>
+  </div>
+</header>
+
+<main class="main">
+  <section class="project-hero">
+    <div class="hero-number">12</div>
+    <div class="cover-zone"><div class="cover" aria-label="Portada ficticia de Kage no Shiori"></div></div>
+
+    <div class="hero-main">
+      <div class="kicker">Proyecto editorial · centro operativo</div>
+      <h1 class="project-title">Proyecto de traducción en español</h1>
+      <a class="manga-link" href="#">
+        <i data-lucide="book-open-text" class="icon-sm"></i>
+        Kage no Shiori <span>· manga asociado</span>
+      </a>
+      <div class="alt-title">影の栞 · The Bookmark of Shadows</div>
+
+      <div class="hero-badges">
+        <span class="badge muted"><i data-lucide="layers-3" class="icon-sm"></i>Proyecto editorial</span>
+        <span class="badge muted"><i data-lucide="languages" class="icon-sm"></i>Español</span>
+        <span class="badge muted"><i data-lucide="network" class="icon-sm"></i>Participación múltiple</span>
+      </div>
+
+      <div class="group-chips" aria-label="Grupos participantes">
+        <span class="group-chip"><span class="group-dot"></span>Akari Scan</span>
+        <span class="group-chip"><span class="group-dot"></span>NekoWorks</span>
+        <span class="group-chip"><span class="group-dot"></span>Tsuki Team</span>
+      </div>
+    </div>
+
+    <div class="hero-aside">
+      <div class="hero-stat"><span>Proyecto</span><strong>PRJ-ES-042</strong></div>
+      <div class="hero-stat"><span>Manga</span><strong>MG-0187</strong></div>
+      <div class="hero-stat"><span>Participación</span><strong>3 grupos</strong></div>
+      <div class="hero-stat"><span>Última actividad</span><strong>Hace 22 min</strong></div>
+      <div class="hero-note">Este proyecto coordina grupos, capítulos y publicaciones. Los grupos participan de forma independiente según sus roles y capacidades.</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" type="button" id="newChapterBtn"><i data-lucide="file-plus-2" class="icon-sm"></i>Nuevo capítulo</button>
+        <button class="btn btn-secondary" type="button" id="newReleaseBtn"><i data-lucide="upload-cloud" class="icon-sm"></i>Nueva publicación</button>
+        <button class="btn btn-secondary" type="button" id="manageGroupsBtn"><i data-lucide="users-round" class="icon-sm"></i>Gestionar grupos</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Estadísticas compactas">
+    <div class="stat"><div class="stat-label">Grupos participantes</div><div class="stat-value">3</div><div class="stat-meta">todos activos</div></div>
+    <div class="stat"><div class="stat-label">Capítulos</div><div class="stat-value">12</div><div class="stat-meta">en este proyecto</div></div>
+    <div class="stat"><div class="stat-label">Borradores</div><div class="stat-value">2</div><div class="stat-meta">en preparación</div></div>
+    <div class="stat"><div class="stat-label">Publicados</div><div class="stat-value">9</div><div class="stat-meta">publicaciones visibles</div></div>
+    <div class="stat"><div class="stat-label">Retirados</div><div class="stat-value">1</div><div class="stat-meta">con historial</div></div>
+  </section>
+
+  <div class="content-grid">
+    <div class="stack">
+      <!-- Manga summary -->
+      <section class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Resumen del manga</div><div class="panel-sub">Ficha canónica asociada. El manga y el proyecto son recursos distintos.</div></div>
+          <span class="badge muted"><i data-lucide="library-big" class="icon-sm"></i>Manga</span>
+        </div>
+        <div class="panel-body">
+          <div class="manga-summary">
+            <div class="mini-cover"></div>
+            <div>
+              <div class="manga-name">Kage no Shiori</div>
+              <div class="manga-alt">影の栞 · The Bookmark of Shadows</div>
+              <div class="manga-facts">
+                <span class="fact">Manga</span><span class="fact">Seinen</span><span class="fact">Adolescentes</span><span class="fact">PÚBLICO</span>
+              </div>
+              <div class="manga-counts">
+                <div class="countbox"><span>Capítulos vinculados</span><strong>12</strong></div>
+                <div class="countbox"><span>Publicaciones</span><strong>14</strong></div>
+              </div>
+            </div>
+            <div class="manga-actions">
+              <a class="btn btn-secondary" href="#"><i data-lucide="external-link" class="icon-sm"></i>Ver ficha pública</a>
+              <a class="btn btn-secondary" href="#" data-editor-manga><i data-lucide="square-pen" class="icon-sm"></i>Editor del manga</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Groups -->
+      <section class="panel" id="groupsPanel">
+        <div class="panel-head">
+          <div><div class="panel-title">Grupos participantes</div><div class="panel-sub">Participación múltiple dentro del proyecto. Varios grupos pueden colaborar de forma independiente.</div></div>
+          <div class="panel-actions">
+            <button class="btn btn-secondary" type="button" id="addGroupBtn" disabled title="Requiere autoridad administrativa sobre la participación del proyecto"><i data-lucide="lock-keyhole" class="icon-sm"></i>Añadir grupo al proyecto</button><span class="badge locked"><i data-lucide="shield-alert" class="icon-sm"></i>Autoridad requerida</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="groups-grid">
+            <article class="group-card">
+              <div class="group-top">
+                <div class="group-logo">AS</div>
+                <div><div class="group-name">Akari Scan</div><div class="group-handle">@akari-scan</div></div>
+              </div>
+              <div class="group-status">
+                <span class="badge verified"><i data-lucide="badge-check" class="icon-sm"></i>Verificado</span>
+                <span class="badge active"><i data-lucide="circle-check" class="icon-sm"></i>Activo</span>
+              </div>
+              <div class="lock-note"><i data-lucide="users" class="icon-sm"></i>Roles del grupo: FOUNDER · ADMIN · UPLOADER · TYPESETTER</div>
+              <div class="your-role"><small>Tu rol en este grupo</small><strong>ADMIN</strong></div>
+              <div class="capabilities"><span class="cap on">Preparar</span><span class="cap on">Publicar</span><span class="cap on">Retirar</span></div>
+              <div class="group-actions">
+                <button class="btn" type="button">Gestionar participación</button>
+                <button class="btn" type="button">Ver grupo</button>
+              </div>
+            </article>
+
+            <article class="group-card">
+              <div class="group-top">
+                <div class="group-logo">NW</div>
+                <div><div class="group-name">NekoWorks</div><div class="group-handle">@nekoworks</div></div>
+              </div>
+              <div class="group-status">
+                <span class="badge verified"><i data-lucide="badge-check" class="icon-sm"></i>Verificado</span>
+                <span class="badge active"><i data-lucide="circle-check" class="icon-sm"></i>Activo</span>
+              </div>
+              <div class="lock-note"><i data-lucide="users" class="icon-sm"></i>Roles del grupo: FOUNDER · TRANSLATOR · PROOFREADER</div>
+              <div class="your-role"><small>Tu rol en este grupo</small><strong>TRANSLATOR</strong></div>
+              <div class="capabilities"><span class="cap on">Traducción</span><span class="cap off">Publicar</span><span class="cap off">Retirar</span></div>
+              <div class="group-actions">
+                <button class="btn" type="button">Ver grupo</button>
+                <button class="btn" type="button" disabled title="No tienes autoridad para retirar la participación de este grupo">Retirar grupo</button>
+              </div>
+              <div class="lock-note"><i data-lucide="lock-keyhole" class="icon-sm"></i>TRANSLATOR por sí solo no otorga mutaciones de publicación.</div>
+            </article>
+
+            <article class="group-card">
+              <div class="group-top">
+                <div class="group-logo">TT</div>
+                <div><div class="group-name">Tsuki Team</div><div class="group-handle">@tsuki-team</div></div>
+              </div>
+              <div class="group-status">
+                <span class="badge verified"><i data-lucide="badge-check" class="icon-sm"></i>Verificado</span>
+                <span class="badge active"><i data-lucide="circle-check" class="icon-sm"></i>Activo</span>
+              </div>
+              <div class="lock-note"><i data-lucide="users" class="icon-sm"></i>Roles del grupo: FOUNDER · UPLOADER · CLEANER · REDRAWER</div>
+              <div class="your-role"><small>Tu rol en este grupo</small><strong>UPLOADER</strong></div>
+              <div class="capabilities"><span class="cap on">Preparar</span><span class="cap on">Borradores</span><span class="cap off">Publicar</span><span class="cap off">Retirar</span></div>
+              <div class="group-actions">
+                <button class="btn" type="button">Ver grupo</button>
+                <button class="btn" type="button" disabled title="UPLOADER es un rol operativo y no permite gestionar la participación del grupo">Gestionar participación</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chapters and releases -->
+      <section class="panel" id="releasesPanel">
+        <div class="panel-head">
+          <div><div class="panel-title">Capítulos y publicaciones</div><div class="panel-sub">Actividad editorial del proyecto. Las publicaciones realizadas no se editan destructivamente.</div></div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" type="button" id="prepareBtn"><i data-lucide="file-plus-2" class="icon-sm"></i>Preparar publicación</button>
+          </div>
+        </div>
+
+        <div class="release-toolbar">
+          <div class="release-filters">
+            <button class="filter-btn active" data-filter="ALL" type="button">Todos</button>
+            <button class="filter-btn" data-filter="DRAFT" type="button">Borradores</button>
+            <button class="filter-btn" data-filter="PUBLISHED" type="button">Publicados</button>
+            <button class="filter-btn" data-filter="WITHDRAWN" type="button">Retirados</button>
+          </div>
+          <div class="permissions-inline"><i data-lucide="shield-check" class="icon-sm"></i>Acciones según autoridad efectiva</div>
+        </div>
+
+        <div class="release-list" id="releaseList">
+          <article class="release-row" data-status="DRAFT">
+            <div class="release-cell"><span class="cell-label">Capítulo</span><div class="chapter-no">CAP. 12</div></div>
+            <div class="release-cell release-title-cell">
+              <span class="cell-label">Publicación</span>
+              <div class="chapter-title">El eco bajo la lluvia</div>
+              <div class="chapter-lineage"><i data-lucide="pencil-line" class="icon-sm"></i>Publicación en borrador · lista para continuar preparación</div>
+            </div>
+            <div class="release-cell"><span class="cell-label">Idioma</span><div class="release-main">Español</div></div>
+            <div class="release-cell"><span class="cell-label">Grupo</span><div class="release-main">Akari Scan</div><div class="release-sub">responsable</div></div>
+            <div class="release-cell"><span class="cell-label">Estado</span><span class="badge draft"><i data-lucide="file-pen-line" class="icon-sm"></i>Borrador</span></div>
+            <div class="release-cell datecell"><span class="cell-label">Páginas</span><div class="release-main">28</div><div class="release-sub">hace 22 min</div></div>
+            <div class="release-actions">
+              <a class="btn primary-action" href="#" data-publication-flow><i data-lucide="pencil" class="icon-sm"></i>Continuar edición</a>
+              <a class="btn" href="#" data-publication-flow><i data-lucide="image-up" class="icon-sm"></i>Subir páginas</a>
+              <button class="btn" type="button"><i data-lucide="eye" class="icon-sm"></i>Vista previa</button>
+              <button class="btn btn-primary" type="button"><i data-lucide="send" class="icon-sm"></i>Publicar</button>
+            </div>
+          </article>
+
+          <article class="release-row" data-status="PUBLISHED">
+            <div class="release-cell"><span class="cell-label">Capítulo</span><div class="chapter-no">CAP. 11</div></div>
+            <div class="release-cell release-title-cell">
+              <span class="cell-label">Publicación</span>
+              <div class="chapter-title">Piedras que recuerdan</div>
+              <div class="chapter-lineage"><i data-lucide="git-branch" class="icon-sm"></i>Publicación de reemplazo · sustituye una publicación anterior</div>
+            </div>
+            <div class="release-cell"><span class="cell-label">Idioma</span><div class="release-main">Español</div></div>
+            <div class="release-cell"><span class="cell-label">Grupo</span><div class="release-main">NekoWorks</div><div class="release-sub">responsable</div></div>
+            <div class="release-cell"><span class="cell-label">Estado</span><span class="badge published"><i data-lucide="circle-check" class="icon-sm"></i>Publicado</span></div>
+            <div class="release-cell datecell"><span class="cell-label">Publicación</span><div class="release-main">30 págs.</div><div class="release-sub">22 sep 2026</div></div>
+            <div class="release-actions">
+              <button class="btn" type="button"><i data-lucide="external-link" class="icon-sm"></i>Ver publicación</button>
+              <button class="btn" type="button" data-lineage><i data-lucide="copy-plus" class="icon-sm"></i>Crear reemplazo</button>
+              <button class="btn btn-danger" type="button" data-withdraw><i data-lucide="archive-x" class="icon-sm"></i>Retirar</button>
+            </div>
+          </article>
+
+          <article class="release-row" data-status="WITHDRAWN">
+            <div class="release-cell"><span class="cell-label">Capítulo</span><div class="chapter-no">CAP. 10</div></div>
+            <div class="release-cell release-title-cell">
+              <span class="cell-label">Publicación</span>
+              <div class="chapter-title">La marca del jardín</div>
+              <div class="chapter-lineage"><i data-lucide="history" class="icon-sm"></i>Publicación retirada · conserva historial</div>
+            </div>
+            <div class="release-cell"><span class="cell-label">Idioma</span><div class="release-main">Español</div></div>
+            <div class="release-cell"><span class="cell-label">Grupo</span><div class="release-main">Tsuki Team</div><div class="release-sub">responsable</div></div>
+            <div class="release-cell"><span class="cell-label">Estado</span><span class="badge withdrawn"><i data-lucide="archive-x" class="icon-sm"></i>Retirado</span></div>
+            <div class="release-cell datecell"><span class="cell-label">Última actividad</span><div class="release-main">27 págs.</div><div class="release-sub">18 sep 2026</div></div>
+            <div class="release-actions">
+              <button class="btn" type="button" data-lineage><i data-lucide="history" class="icon-sm"></i>Ver historial</button>
+              <button class="btn" type="button" data-lineage><i data-lucide="copy-plus" class="icon-sm"></i>Crear reemplazo</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Empty state variants: se muestran solo cuando corresponde -->
+      <section class="panel" hidden aria-hidden="true">
+        <div class="panel-head">
+          <div><div class="panel-title">Estados sin contenido</div><div class="panel-sub">Se muestran únicamente cuando la sección correspondiente no tiene contenido.</div></div>
+          <span class="badge muted">Sin contenido</span>
+        </div>
+        <div class="panel-body">
+          <div class="empty-variants">
+            <div class="empty-card"><div><i data-lucide="book-dashed" class="icon-lg"></i><strong>Sin capítulos</strong><span>El proyecto aún no tiene capítulos preparados.</span></div></div>
+            <div class="empty-card"><div><i data-lucide="users" class="icon-lg"></i><strong>Sin grupos adicionales</strong><span>Solo participa el grupo desde el que accedes.</span></div></div>
+            <div class="empty-card"><div><i data-lucide="send-horizontal" class="icon-lg"></i><strong>Sin publicaciones</strong><span>Hay borradores, pero todavía no existen publicaciones realizadas.</span></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right rail -->
+    <aside class="right-rail">
+      <section class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Acciones rápidas</div><div class="panel-sub">Accesos del proyecto actual</div></div>
+        </div>
+        <div class="panel-body">
+          <div class="quick-grid">
+            <button class="quick primary" type="button" id="quickChapter">
+              <i data-lucide="file-plus-2" class="icon"></i><div><strong>Nuevo capítulo</strong><span>Crear estructura inicial</span></div>
+            </button>
+            <button class="quick" type="button" data-publication-flow>
+              <i data-lucide="upload-cloud" class="icon"></i><div><strong>Preparar publicación</strong><span>Preparar publicación, páginas y vista previa</span></div>
+            </button>
+            <button class="quick" type="button" id="quickGroups">
+              <i data-lucide="users-round" class="icon"></i><div><strong>Gestionar grupos</strong><span>Participación del proyecto</span></div>
+            </button>
+            <a class="quick" href="#" data-editor-manga>
+              <i data-lucide="square-pen" class="icon"></i><div><strong>Editor del manga</strong><span>Ficha canónica separada</span></div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Tus permisos en este proyecto</div><div class="panel-sub">Autoridad efectiva de la sesión actual</div></div>
+          <span class="badge role">ADMIN · Akari Scan</span>
+        </div>
+        <div class="panel-body">
+          <div class="permission-list">
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Ver proyecto<small>permitido</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Crear capítulos<small>permitido</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Crear publicaciones<small>permitido</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Subir páginas<small>permitido</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Reordenar páginas<small>permitido</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Vista previa<small>permitido</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Publicar<small>permitido por rol ADMIN del grupo</small></div></div>
+            <div class="permission allowed"><span class="permission-icon"><i data-lucide="check" class="icon-sm"></i></span><div>Retirar publicación<small>permitido por rol ADMIN del grupo</small></div></div>
+          </div>
+          <div class="authority-source">Autoridad efectiva: ADMIN en Akari Scan permite preparar, publicar y retirar publicaciones asociadas a ese grupo. TRANSLATOR en NekoWorks y UPLOADER en Tsuki Team no conceden por sí solos autoridad de publicación ni control sobre la participación de otros grupos.</div>
+          <div class="restricted-example"><i data-lucide="lock-keyhole" class="icon-sm"></i> Gestionar la participación de Tsuki Team permanece bloqueado: UPLOADER es un rol operativo y no concede autoridad administrativa sobre la participación del grupo.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Acceso a publicación</div><div class="panel-sub">Preparación de publicaciones, páginas y vista previa</div></div>
+        </div>
+        <div class="panel-body">
+          <div class="drawer-note" style="margin:0">Desde estas acciones puedes continuar una publicación, gestionar sus páginas, revisar la vista previa y avanzar a publicación cuando tu autoridad efectiva lo permita.</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+</div>
+
+<!-- Mobile actions -->
+<div class="mobile-actions">
+  <button class="btn btn-primary" type="button" id="mobileChapter"><i data-lucide="file-plus-2" class="icon-sm"></i>Nuevo capítulo</button>
+  <button class="btn" type="button" id="mobileGroups"><i data-lucide="users-round" class="icon-sm"></i>Gestionar grupos</button>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Manage groups drawer -->
+<aside class="drawer" id="groupsDrawer" role="dialog" aria-modal="true" aria-labelledby="groupsDrawerTitle">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-kicker">Participación del proyecto</div>
+      <div class="drawer-title" id="groupsDrawerTitle">Gestionar grupos</div>
+      <div class="drawer-sub">La participación puede incluir varios grupos que colaboran de forma independiente dentro del mismo proyecto.</div>
+    </div>
+    <button class="drawer-close" data-close-drawer type="button" aria-label="Cerrar"><i data-lucide="x" class="icon"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-note">Las acciones de participación dependen de la autoridad efectiva sobre el grupo y el proyecto. La pertenencia o autoridad en un grupo no concede control automático sobre los demás grupos participantes.</div>
+
+    <div class="manage-group-row">
+      <div class="group-logo">AS</div>
+      <div><div class="group-name">Akari Scan</div><div class="group-handle">Tu rol: ADMIN · ACTIVO · VERIFICADO</div></div>
+      <div class="manage-group-actions"><button class="btn" type="button">Gestionar</button><button class="btn btn-danger" type="button">Retirar participación</button></div>
+    </div>
+    <div class="manage-group-row">
+      <div class="group-logo">NW</div>
+      <div><div class="group-name">NekoWorks</div><div class="group-handle">Tu rol: TRANSLATOR · ACTIVO · VERIFICADO</div></div>
+      <div class="manage-group-actions"><button class="btn" type="button">Ver grupo</button><button class="btn" type="button" disabled>Retirar</button></div>
+    </div>
+    <div class="manage-group-row">
+      <div class="group-logo">TT</div>
+      <div><div class="group-name">Tsuki Team</div><div class="group-handle">UPLOADER · ACTIVO · VERIFICADO</div></div>
+      <div class="manage-group-actions"><button class="btn" type="button">Ver grupo</button><button class="btn" type="button" disabled>Gestionar</button></div>
+    </div>
+
+    <div style="margin-top:15px;padding-top:14px;border-top:1px solid #252c35">
+      <div class="field-label-row" style="display:flex;justify-content:space-between;margin-bottom:7px">
+        <span style="font-size:12px;font-weight:800">Añadir grupo al proyecto</span><span class="badge locked"><i data-lucide="shield-alert" class="icon-sm"></i>Autoridad requerida</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:7px">
+        <input type="search" placeholder="Buscar grupo VERIFICADO…" disabled aria-disabled="true" style="height:38px;border:1px solid #2b333d;border-radius:8px;background:#0c1015;color:#fff;padding:0 10px;font-size:12px">
+        <button class="btn" type="button" id="drawerAddGroup" disabled title="Requiere autoridad administrativa sobre la participación del proyecto">Añadir</button>
+      </div>
+      <div class="lock-note"><i data-lucide="lock-keyhole" class="icon-sm"></i>Esta acción se habilita únicamente cuando la sesión tiene autoridad administrativa sobre la participación correspondiente.</div>
+    </div>
+  </div>
+</aside>
+
+<!-- Lineage drawer -->
+<aside class="drawer" id="lineageDrawer" role="dialog" aria-modal="true" aria-labelledby="lineageTitle">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-kicker">Historial de reemplazo</div>
+      <div class="drawer-title" id="lineageTitle">Historial de publicación</div>
+      <div class="drawer-sub">Las correcciones se publican mediante una nueva publicación; una publicación ya realizada no se edita destructivamente.</div>
+    </div>
+    <button class="drawer-close" data-close-drawer type="button" aria-label="Cerrar"><i data-lucide="x" class="icon"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="lineage">
+      <div class="lineage-head"><strong>Cap. 11 · Español</strong><span class="badge published">Publicado</span></div>
+      <p>Publicación vigente. Sustituye una publicación anterior que permanece trazable en el historial.</p>
+      <div class="lineage-flow"><span class="node old">Publicación anterior · histórica</span><i data-lucide="arrow-right" class="icon-sm"></i><span class="node current">Publicación vigente · actual</span></div>
+    </div>
+    <div class="lineage">
+      <div class="lineage-head"><strong>Crear reemplazo</strong><span class="badge draft">Nuevo borrador</span></div>
+      <p>Genera una nueva publicación de reemplazo para corregir el contenido sin modificar las páginas de la publicación vigente.</p>
+    </div>
+    <div class="drawer-actions" style="margin-top:14px;display:flex;gap:7px;justify-content:flex-end">
+      <button class="btn" data-close-drawer type="button">Cerrar</button>
+      <a class="btn btn-primary" href="#" data-publication-flow>Crear reemplazo</a>
+    </div>
+  </div>
+</aside>
+
+<!-- Simple modal -->
+<div class="modalbg" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <div class="modal-icon"><i data-lucide="shield-check" class="icon-lg"></i></div>
+      <h2 id="modalTitle">Acción editorial</h2>
+      <p id="modalCopy"></p>
+    </div>
+    <div class="modal-body"><div class="modal-info" id="modalInfo"></div></div>
+    <div class="modal-actions">
+      <button class="btn" id="modalCancel" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="modalConfirm" type="button">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="circle-check" class="icon-sm"></i><span id="toastText">Acción completada.</span></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let activeDrawer=null,lastFocus=null,modalAction=null;
+
+function icons(){if(window.lucide)lucide.createIcons()}
+function toast(text,error=false){
+  $("#toastText").textContent=text;
+  $("#toast").style.borderColor=error?"#6c2932":"#38414c";
+  $("#toast").classList.add("show");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(()=>$("#toast").classList.remove("show"),2300);
+  icons();
+}
+function openDrawer(id){
+  closeDrawer(false);
+  activeDrawer=id;lastFocus=document.activeElement;
+  $("#overlay").classList.add("open");$("#"+id).classList.add("open");
+  setTimeout(()=>$("#"+id+" .drawer-close")?.focus(),0);
+}
+function closeDrawer(returnFocus=true){
+  $(".drawer.open")?.classList.remove("open");
+  $("#overlay").classList.remove("open");
+  if(returnFocus&&lastFocus?.focus)lastFocus.focus();
+  activeDrawer=null;
+}
+function openModal(action){
+  modalAction=action;lastFocus=document.activeElement;
+  if(action==="chapter"){
+    $("#modalTitle").textContent="Nuevo capítulo";
+    $("#modalCopy").textContent="Crear estructura inicial dentro de este proyecto editorial.";
+    $("#modalInfo").textContent="El capítulo se crea dentro de este proyecto. Después podrás preparar publicaciones, gestionar páginas y revisar el contenido antes de publicarlo.";
+    $("#modalConfirm").textContent="Crear capítulo";
+  }else if(action==="release"){
+    $("#modalTitle").textContent="Nueva publicación";
+    $("#modalCopy").textContent="Preparar una nueva versión editorial para un capítulo existente.";
+    $("#modalInfo").textContent="La preparación de la publicación incluye gestión de páginas, orden, vista previa y publicación según la autoridad efectiva del usuario.";
+    $("#modalConfirm").textContent="Preparar publicación";
+  }else if(action==="withdraw"){
+    $("#modalTitle").textContent="Retirar publicación";
+    $("#modalCopy").textContent="Acción disponible solo con autoridad de publicación efectiva.";
+    $("#modalInfo").textContent="La publicación quedará retirada y conservará su historial. Sus páginas no se editan destructivamente.";
+    $("#modalConfirm").textContent="Retirar";
+  }else if(action==="addgroup"){
+    $("#modalTitle").textContent="Añadir grupo al proyecto";
+    $("#modalCopy").textContent="Acción administrativa sobre la participación del proyecto.";
+    $("#modalInfo").textContent="Añadir un grupo requiere autoridad administrativa sobre la participación del proyecto. La autoridad en un grupo no concede control automático sobre los demás.";
+    $("#modalConfirm").textContent="Continuar";
+  }
+  $("#modal").classList.add("open");
+  setTimeout(()=>$("#modalCancel").focus(),0);
+}
+function closeModal(){
+  $("#modal").classList.remove("open");modalAction=null;
+  if(lastFocus?.focus)lastFocus.focus();
+}
+function confirmModal(){
+  const messages={
+    chapter:"Capítulo creado solo como interacción visual.",
+    release:"Preparación de publicación abierta.",
+    withdraw:"Publicación marcada como retirada.",
+    addgroup:"Acción de participación representada solo visualmente."
+  };
+  const msg=messages[modalAction]||"Acción completada.";
+  closeModal();toast(msg);
+}
+
+/* Main actions */
+$("#newChapterBtn").onclick=$("#quickChapter").onclick=$("#mobileChapter").onclick=()=>openModal("chapter");
+$("#newReleaseBtn").onclick=()=>openModal("release");
+$("#manageGroupsBtn").onclick=$("#quickGroups").onclick=$("#mobileGroups").onclick=()=>openDrawer("groupsDrawer");
+$("#addGroupBtn").onclick=()=>{};
+$("#drawerAddGroup").onclick=()=>{};
+$$("[data-lineage]").forEach(btn=>btn.onclick=()=>openDrawer("lineageDrawer"));
+$$("[data-withdraw]").forEach(btn=>btn.onclick=()=>openModal("withdraw"));
+
+/* Publication flow placeholders */
+$$("[data-publication-flow]").forEach(el=>el.addEventListener("click",e=>{
+  e.preventDefault();
+  toast("Abriendo preparación de publicación.");
+}));
+
+/* Release filters */
+$$(".filter-btn").forEach(btn=>btn.onclick=()=>{
+  const filter=btn.dataset.filter;
+  $$(".filter-btn").forEach(x=>x.classList.toggle("active",x===btn));
+  $$(".release-row").forEach(row=>{
+    row.style.display=filter==="ALL"||row.dataset.status===filter?"":"none";
+  });
+});
+
+/* Drawer + modal */
+$("#overlay").onclick=()=>closeDrawer();
+$$("[data-close-drawer]").forEach(btn=>btn.onclick=()=>closeDrawer());
+$("#modalCancel").onclick=closeModal;
+$("#modalConfirm").onclick=confirmModal;
+$("#modal").onclick=e=>{if(e.target===$("#modal"))closeModal()};
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    if($("#modal").classList.contains("open"))closeModal();
+    else if(activeDrawer)closeDrawer();
+  }
+  if(e.key==="Tab"){
+    const container=$("#modal").classList.contains("open")?$("#modal"):activeDrawer?$("#"+activeDrawer):null;
+    if(!container)return;
+    const f=[...container.querySelectorAll("button,a,input")].filter(x=>x.offsetParent!==null&&!x.disabled);
+    if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+
+icons();
+</script>
+</body>
+</html>

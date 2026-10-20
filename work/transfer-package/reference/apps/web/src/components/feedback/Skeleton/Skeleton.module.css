@@ -1,0 +1,43 @@
+.skeleton {
+  display: block;
+  max-width: 100%;
+  background: linear-gradient(
+    110deg,
+    var(--mz-surface-secondary) 8%,
+    var(--mz-card-hover) 18%,
+    var(--mz-surface-secondary) 33%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shine 1.4s linear infinite;
+}
+
+.text {
+  width: 100%;
+  height: 0.75rem;
+  border-radius: var(--mz-radius-full);
+}
+
+.circle {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mz-radius-full);
+}
+
+.rectangle {
+  width: 100%;
+  min-height: 96px;
+  border-radius: var(--mz-radius-md);
+}
+
+@keyframes skeleton-shine {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--mz-surface-secondary);
+  }
+}

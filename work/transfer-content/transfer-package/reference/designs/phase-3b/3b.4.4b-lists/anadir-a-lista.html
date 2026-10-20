@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09090d">
+<title>MangaZone — Añadir a lista</title>
+<meta name="description" content="Prototipo visual para añadir un manga a una o varias listas en MangaZone.">
+<style>
+:root{
+  --bg:#08080b;--surface:#121219;--surface2:#181820;--surface3:#20202a;--border:#292933;--border2:#1d1d25;
+  --text:#f5f5f7;--text2:#b9b9c5;--muted:#7f7f90;--red:#e63946;--red2:#ff4e5b;--redSoft:rgba(230,57,70,.15);
+  --green:#46c97c;--blue:#5ea8ff;--gold:#f1c75b;--shadow:0 28px 90px rgba(0,0,0,.55);
+  --header:64px;--font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--display:"Arial Narrow",Impact,Haettenschweiler,sans-serif
+}
+*{box-sizing:border-box;scrollbar-color:#7f1f2d #0b0b0f;scrollbar-width:thin}
+html{background:var(--bg)}
+body{
+  margin:0;min-height:100vh;color:var(--text);font-family:var(--font);
+  background:radial-gradient(circle at 12% 0%,rgba(230,57,70,.08),transparent 25%),linear-gradient(180deg,#09090d,#08080b)
+}
+button,input{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#0b0b0f;border-radius:999px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#7f1f2d,#e63946);border:2px solid #0b0b0f;border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#a52a3a,#ff4e5b)}::-webkit-scrollbar-corner{background:#0b0b0f}
+:focus-visible{outline:2px solid var(--red2);outline-offset:3px}
+
+.topbar{
+  height:var(--header);display:flex;align-items:center;gap:18px;padding:0 22px;background:#09090ddd;
+  border-bottom:1px solid #ffffff10;position:fixed;inset:0 0 auto;z-index:20;backdrop-filter:blur(18px)
+}
+.brand{display:flex;gap:10px;align-items:center}.mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--red),#861d2b);font-weight:900}
+.brandtxt{font:26px var(--display)}.brandtxt span{color:var(--red)}.nav{display:flex;gap:6px}.nav a{padding:10px 12px;color:var(--text2);font-size:14px;border-radius:10px}.nav a:hover{background:#ffffff0d;color:#fff}
+.search{margin-left:auto;max-width:520px;flex:1}.search input{width:100%;height:42px;border:1px solid var(--border);border-radius:13px;background:var(--surface);padding:0 14px}
+.page{padding:92px 26px 60px}
+.context{
+  width:min(1080px,100%);margin:auto;border:1px solid var(--border);border-radius:22px;overflow:hidden;background:var(--surface);
+  display:grid;grid-template-columns:220px 1fr;box-shadow:var(--shadow)
+}
+.cover{
+  min-height:330px;background:linear-gradient(145deg,#a91f35,#1a151c 55%,#0d0d12);display:grid;place-items:center;
+  font:64px var(--display);letter-spacing:2px
+}
+.info{padding:28px}.eyebrow{font-size:11px;color:#ff858f;letter-spacing:.14em;text-transform:uppercase;font-weight:900}.info h1{margin:8px 0 6px;font:46px/.98 var(--display);text-transform:uppercase}.meta{color:var(--muted);font-size:12px}.desc{margin-top:15px;color:var(--text2);font-size:13px;line-height:1.6;max-width:700px}.fakeActions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.fakeActions button{height:42px;padding:0 14px;border:1px solid var(--border);border-radius:11px;background:var(--surface2);font-weight:800}.fakeActions .active{background:var(--redSoft);border-color:#e6394677}
+
+.overlay{
+  position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.68);backdrop-filter:blur(7px);
+  display:grid;place-items:center;padding:18px;transition:.2s
+}
+.overlay.hidden{opacity:0;pointer-events:none}
+.modal{
+  width:min(100%,720px);max-height:calc(100vh - 36px);overflow:hidden;border:1px solid #ffffff1a;border-radius:22px;
+  background:#111117;box-shadow:var(--shadow);display:flex;flex-direction:column
+}
+.mhead{display:flex;justify-content:space-between;gap:16px;padding:22px 24px 17px;border-bottom:1px solid var(--border2)}
+.mhead h2{margin:0;font-size:24px}.mhead p{margin:6px 0 0;color:var(--muted);font-size:11px}.close{width:40px;height:40px;border:1px solid var(--border);border-radius:11px;background:var(--surface2);font-size:22px}
+.mangaStrip{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;padding:15px 24px;border-bottom:1px solid var(--border2);background:#0f0f15}
+.thumb{width:64px;aspect-ratio:2/3;border-radius:10px;background:linear-gradient(145deg,#a91f35,#1b171d);display:grid;place-items:center;font-weight:950}
+.mtitle{font-size:13px;font-weight:900}.mmeta{margin-top:4px;color:var(--muted);font-size:10px}
+
+.controls{padding:15px 24px 10px;display:grid;grid-template-columns:1fr auto;gap:10px}
+.searchbox{position:relative}.searchbox input{width:100%;height:42px;border:1px solid var(--border);border-radius:11px;background:#15151d;padding:0 12px 0 38px;outline:none}.searchbox span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.newList{height:42px;padding:0 13px;border:1px solid #e639466f;border-radius:11px;background:var(--redSoft);font-size:11px;font-weight:850}
+.summary{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:0 24px 10px;color:var(--muted);font-size:10px}
+.listWrap{overflow:auto;padding:0 24px 10px;min-height:180px;max-height:390px}
+.lists{display:grid;gap:9px}
+.listItem{
+  display:grid;grid-template-columns:34px 58px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;
+  border:1px solid var(--border);border-radius:14px;background:#14141c;transition:.15s
+}
+.listItem:hover{border-color:#3b3b46}.listItem.selected{border-color:#e6394680;background:var(--redSoft)}
+.check{
+  width:24px;height:24px;border:1px solid #454553;border-radius:7px;background:#101016;display:grid;place-items:center;
+  color:transparent;font-size:14px;font-weight:950
+}
+.selected .check{background:var(--red);border-color:var(--red);color:#fff}
+.listCover{width:58px;height:58px;border-radius:11px;overflow:hidden;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}
+.listCover i:nth-child(1){background:var(--a)}.listCover i:nth-child(2){background:#6d3d87}.listCover i:nth-child(3){background:#1f6657}.listCover i:nth-child(4){background:#2f5c78}
+.lname{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lmeta{margin-top:4px;color:var(--muted);font-size:10px}
+.badge{padding:6px 8px;border-radius:999px;border:1px solid var(--border);background:#101016;color:var(--text2);font-size:9px;font-weight:850}
+.empty{padding:40px 20px;text-align:center;border:1px dashed #373743;border-radius:14px;color:var(--muted)}.empty strong{display:block;color:#fff;margin-bottom:6px}
+
+.footer{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 24px 20px;border-top:1px solid var(--border2);
+  background:linear-gradient(180deg,#111117f3,#111117)
+}
+.selectionText{font-size:10px;color:var(--muted)}.footerActions{display:flex;gap:9px}.cancel,.save{height:44px;padding:0 15px;border-radius:11px;font-weight:850}.cancel{border:1px solid var(--border);background:var(--surface2)}.save{border:0;background:linear-gradient(135deg,var(--red),#b72435);min-width:140px}.save:disabled{opacity:.45;cursor:not-allowed}
+
+.createPanel{
+  display:none;margin:0 24px 12px;padding:14px;border:1px solid var(--border);border-radius:14px;background:#15151d
+}
+.createPanel.show{display:block}.createPanel h3{margin:0 0 10px;font-size:13px}.createGrid{display:grid;grid-template-columns:1fr auto;gap:9px}.createGrid input{height:40px;border:1px solid var(--border);border-radius:10px;background:#101016;padding:0 11px;outline:none}.createGrid button{height:40px;padding:0 12px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--red),#b72435);font-size:11px;font-weight:850}
+
+.toast{position:fixed;left:50%;bottom:26px;z-index:140;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.22s;background:#15151e;border:1px solid var(--border);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow);font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:820px){.nav,.search{display:none}.context{grid-template-columns:160px 1fr}.cover{min-height:260px;font-size:46px}}
+@media(max-width:640px){
+  :root{--header:58px}.topbar{padding:0 12px}.brandtxt{font-size:22px}.page{padding:78px 14px 50px}.context{display:block}.cover{min-height:170px}.info{padding:20px}.info h1{font-size:38px}
+  .overlay{padding:0;place-items:end}.modal{width:100%;max-height:96vh;border-radius:22px 22px 0 0}.mhead{padding:18px 18px 14px}.mangaStrip{padding:13px 18px}.controls{padding:13px 18px 9px;grid-template-columns:1fr}.summary{padding:0 18px 9px}.listWrap{padding:0 18px 10px;max-height:360px}.createPanel{margin:0 18px 10px}.footer{padding:14px 18px calc(16px + env(safe-area-inset-bottom));flex-direction:column;align-items:stretch}.footerActions{display:grid;grid-template-columns:1fr 1.25fr}.cancel,.save{width:100%}.listItem{grid-template-columns:30px 50px minmax(0,1fr)}.listCover{width:50px;height:50px}.badge{grid-column:3;justify-self:start}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#"><span class="mark">MZ</span><span class="brandtxt">Manga<span>Zone</span></span></a>
+  <nav class="nav"><a href="#">Inicio</a><a href="#">Explorar</a><a href="#">Biblioteca</a><a href="#">Listas</a><a href="#">Comunidad</a></nav>
+  <div class="search"><input placeholder="Buscar manga…"></div>
+</header>
+
+<main class="page">
+  <section class="context">
+    <div class="cover">AC</div>
+    <div class="info">
+      <span class="eyebrow">Ficha de manga</span>
+      <h1>Ashes of the Crown</h1>
+      <div class="meta">Manga · Fantasía oscura · Publicando · ★ 9.3</div>
+      <p class="desc">Un imperio consumido por antiguas promesas, magia prohibida y una corona que parece elegir a sus propios herederos.</p>
+      <div class="fakeActions">
+        <button>▶ Leer ahora</button>
+        <button>♡ Favorito</button>
+        <button class="active" id="openBtn">＋ Añadir a lista</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="overlay" class="overlay">
+  <section class="modal" role="dialog" aria-modal="true">
+    <header class="mhead">
+      <div><h2>Añadir a lista</h2><p>Selecciona una o varias listas donde quieras guardar esta obra.</p></div>
+      <button id="closeBtn" class="close">×</button>
+    </header>
+
+    <div class="mangaStrip">
+      <div class="thumb">AC</div>
+      <div><div class="mtitle">Ashes of the Crown</div><div class="mmeta">Manga · Fantasía oscura · Capítulos disponibles: 48</div></div>
+    </div>
+
+    <div class="controls">
+      <div class="searchbox"><span>⌕</span><input id="listSearch" placeholder="Buscar entre tus listas…"></div>
+      <button id="newListBtn" class="newList">＋ Crear lista nueva</button>
+    </div>
+
+    <div id="createPanel" class="createPanel">
+      <h3>Crear lista rápida</h3>
+      <div class="createGrid">
+        <input id="newListName" maxlength="60" placeholder="Nombre de la nueva lista">
+        <button id="createListBtn">Crear</button>
+      </div>
+    </div>
+
+    <div class="summary">
+      <span id="resultText">6 listas disponibles</span>
+      <span>Puede añadirse a varias</span>
+    </div>
+
+    <div class="listWrap">
+      <div id="lists" class="lists"></div>
+      <div id="emptyState" class="empty" hidden><strong>No encontramos listas</strong>Prueba con otro nombre o crea una nueva.</div>
+    </div>
+
+    <footer class="footer">
+      <div id="selectionText" class="selectionText">No has seleccionado ninguna lista</div>
+      <div class="footerActions">
+        <button id="cancelBtn" class="cancel">Cancelar</button>
+        <button id="saveBtn" class="save" disabled>Añadir a lista</button>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+let listsData=[
+{id:1,name:"Fantasía oscura imprescindible",visibility:"Pública",count:8,accent:"#a91f35",contains:true},
+{id:2,name:"Pendientes del mes",visibility:"Privada",count:5,accent:"#28527a",contains:false},
+{id:3,name:"Para releer",visibility:"Privada",count:3,accent:"#303451",contains:false},
+{id:4,name:"Joyas ocultas",visibility:"Pública",count:5,accent:"#1f6657",contains:false},
+{id:5,name:"Acción sin descanso",visibility:"No listada",count:4,accent:"#9a2632",contains:false},
+{id:6,name:"Favoritos de fantasía",visibility:"Pública",count:11,accent:"#6d3d87",contains:true}
+];
+const selected=new Set(listsData.filter(x=>x.contains).map(x=>x.id));
+const overlay=document.getElementById("overlay"),lists=document.getElementById("lists"),toast=document.getElementById("toast");
+
+function showToast(msg){toast.textContent=msg;toast.classList.add("show");clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove("show"),1700)}
+function openModal(){overlay.classList.remove("hidden");setTimeout(()=>document.getElementById("listSearch").focus(),80)}
+function closeModal(){overlay.classList.add("hidden")}
+function filtered(){const q=document.getElementById("listSearch").value.trim().toLowerCase();return listsData.filter(x=>x.name.toLowerCase().includes(q))}
+function render(){
+ const data=filtered();
+ lists.innerHTML=data.map(x=>`<button class="listItem ${selected.has(x.id)?"selected":""}" data-id="${x.id}">
+   <span class="check">✓</span>
+   <span class="listCover" style="--a:${x.accent}"><i></i><i></i><i></i><i></i></span>
+   <span style="min-width:0;text-align:left"><span class="lname">${x.name}</span><span class="lmeta">${x.count} obras${x.contains?" · Ya contiene este manga":""}</span></span>
+   <span class="badge">${x.visibility}</span>
+ </button>`).join("");
+ document.getElementById("emptyState").hidden=data.length>0;
+ document.getElementById("resultText").textContent=`${data.length} ${data.length===1?"lista disponible":"listas disponibles"}`;
+ const n=selected.size;
+ document.getElementById("selectionText").textContent=n?`${n} ${n===1?"lista seleccionada":"listas seleccionadas"}`:"No has seleccionado ninguna lista";
+ const save=document.getElementById("saveBtn");
+ save.disabled=n===0;
+ save.textContent=n>1?`Guardar en ${n} listas`:"Añadir a lista";
+ document.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{const id=+b.dataset.id;selected.has(id)?selected.delete(id):selected.add(id);render()});
+}
+document.getElementById("listSearch").oninput=render;
+document.getElementById("newListBtn").onclick=()=>{document.getElementById("createPanel").classList.toggle("show");setTimeout(()=>document.getElementById("newListName").focus(),50)};
+document.getElementById("createListBtn").onclick=()=>{
+ const name=document.getElementById("newListName").value.trim();
+ if(name.length<2){showToast("Escribe un nombre para la lista");return}
+ const id=Date.now();listsData.unshift({id,name,visibility:"Privada",count:0,accent:"#e63946",contains:false});selected.add(id);
+ document.getElementById("newListName").value="";document.getElementById("createPanel").classList.remove("show");render();showToast("Lista creada y seleccionada");
+};
+document.getElementById("saveBtn").onclick=()=>{
+ listsData=listsData.map(x=>({...x,contains:selected.has(x.id)}));
+ showToast(selected.size===1?"Manga añadido a la lista":`Manga guardado en ${selected.size} listas`);
+ setTimeout(closeModal,500);
+};
+document.getElementById("closeBtn").onclick=closeModal;document.getElementById("cancelBtn").onclick=closeModal;document.getElementById("openBtn").onclick=openModal;
+overlay.onclick=e=>{if(e.target===overlay)closeModal()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();if((e.ctrlKey||e.metaKey)&&e.key==="Enter"&&!document.getElementById("saveBtn").disabled)document.getElementById("saveBtn").click()});
+render();
+</script>
+</body>
+</html>

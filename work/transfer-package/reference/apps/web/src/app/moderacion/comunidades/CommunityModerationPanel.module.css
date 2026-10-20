@@ -1,0 +1,63 @@
+.page { min-height: 100%; padding: 32px clamp(18px, 4vw, 56px) 64px; color: var(--color-text-primary); }
+.hero { display: flex; justify-content: space-between; gap: 24px; align-items: flex-end; margin-bottom: 24px; }
+.hero h1 { margin: 4px 0 6px; font-family: var(--font-bebas-neue), sans-serif; font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: .03em; }
+.hero p { margin: 0; color: var(--color-text-secondary); }
+.eyebrow { display: flex; align-items: center; gap: 8px; color: #e8192c !important; font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.countCard { display: flex; align-items: center; gap: 12px; min-width: 145px; padding: 16px 18px; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }
+.countCard strong { display: block; font-size: 1.6rem; }
+.filters { display: grid; grid-template-columns: repeat(2, minmax(180px, 260px)); gap: 14px; padding: 16px; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }
+.filters label { display: grid; gap: 7px; color: var(--color-text-secondary); font-size: .78rem; font-weight: 700; text-transform: uppercase; }
+.filters select, .dialog textarea { width: 100%; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-background); color: var(--color-text-primary); padding: 11px 12px; font: inherit; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 390px); gap: 20px; margin-top: 20px; align-items: start; }
+.list { display: grid; gap: 12px; min-width: 0; }
+.row { display: grid; gap: 9px; width: 100%; padding: 17px; text-align: left; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); color: inherit; cursor: pointer; }
+.row:hover, .row:focus-visible { border-color: #e8192c; outline: none; transform: translateY(-1px); }
+.rowTop { display: flex; justify-content: space-between; gap: 12px; color: var(--color-text-secondary); font-size: .76rem; }
+.badge { width: fit-content; padding: 4px 8px; border-radius: 999px; background: rgb(232 25 44 / 14%); color: #ff5060; font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.preview { display: -webkit-box; overflow: hidden; color: var(--color-text-secondary); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.meta { color: var(--color-text-secondary); font-size: .82rem; }
+.detail { position: sticky; top: 92px; min-height: 420px; padding: 22px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); box-shadow: 0 18px 50px rgb(0 0 0 / 20%); }
+.closeButton { display: none; margin-left: auto; border: 0; background: transparent; color: inherit; }
+.detailHeading { display: grid; gap: 7px; padding-right: 28px; }
+.detailHeading h2, .detailHeading p { margin: 0; }
+.detailHeading p { color: var(--color-text-secondary); }
+.context, .content, .history { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--color-border); }
+.context { display: grid; gap: 5px; }
+.context span { color: var(--color-text-secondary); font-size: .75rem; text-transform: uppercase; }
+.content h3, .history h3 { margin: 0 0 10px; font-size: .9rem; text-transform: uppercase; }
+.content p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.history ol { display: grid; gap: 12px; margin: 0 0 18px; padding: 0; list-style: none; }
+.history li { display: grid; gap: 3px; padding-left: 12px; border-left: 2px solid #e8192c; }
+.history li span, .history li p { margin: 0; color: var(--color-text-secondary); font-size: .82rem; }
+.primaryButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border: 0; border-radius: 9px; background: #e8192c; color: white; font-weight: 800; cursor: pointer; }
+.primaryButton:disabled { cursor: wait; opacity: .58; }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px; }
+.pagination button, .dialogActions > button:not(.primaryButton) { display: inline-flex; align-items: center; gap: 5px; min-height: 40px; padding: 0 12px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); color: inherit; }
+.state { display: grid; place-items: center; gap: 10px; min-height: 250px; padding: 28px; text-align: center; color: var(--color-text-secondary); border: 1px dashed var(--color-border); border-radius: 14px; }
+.state h1, .state h2, .state p { margin: 0; }
+.spinner { width: 28px; height: 28px; border: 3px solid var(--color-border); border-top-color: #e8192c; border-radius: 50%; animation: spin .8s linear infinite; }
+.bannerError, .fieldError { color: #ff7180; }
+.bannerError { padding: 12px 14px; border: 1px solid rgb(232 25 44 / 40%); border-radius: 10px; background: rgb(232 25 44 / 10%); }
+.dialogBackdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(0 0 0 / 70%); }
+.dialog { width: min(100%, 520px); max-height: calc(100vh - 40px); overflow: auto; padding: 24px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); box-shadow: 0 24px 80px rgb(0 0 0 / 45%); }
+.dialog h2 { margin-top: 0; }
+.dialog label { display: block; margin: 18px 0 7px; font-weight: 700; }
+.dialog textarea { resize: vertical; }
+.dialog > span { color: var(--color-text-secondary); font-size: .78rem; }
+.dialogActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; }
+  .detail { position: fixed; z-index: 60; inset: auto 0 0; display: none; max-height: 82vh; overflow: auto; border-radius: 20px 20px 0 0; }
+  .detailOpen { display: block; }
+  .closeButton { display: flex; }
+}
+@media (max-width: 560px) {
+  .page { padding: 22px 14px 92px; }
+  .hero { align-items: stretch; flex-direction: column; }
+  .countCard { min-width: 0; }
+  .filters { grid-template-columns: 1fr; }
+  .pagination { flex-wrap: wrap; }
+  .dialogActions { flex-direction: column-reverse; }
+  .dialogActions button { width: 100%; }
+}

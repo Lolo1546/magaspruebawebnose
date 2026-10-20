@@ -1,0 +1,1829 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING_VERIFICATION
+  SUSPENDED
+  PENDING_DELETION
+  DELETED
+}
+
+enum PasswordResetRequestJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AssetStatus {
+  PENDING
+  READY
+  QUARANTINED
+  REJECTED
+  DELETED
+}
+
+enum MangaType {
+  MANGA
+  MANHWA
+  MANHUA
+  WEBTOON
+  NOVEL
+  COMIC
+  ONE_SHOT
+  DOUJINSHI
+  OEL
+}
+
+enum MangaDemography {
+  SEINEN
+  SHOUJO
+  SHOUNEN
+  JOSEI
+  KODOMO
+}
+
+enum MangaEditorialStatus {
+  DRAFT
+  PUBLIC
+  HIDDEN
+}
+
+enum EditorialAuditActionType {
+  PROJECT_CREATED
+  PROJECT_GROUP_ADDED
+  PROJECT_GROUP_REMOVED
+  MANGA_CREATED
+  MANGA_UPDATED
+  MANGA_PUBLISHED
+  MANGA_HIDDEN
+  RELEASE_PUBLISHED
+  RELEASE_WITHDRAWN
+  CHAPTER_THUMBNAIL_SET
+  CHAPTER_THUMBNAIL_REQUESTED
+  CHAPTER_THUMBNAIL_APPROVED
+  CHAPTER_THUMBNAIL_REJECTED
+  CHAPTER_THUMBNAIL_OVERRIDDEN
+}
+
+enum EditorialUploadPurpose {
+  MANGA_PAGE
+  MANGA_COVER
+  CHAPTER_THUMBNAIL
+}
+
+enum ChapterThumbnailRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUPERSEDED
+}
+
+enum EditorialUploadState {
+  PENDING
+  FINALIZED
+  REJECTED
+  EXPIRED
+}
+
+enum MangaStatus {
+  ONGOING
+  COMPLETED
+  PAUSED
+  CANCELLED
+  UNKNOWN
+}
+
+enum ContentRating {
+  GENERAL
+  TEEN
+  MATURE
+  ADULT
+}
+
+enum ContributionType {
+  AUTHOR
+  ARTIST
+  STORY
+  ILLUSTRATION
+}
+
+enum ChapterKind {
+  REGULAR
+  SPECIAL
+  ONE_SHOT
+  EXTRA
+}
+
+enum ChapterStatus {
+  DRAFT
+  ACTIVE
+  HIDDEN
+  ARCHIVED
+}
+
+enum ChapterReleaseStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  HIDDEN
+  WITHDRAWN
+}
+
+enum ChapterContributionType {
+  TRANSLATOR
+  CLEANER
+  REDRAWER
+  TYPESETTER
+  PROOFREADER
+  UPLOADER
+  OTHER
+}
+
+enum LibraryStatus {
+  READING
+  PLAN_TO_READ
+  ON_HOLD
+  COMPLETED
+  DROPPED
+}
+
+enum ListVisibility {
+  PRIVATE
+  UNLISTED
+  PUBLIC
+}
+
+enum ScanlationGroupStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+  CLOSED
+}
+
+enum ScanlationGroupMemberStatus {
+  ACTIVE
+  LEFT
+  REMOVED
+  SUSPENDED
+}
+
+enum ScanlationGroupRole {
+  FOUNDER
+  ADMIN
+  UPLOADER
+  TRANSLATOR
+  CLEANER
+  REDRAWER
+  TYPESETTER
+  PROOFREADER
+}
+
+enum ScanlationGroupRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_INFO
+}
+
+enum CreationRequestActionType {
+  INFO_REQUESTED
+  RESUBMITTED
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+  ABANDONED
+  COMPLETED
+  AVAILABLE_FOR_CONTINUATION
+  DISPUTED
+}
+
+enum ProjectGroupStatus {
+  ACTIVE
+  LEFT
+  REMOVED
+}
+
+enum ProjectRequestType {
+  CREATE
+  JOIN
+  CONTINUE
+  COLLABORATE
+  TRANSFER
+}
+
+enum ProjectRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_INFO
+  CANCELLED
+}
+
+enum CommunityStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  CLOSED
+  MERGED
+}
+
+enum CommunityRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_INFO
+}
+
+enum CommunityMemberRole {
+  OWNER
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum CommunityMemberStatus {
+  ACTIVE
+  LEFT
+  REMOVED
+  SUSPENDED
+}
+
+enum PostStatus {
+  PUBLISHED
+  HIDDEN
+  REMOVED
+}
+
+enum PostCommentStatus {
+  PUBLISHED
+  HIDDEN
+  REMOVED
+}
+
+enum MangaCommentStatus {
+  PUBLISHED
+  HIDDEN
+  REMOVED
+}
+
+enum ReviewStatus {
+  PUBLISHED
+  HIDDEN
+  REMOVED
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  HATE
+  SEXUAL_CONTENT
+  VIOLENCE
+  SPOILER
+  IMPERSONATION
+  COPYRIGHT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum ModerationActionType {
+  HIDE_CONTENT
+  RESTORE_CONTENT
+  REMOVE_CONTENT
+  WARN_USER
+  RESTRICT_USER
+  SUSPEND_USER
+  BAN_USER
+  UNBAN_USER
+  APPROVE_REQUEST
+  REJECT_REQUEST
+  OTHER
+}
+
+enum AdministrativeAuditActionType {
+  GLOBAL_ROLE_GRANTED
+  GLOBAL_ROLE_REVOKED
+  GLOBAL_PERMISSION_GRANTED
+  GLOBAL_PERMISSION_REVOKED
+  USER_SUSPENDED
+  USER_RESTORED
+}
+
+enum ModerationTargetType {
+  USER
+  POST
+  POST_COMMENT
+  REVIEW
+  COMMUNITY
+  SCANLATION_GROUP
+  PROJECT
+  CHAPTER_RELEASE
+  MANGA_COMMENT
+}
+
+enum ConversationType {
+  DIRECT
+  GROUP
+}
+
+enum UserSanctionType {
+  WARNING
+  RESTRICTION
+  SUSPENSION
+  BAN
+}
+
+enum AppealStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AccountDeletionRequestStatus {
+  PENDING
+  CANCELLED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ContentDeletionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum NotificationCategory {
+  MANGA
+  SOCIAL
+  COMMUNITY
+  GROUP
+  MODERATION
+  SYSTEM
+}
+
+model User {
+  definedChapterThumbnails Chapter[] @relation("ChapterThumbnailActor")
+  thumbnailRequests ChapterThumbnailRequest[] @relation("ThumbnailRequester")
+  resolvedThumbnailRequests ChapterThumbnailRequest[] @relation("ThumbnailResolver")
+  id                 String     @id @default(uuid(7)) @db.Uuid
+  username           String?
+  usernameNormalized String?    @unique
+  email              String?
+  emailNormalized    String?    @unique
+  passwordHash       String?
+  status             UserStatus
+  emailVerifiedAt    DateTime?  @db.Timestamptz(3)
+  createdAt          DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime   @updatedAt @db.Timestamptz(3)
+
+  profile                          Profile?
+  roles                            UserRole[]                   @relation("UserRoleSubject")
+  roleAssignmentsMade              UserRole[]                   @relation("UserRoleAssigner")
+  permissionGrants                 UserPermissionGrant[]        @relation("UserPermissionGrantSubject")
+  permissionGrantsMade             UserPermissionGrant[]        @relation("UserPermissionGrantGranter")
+  originatedAssets                 Asset[]                      @relation("AssetOwner")
+  uploadedChapterReleases          ChapterRelease[]             @relation("ChapterReleaseUploader")
+  libraryEntries                   LibraryEntry[]
+  readingProgress                  ReadingProgress[]
+  readingHistory                   ReadingHistoryEntry[]
+  readingReleaseProgress           ReadingReleaseProgress[]
+  lists                            UserList[]
+  createdScanlationGroups          ScanlationGroup[]            @relation("ScanlationGroupCreator")
+  scanlationMemberships            ScanlationGroupMember[]
+  scanlationRequests               ScanlationGroupRequest[]     @relation("ScanlationGroupRequester")
+  reviewedScanlationRequests       ScanlationGroupRequest[]     @relation("ScanlationGroupReviewer")
+  scanlationRequestActions         ScanlationGroupRequestAction[] @relation("ScanlationGroupRequestActionActor")
+  createdScanlationProjects        ScanlationProject[]          @relation("ScanlationProjectCreator")
+  projectRequests                  ProjectRequest[]             @relation("ProjectRequestRequester")
+  reviewedProjectRequests          ProjectRequest[]             @relation("ProjectRequestReviewer")
+  chapterCredits                   ChapterCredit[]
+  ownedCommunities                 Community[]                  @relation("CommunityOwner")
+  communityMemberships             CommunityMember[]
+  communityRequests                CommunityRequest[]           @relation("CommunityRequestRequester")
+  reviewedCommunityRequests        CommunityRequest[]           @relation("CommunityRequestReviewer")
+  communityRequestActions          CommunityRequestAction[]       @relation("CommunityRequestActionActor")
+  communityPosts                   Post[]                       @relation("PostAuthor")
+  postComments                     PostComment[]
+  mangaComments                    MangaComment[]
+  reviews                          Review[]
+  reviewVotes                      ReviewVote[]
+  submittedReports                 Report[]                     @relation("ReportReporter")
+  reportsAboutUser                 Report[]                     @relation("ReportTargetUser")
+  reviewedReports                  Report[]                     @relation("ReportReviewer")
+  moderationActions                ModerationAction[]           @relation("ModerationActionModerator")
+  sanctions                        UserSanction[]               @relation("UserSanctionSubject")
+  sanctionsIssued                  UserSanction[]               @relation("UserSanctionIssuer")
+  sanctionsRevoked                 UserSanction[]               @relation("UserSanctionRevoker")
+  appeals                          Appeal[]                     @relation("AppealUser")
+  reviewedAppeals                  Appeal[]                     @relation("AppealReviewer")
+  accountDeletionRequests          AccountDeletionRequest[]
+  contentDeletionRequests          ContentDeletionRequest[]     @relation("ContentDeletionRequester")
+  reviewedDeletionRequests         ContentDeletionRequest[]     @relation("ContentDeletionReviewer")
+  receivedNotifications            Notification[]               @relation("NotificationRecipient")
+  actedNotifications               Notification[]               @relation("NotificationActor")
+  createdConversations             Conversation[]               @relation("ConversationCreator")
+  conversationMemberships          ConversationMember[]
+  directConversationIdentitiesLow  DirectConversationIdentity[] @relation("DirectConversationUserLow")
+  directConversationIdentitiesHigh DirectConversationIdentity[] @relation("DirectConversationUserHigh")
+  sentMessages                     Message[]                    @relation("MessageSender")
+  sessions                         Session[]
+  emailVerificationTokens          EmailVerificationToken[]
+  passwordResetTokens              PasswordResetToken[]
+  securityAuditEvents              SecurityAuditEvent[]
+  administrativeAuditEventsAsActor  AdministrativeAuditEvent[] @relation("AdministrativeAuditEventActor")
+  administrativeAuditEventsAsTarget AdministrativeAuditEvent[] @relation("AdministrativeAuditEventTarget")
+  editorialAuditEvents EditorialAuditEvent[]
+  editorialUploadIntents EditorialUploadIntent[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Profile {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  userId        String   @unique @db.Uuid
+  displayName   String?
+  bio           String?
+  avatarAssetId String?  @db.Uuid
+  bannerAssetId String?  @db.Uuid
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
+
+  user        User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  avatarAsset Asset? @relation("ProfileAvatarAsset", fields: [avatarAssetId], references: [id], onDelete: SetNull)
+  bannerAsset Asset? @relation("ProfileBannerAsset", fields: [bannerAssetId], references: [id], onDelete: SetNull)
+
+  @@index([avatarAssetId])
+  @@index([bannerAssetId])
+}
+
+model Asset {
+  chapterThumbnails Chapter[] @relation("ChapterThumbnailAsset")
+  thumbnailRequests ChapterThumbnailRequest[]
+  thumbnailAuditBefore EditorialAuditEvent[] @relation("ThumbnailAuditBefore")
+  thumbnailAuditAfter EditorialAuditEvent[] @relation("ThumbnailAuditAfter")
+  id          String      @id @default(uuid(7)) @db.Uuid
+  storageKey  String      @unique
+  mimeType    String
+  sizeBytes   BigInt      @db.BigInt
+  width       Int?
+  height      Int?
+  status      AssetStatus
+  ownerUserId String?     @db.Uuid
+  createdAt   DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime    @updatedAt @db.Timestamptz(3)
+  sha256      String?     @db.VarChar(64)
+  uploadIntent EditorialUploadIntent?
+
+  owner              User?               @relation("AssetOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  profileAvatars     Profile[]           @relation("ProfileAvatarAsset")
+  profileBanners     Profile[]           @relation("ProfileBannerAsset")
+  mangaCovers        Manga[]             @relation("MangaCoverAsset")
+  chapterPages       ChapterPage[]
+  scanlationLogos    ScanlationGroup[]   @relation("ScanlationGroupLogo")
+  scanlationBanners  ScanlationGroup[]   @relation("ScanlationGroupBanner")
+  communityAvatars   Community[]         @relation("CommunityAvatarAsset")
+  communityBanners   Community[]         @relation("CommunityBannerAsset")
+  messageAttachments MessageAttachment[]
+
+  @@index([status])
+  @@index([ownerUserId])
+  @@index([createdAt])
+}
+
+model Manga {
+  id              String        @id @default(uuid(7)) @db.Uuid
+  slug            String        @unique
+  title           String
+  normalizedTitle String        @default("")
+  editorialStatus MangaEditorialStatus @default(DRAFT)
+  version         Int           @default(1)
+  originalTitle   String?
+  type            MangaType
+  demography      MangaDemography?
+  status          MangaStatus
+  description     String?
+  coverAssetId    String?       @db.Uuid
+  publicationYear Int?
+  contentRating   ContentRating
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
+
+  coverAsset        Asset?                @relation("MangaCoverAsset", fields: [coverAssetId], references: [id], onDelete: SetNull)
+  aliases           MangaAlias[]
+  slugHistory       MangaSlugHistory[]
+  genres            MangaGenre[]
+  creators          MangaCreator[]
+  chapters          Chapter[]
+  libraryEntries    LibraryEntry[]
+  readingProgress   ReadingProgress[]
+  readingHistory    ReadingHistoryEntry[]
+  listItems         UserListItem[]
+  projects          ScanlationProject[]
+  projectRequests   ProjectRequest[]
+  communities       Community[]           @relation("CommunityRelatedManga")
+  communityRequests CommunityRequest[]    @relation("CommunityRequestRelatedManga")
+  reviews           Review[]
+  comments          MangaComment[]
+  notifications     Notification[]
+  uploadIntents     EditorialUploadIntent[]
+  editorialAuditEvents EditorialAuditEvent[]
+
+  @@index([normalizedTitle])
+  @@index([type])
+  @@index([status])
+  @@index([contentRating])
+  @@index([createdAt])
+  @@index([coverAssetId])
+}
+
+model MangaSlugHistory {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  mangaId   String   @db.Uuid
+  slug      String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  manga Manga @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+
+  @@index([mangaId])
+}
+
+model MangaAlias {
+  id              String   @id @default(uuid(7)) @db.Uuid
+  mangaId         String   @db.Uuid
+  alias           String
+  normalizedAlias String
+  languageCode    String?
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+
+  manga Manga @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+
+  @@unique([mangaId, normalizedAlias])
+  @@index([normalizedAlias])
+}
+
+model Genre {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  slug        String   @unique
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  mangas MangaGenre[]
+}
+
+model MangaGenre {
+  mangaId String @db.Uuid
+  genreId String @db.Uuid
+
+  manga Manga @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Restrict)
+
+  @@id([mangaId, genreId])
+  @@index([genreId])
+}
+
+model Creator {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  name           String
+  normalizedName String?
+  biography      String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+
+  mangas MangaCreator[]
+
+  @@index([normalizedName])
+}
+
+model MangaCreator {
+  mangaId          String           @db.Uuid
+  creatorId        String           @db.Uuid
+  contributionType ContributionType
+
+  manga   Manga   @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  creator Creator @relation(fields: [creatorId], references: [id], onDelete: Restrict)
+
+  @@id([mangaId, creatorId, contributionType])
+  @@index([creatorId])
+}
+
+model Chapter {
+  thumbnailAssetId String? @db.Uuid
+  thumbnailActorUserId String? @db.Uuid
+  thumbnailGroupId String? @db.Uuid
+  thumbnailSetAt DateTime? @db.Timestamptz(3)
+  thumbnailAsset Asset? @relation("ChapterThumbnailAsset", fields: [thumbnailAssetId], references: [id], onDelete: Restrict)
+  thumbnailActor User? @relation("ChapterThumbnailActor", fields: [thumbnailActorUserId], references: [id], onDelete: Restrict)
+  thumbnailGroup ScanlationGroup? @relation("ChapterThumbnailGroup", fields: [thumbnailGroupId], references: [id], onDelete: Restrict)
+  thumbnailRequests ChapterThumbnailRequest[]
+  thumbnailIntents EditorialUploadIntent[]
+  thumbnailAuditEvents EditorialAuditEvent[]
+  id           String        @id @default(uuid(7)) @db.Uuid
+  mangaId      String        @db.Uuid
+  kind         ChapterKind
+  number       Decimal?      @db.Decimal(12, 4)
+  displayLabel String
+  sortOrder    Decimal       @db.Decimal(12, 4)
+  title        String?
+  status       ChapterStatus
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @db.Timestamptz(3)
+
+  manga            Manga                      @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  releases         ChapterRelease[]
+  readingProgress  ReadingProgress[]          @relation("ReadingProgressChapter")
+  readingHistory   ReadingHistoryEntry[]      @relation("ReadingHistoryChapter")
+  assignmentStarts ProjectAssignmentHistory[] @relation("ProjectAssignmentFromChapter")
+  assignmentEnds   ProjectAssignmentHistory[] @relation("ProjectAssignmentToChapter")
+  spoilerPosts     Post[]                     @relation("PostSpoilerChapter")
+  spoilerReviews   Review[]                   @relation("ReviewSpoilerChapter")
+
+  @@unique([mangaId, kind, number])
+  @@unique([mangaId, kind, displayLabel])
+  @@unique([mangaId, sortOrder])
+  @@unique([mangaId, id])
+  @@index([status])
+}
+
+model ChapterRelease {
+  id               String               @id @default(uuid(7)) @db.Uuid
+  chapterId        String               @db.Uuid
+  projectId        String?              @db.Uuid
+  language         String               @db.VarChar(35)
+  status           ChapterReleaseStatus
+  publishedAt      DateTime?            @db.Timestamptz(3)
+  uploadedByUserId String?              @db.Uuid
+  publishingGroupId String?             @db.Uuid
+  supersedesReleaseId String?           @db.Uuid
+  version          Int                 @default(1)
+  createdAt        DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime             @updatedAt @db.Timestamptz(3)
+
+  chapter         Chapter               @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  project         ScanlationProject?    @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  uploadedBy      User?                 @relation("ChapterReleaseUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  pages           ChapterPage[]
+  groups          ChapterReleaseGroup[]
+  credits         ChapterCredit[]
+  readingProgress ReadingProgress[]     @relation("ReadingProgressRelease")
+  readingHistory  ReadingHistoryEntry[] @relation("ReadingHistoryRelease")
+  readingReleaseProgress ReadingReleaseProgress[]
+  notifications   Notification[]
+  publishingGroup ScanlationGroup? @relation("ReleaseResponsibleGroup", fields: [publishingGroupId], references: [id], onDelete: Restrict)
+  supersedes ChapterRelease? @relation("ReleaseReplacement", fields: [supersedesReleaseId], references: [id], onDelete: Restrict)
+  replacements ChapterRelease[] @relation("ReleaseReplacement")
+  uploadIntents EditorialUploadIntent[]
+
+  auditEvents EditorialAuditEvent[]
+
+  @@index([publishingGroupId])
+  @@index([supersedesReleaseId])
+  @@index([chapterId, status, publishedAt])
+  @@index([projectId, status, publishedAt])
+  @@index([status, publishedAt])
+  @@index([language])
+  @@index([uploadedByUserId])
+}
+
+model ChapterReleaseGroup {
+  chapterReleaseId String   @db.Uuid
+  groupId          String   @db.Uuid
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+
+  chapterRelease ChapterRelease  @relation(fields: [chapterReleaseId], references: [id], onDelete: Cascade)
+  group          ScanlationGroup @relation(fields: [groupId], references: [id], onDelete: Restrict)
+
+  @@id([chapterReleaseId, groupId])
+  @@index([groupId])
+}
+
+model ChapterCredit {
+  id                  String                  @id @default(uuid(7)) @db.Uuid
+  chapterReleaseId    String                  @db.Uuid
+  userId              String?                 @db.Uuid
+  groupId             String?                 @db.Uuid
+  contributionType    ChapterContributionType
+  displayNameSnapshot String?
+  createdAt           DateTime                @default(now()) @db.Timestamptz(3)
+
+  chapterRelease ChapterRelease   @relation(fields: [chapterReleaseId], references: [id], onDelete: Cascade)
+  user           User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  group          ScanlationGroup? @relation(fields: [groupId], references: [id], onDelete: Restrict)
+
+  @@index([chapterReleaseId])
+  @@index([userId])
+  @@index([groupId])
+}
+
+model ChapterPage {
+  id               String   @id @default(uuid(7)) @db.Uuid
+  chapterReleaseId String   @db.Uuid
+  pageNumber       Int
+  assetId          String   @db.Uuid
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+
+  chapterRelease ChapterRelease @relation(fields: [chapterReleaseId], references: [id], onDelete: Cascade)
+  asset          Asset          @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@unique([chapterReleaseId, pageNumber])
+  @@index([assetId])
+}
+
+model LibraryEntry {
+  userId     String        @db.Uuid
+  mangaId    String        @db.Uuid
+  status     LibraryStatus
+  isFavorite Boolean       @default(false)
+  createdAt  DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime      @updatedAt @db.Timestamptz(3)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  manga Manga @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+
+  @@id([userId, mangaId])
+  @@index([userId, status, updatedAt])
+  @@index([userId, isFavorite, updatedAt])
+}
+
+model ReadingProgress {
+  userId           String   @db.Uuid
+  mangaId          String   @db.Uuid
+  chapterId        String   @db.Uuid
+  chapterReleaseId String?  @db.Uuid
+  pageNumber       Int      @default(1)
+  progressPercent  Int      @default(0)
+  lastReadAt       DateTime @default(now()) @db.Timestamptz(3)
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  manga          Manga           @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  chapter        Chapter         @relation("ReadingProgressChapter", fields: [mangaId, chapterId], references: [mangaId, id], onDelete: Restrict)
+  chapterRelease ChapterRelease? @relation("ReadingProgressRelease", fields: [chapterReleaseId], references: [id], onDelete: SetNull)
+
+  @@id([userId, mangaId])
+  @@index([userId, lastReadAt])
+  @@index([mangaId, chapterId])
+  @@index([chapterReleaseId])
+}
+
+model ReadingReleaseProgress {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @db.Uuid
+  chapterReleaseId String    @db.Uuid
+  pageNumber       Int       @default(1)
+  completedAt      DateTime? @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @db.Timestamptz(3)
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapterRelease ChapterRelease @relation(fields: [chapterReleaseId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, chapterReleaseId])
+  @@index([chapterReleaseId])
+}
+
+model ReadingHistoryEntry {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @db.Uuid
+  mangaId          String    @db.Uuid
+  chapterId        String    @db.Uuid
+  chapterReleaseId String?   @db.Uuid
+  lastPageNumber   Int       @default(1)
+  progressPercent  Int       @default(0)
+  firstReadAt      DateTime  @default(now()) @db.Timestamptz(3)
+  lastReadAt       DateTime  @default(now()) @db.Timestamptz(3)
+  completedAt      DateTime? @db.Timestamptz(3)
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  manga          Manga           @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  chapter        Chapter         @relation("ReadingHistoryChapter", fields: [mangaId, chapterId], references: [mangaId, id], onDelete: Restrict)
+  chapterRelease ChapterRelease? @relation("ReadingHistoryRelease", fields: [chapterReleaseId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, chapterId])
+  @@index([userId, lastReadAt])
+  @@index([userId, mangaId, lastReadAt])
+  @@index([mangaId, chapterId])
+  @@index([chapterReleaseId])
+}
+
+model UserList {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  userId      String         @db.Uuid
+  name        String
+  description String?
+  visibility  ListVisibility @default(PRIVATE)
+  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime       @updatedAt @db.Timestamptz(3)
+
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items UserListItem[]
+
+  @@index([userId, updatedAt])
+  @@index([visibility, updatedAt])
+}
+
+model UserListItem {
+  listId   String   @db.Uuid
+  mangaId  String   @db.Uuid
+  position Int?
+  addedAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  list  UserList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  manga Manga    @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+
+  @@id([listId, mangaId])
+  @@index([listId, position])
+}
+
+model ScanlationGroup {
+  definedChapterThumbnails Chapter[] @relation("ChapterThumbnailGroup")
+  thumbnailRequests ChapterThumbnailRequest[]
+  thumbnailIntents EditorialUploadIntent[]
+  id              String                @id @default(uuid(7)) @db.Uuid
+  slug            String                @unique
+  name            String
+  nameNormalized  String
+  description     String?
+  language        String                @db.VarChar(35)
+  website         String?
+  status          ScanlationGroupStatus
+  verifiedAt      DateTime?             @db.Timestamptz(3)
+  createdByUserId String?               @db.Uuid
+  logoAssetId     String?               @db.Uuid
+  bannerAssetId   String?               @db.Uuid
+  createdAt       DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime              @updatedAt @db.Timestamptz(3)
+
+  createdBy               User?                        @relation("ScanlationGroupCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  logoAsset               Asset?                       @relation("ScanlationGroupLogo", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  bannerAsset             Asset?                       @relation("ScanlationGroupBanner", fields: [bannerAssetId], references: [id], onDelete: SetNull)
+  slugHistory             ScanlationGroupSlugHistory[]
+  members                 ScanlationGroupMember[]
+  originRequest           ScanlationGroupRequest?
+  projectParticipations   ProjectGroup[]
+  projectRequests         ProjectRequest[]             @relation("ProjectRequestRequesterGroup")
+  targetedProjectRequests ProjectRequest[]             @relation("ProjectRequestTargetGroup")
+  projectHistory          ProjectAssignmentHistory[]
+  releaseParticipations   ChapterReleaseGroup[]
+  chapterCredits          ChapterCredit[]
+  reports                 Report[]
+  notifications           Notification[]
+  responsibleReleases     ChapterRelease[] @relation("ReleaseResponsibleGroup")
+  editorialAuditEvents    EditorialAuditEvent[]
+
+  @@index([status])
+  @@index([createdByUserId])
+  @@index([createdAt])
+  @@index([nameNormalized])
+}
+
+model ScanlationGroupSlugHistory {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  groupId   String   @db.Uuid
+  slug      String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  group ScanlationGroup @relation(fields: [groupId], references: [id], onDelete: Restrict)
+
+  @@index([groupId])
+}
+
+model ScanlationGroupMember {
+  id        String                      @id @default(uuid(7)) @db.Uuid
+  groupId   String                      @db.Uuid
+  userId    String                      @db.Uuid
+  status    ScanlationGroupMemberStatus
+  joinedAt  DateTime                    @default(now()) @db.Timestamptz(3)
+  leftAt    DateTime?                   @db.Timestamptz(3)
+  createdAt DateTime                    @default(now()) @db.Timestamptz(3)
+
+  group ScanlationGroup             @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  user  User                        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  roles ScanlationGroupMemberRole[]
+
+  @@index([groupId, status])
+  @@index([userId, status])
+}
+
+model ScanlationGroupMemberRole {
+  membershipId String              @db.Uuid
+  role         ScanlationGroupRole
+
+  membership ScanlationGroupMember @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@id([membershipId, role])
+}
+
+model ScanlationGroupRequest {
+  id                     String                       @id @default(uuid(7)) @db.Uuid
+  requesterUserId        String                       @db.Uuid
+  proposedName           String
+  proposedNameNormalized String
+  description            String?
+  language               String                       @db.VarChar(35)
+  website                String?
+  status                 ScanlationGroupRequestStatus
+  reviewerUserId         String?                      @db.Uuid
+  reviewedAt             DateTime?                    @db.Timestamptz(3)
+  reviewReason           String?
+  createdGroupId         String?                      @unique @db.Uuid
+  createdAt              DateTime                     @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime                     @updatedAt @db.Timestamptz(3)
+
+  requester    User             @relation("ScanlationGroupRequester", fields: [requesterUserId], references: [id], onDelete: Restrict)
+  reviewer     User?            @relation("ScanlationGroupReviewer", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+  createdGroup ScanlationGroup? @relation(fields: [createdGroupId], references: [id], onDelete: SetNull)
+  actions      ScanlationGroupRequestAction[] @relation("ScanlationGroupRequestActions")
+
+  @@index([status, createdAt])
+  @@index([requesterUserId])
+  @@index([reviewerUserId])
+  @@index([proposedNameNormalized])
+}
+
+model ScanlationGroupRequestAction {
+  id            String                    @id @default(uuid(7)) @db.Uuid
+  requestId     String                    @db.Uuid
+  actorUserId   String                    @db.Uuid
+  type          CreationRequestActionType
+  publicMessage String?
+  internalNote  String?
+  createdAt     DateTime                  @default(now()) @db.Timestamptz(3)
+
+  request ScanlationGroupRequest @relation("ScanlationGroupRequestActions", fields: [requestId], references: [id], onDelete: Restrict)
+  actor   User                   @relation("ScanlationGroupRequestActionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt, id])
+  @@index([actorUserId])
+}
+
+model ScanlationProject {
+  id              String        @id @default(uuid(7)) @db.Uuid
+  mangaId         String        @db.Uuid
+  status          ProjectStatus
+  createdByUserId String?       @db.Uuid
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
+
+  manga         Manga                      @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  createdBy     User?                      @relation("ScanlationProjectCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  groups        ProjectGroup[]
+  requests      ProjectRequest[]
+  history       ProjectAssignmentHistory[]
+  releases      ChapterRelease[]
+  notifications Notification[]
+  editorialAuditEvents EditorialAuditEvent[]
+
+  @@index([mangaId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([createdByUserId])
+}
+
+model EditorialAuditEvent {
+  chapterId String? @db.Uuid
+  thumbnailRequestId String? @db.Uuid
+  previousAssetId String? @db.Uuid
+  proposedAssetId String? @db.Uuid
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  thumbnailRequest ChapterThumbnailRequest? @relation(fields: [thumbnailRequestId], references: [id], onDelete: Restrict)
+  previousAsset Asset? @relation("ThumbnailAuditBefore", fields: [previousAssetId], references: [id], onDelete: Restrict)
+  proposedAsset Asset? @relation("ThumbnailAuditAfter", fields: [proposedAssetId], references: [id], onDelete: Restrict)
+  @@index([chapterId, createdAt, id])
+  id String @id @default(uuid(7)) @db.Uuid
+  actorUserId String @db.Uuid
+  projectId String? @db.Uuid
+  groupId String? @db.Uuid
+  mangaId String? @db.Uuid
+  releaseId String? @db.Uuid
+  actionType EditorialAuditActionType
+  reason String? @db.VarChar(2000)
+  fromVersion Int?
+  toVersion Int?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+  project ScanlationProject? @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  group ScanlationGroup? @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  manga Manga? @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  release ChapterRelease? @relation(fields: [releaseId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt, id])
+  @@index([mangaId, createdAt, id])
+  @@index([releaseId, createdAt, id])
+  @@index([actorUserId, createdAt, id])
+  @@index([groupId])
+}
+
+model EditorialUploadIntent {
+  chapterId String? @db.Uuid
+  thumbnailGroupId String? @db.Uuid
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  thumbnailGroup ScanlationGroup? @relation(fields: [thumbnailGroupId], references: [id], onDelete: Restrict)
+  @@index([chapterId])
+  id String @id @default(uuid(7)) @db.Uuid
+  actorUserId String @db.Uuid
+  purpose EditorialUploadPurpose
+  mangaId String? @db.Uuid
+  releaseId String? @db.Uuid
+  temporaryStorageKey String @unique
+  expectedBytes BigInt @db.BigInt
+  maxBytes BigInt @db.BigInt
+  expiresAt DateTime @db.Timestamptz(3)
+  state EditorialUploadState @default(PENDING)
+  finalizedAt DateTime? @db.Timestamptz(3)
+  assetId String? @unique @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+  manga Manga? @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  release ChapterRelease? @relation(fields: [releaseId], references: [id], onDelete: Restrict)
+  asset Asset? @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@index([state, expiresAt])
+  @@index([actorUserId, createdAt])
+  @@index([mangaId])
+  @@index([releaseId])
+}
+
+model ChapterThumbnailRequest {
+  id String @id @default(uuid(7)) @db.Uuid
+  chapterId String @db.Uuid
+  groupId String @db.Uuid
+  requesterUserId String @db.Uuid
+  proposedAssetId String @db.Uuid
+  status ChapterThumbnailRequestStatus @default(PENDING)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  resolvedAt DateTime? @db.Timestamptz(3)
+  resolverUserId String? @db.Uuid
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Restrict)
+  group ScanlationGroup @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  requester User @relation("ThumbnailRequester", fields: [requesterUserId], references: [id], onDelete: Restrict)
+  resolver User? @relation("ThumbnailResolver", fields: [resolverUserId], references: [id], onDelete: Restrict)
+  proposedAsset Asset @relation(fields: [proposedAssetId], references: [id], onDelete: Restrict)
+  auditEvents EditorialAuditEvent[]
+  @@index([chapterId, status, createdAt, id])
+}
+
+model ProjectGroup {
+  id        String             @id @default(uuid(7)) @db.Uuid
+  projectId String             @db.Uuid
+  groupId   String             @db.Uuid
+  status    ProjectGroupStatus
+  joinedAt  DateTime           @default(now()) @db.Timestamptz(3)
+  leftAt    DateTime?          @db.Timestamptz(3)
+  createdAt DateTime           @default(now()) @db.Timestamptz(3)
+
+  project ScanlationProject @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  group   ScanlationGroup   @relation(fields: [groupId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, status])
+  @@index([groupId, status])
+}
+
+model ProjectRequest {
+  id               String               @id @default(uuid(7)) @db.Uuid
+  requestType      ProjectRequestType
+  requesterUserId  String               @db.Uuid
+  requesterGroupId String?              @db.Uuid
+  projectId        String?              @db.Uuid
+  mangaId          String?              @db.Uuid
+  targetGroupId    String?              @db.Uuid
+  status           ProjectRequestStatus
+  message          String?
+  reviewerUserId   String?              @db.Uuid
+  reviewedAt       DateTime?            @db.Timestamptz(3)
+  decisionReason   String?
+  createdAt        DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime             @updatedAt @db.Timestamptz(3)
+
+  requester      User               @relation("ProjectRequestRequester", fields: [requesterUserId], references: [id], onDelete: Restrict)
+  requesterGroup ScanlationGroup?   @relation("ProjectRequestRequesterGroup", fields: [requesterGroupId], references: [id], onDelete: Restrict)
+  project        ScanlationProject? @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  manga          Manga?             @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  targetGroup    ScanlationGroup?   @relation("ProjectRequestTargetGroup", fields: [targetGroupId], references: [id], onDelete: Restrict)
+  reviewer       User?              @relation("ProjectRequestReviewer", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([projectId])
+  @@index([mangaId])
+  @@index([requesterGroupId])
+  @@index([targetGroupId])
+  @@index([requesterUserId])
+  @@index([reviewerUserId])
+}
+
+model ProjectAssignmentHistory {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  projectId     String    @db.Uuid
+  groupId       String    @db.Uuid
+  startedAt     DateTime  @db.Timestamptz(3)
+  endedAt       DateTime? @db.Timestamptz(3)
+  fromChapterId String?   @db.Uuid
+  toChapterId   String?   @db.Uuid
+  note          String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+
+  project     ScanlationProject @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  group       ScanlationGroup   @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  fromChapter Chapter?          @relation("ProjectAssignmentFromChapter", fields: [fromChapterId], references: [id], onDelete: SetNull)
+  toChapter   Chapter?          @relation("ProjectAssignmentToChapter", fields: [toChapterId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, startedAt])
+  @@index([groupId, startedAt])
+}
+
+model Community {
+  id             String          @id @default(uuid(7)) @db.Uuid
+  slug           String          @unique
+  name           String
+  nameNormalized String
+  description    String?
+  status         CommunityStatus
+  ownerUserId    String          @db.Uuid
+  relatedMangaId String?         @db.Uuid
+  avatarAssetId  String?         @db.Uuid
+  bannerAssetId  String?         @db.Uuid
+  createdAt      DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime        @updatedAt @db.Timestamptz(3)
+
+  owner         User                   @relation("CommunityOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  relatedManga  Manga?                 @relation("CommunityRelatedManga", fields: [relatedMangaId], references: [id], onDelete: SetNull)
+  avatarAsset   Asset?                 @relation("CommunityAvatarAsset", fields: [avatarAssetId], references: [id], onDelete: SetNull)
+  bannerAsset   Asset?                 @relation("CommunityBannerAsset", fields: [bannerAssetId], references: [id], onDelete: SetNull)
+  slugHistory   CommunitySlugHistory[]
+  members       CommunityMember[]
+  originRequest CommunityRequest?      @relation("CommunityRequestCreatedCommunity")
+  posts         Post[]
+  reports       Report[]
+  notifications Notification[]
+
+  @@index([status])
+  @@index([ownerUserId])
+  @@index([relatedMangaId])
+  @@index([createdAt])
+  @@index([nameNormalized])
+}
+
+model CommunitySlugHistory {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  communityId String   @db.Uuid
+  slug        String   @unique
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Restrict)
+
+  @@index([communityId])
+}
+
+model CommunityRequest {
+  id                     String                 @id @default(uuid(7)) @db.Uuid
+  requesterUserId        String                 @db.Uuid
+  proposedName           String
+  proposedNameNormalized String
+  description            String?
+  relatedMangaId         String?                @db.Uuid
+  status                 CommunityRequestStatus
+  reviewerUserId         String?                @db.Uuid
+  reviewedAt             DateTime?              @db.Timestamptz(3)
+  reviewReason           String?
+  createdCommunityId     String?                @unique @db.Uuid
+  createdAt              DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime               @updatedAt @db.Timestamptz(3)
+
+  requester        User       @relation("CommunityRequestRequester", fields: [requesterUserId], references: [id], onDelete: Restrict)
+  reviewer         User?      @relation("CommunityRequestReviewer", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+  relatedManga     Manga?     @relation("CommunityRequestRelatedManga", fields: [relatedMangaId], references: [id], onDelete: SetNull)
+  createdCommunity Community? @relation("CommunityRequestCreatedCommunity", fields: [createdCommunityId], references: [id], onDelete: SetNull)
+  actions          CommunityRequestAction[] @relation("CommunityRequestActions")
+
+  @@index([status, createdAt])
+  @@index([requesterUserId])
+  @@index([reviewerUserId])
+  @@index([relatedMangaId])
+  @@index([proposedNameNormalized])
+}
+
+model CommunityRequestAction {
+  id            String                    @id @default(uuid(7)) @db.Uuid
+  requestId     String                    @db.Uuid
+  actorUserId   String                    @db.Uuid
+  type          CreationRequestActionType
+  publicMessage String?
+  internalNote  String?
+  createdAt     DateTime                  @default(now()) @db.Timestamptz(3)
+
+  request CommunityRequest @relation("CommunityRequestActions", fields: [requestId], references: [id], onDelete: Restrict)
+  actor   User             @relation("CommunityRequestActionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt, id])
+  @@index([actorUserId])
+}
+
+model CommunityMember {
+  id          String                @id @default(uuid(7)) @db.Uuid
+  communityId String                @db.Uuid
+  userId      String                @db.Uuid
+  role        CommunityMemberRole
+  status      CommunityMemberStatus
+  joinedAt    DateTime              @default(now()) @db.Timestamptz(3)
+  leftAt      DateTime?             @db.Timestamptz(3)
+  createdAt   DateTime              @default(now()) @db.Timestamptz(3)
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([communityId, status])
+  @@index([userId, status])
+}
+
+model Post {
+  id               String     @id @default(uuid(7)) @db.Uuid
+  communityId      String     @db.Uuid
+  authorUserId     String     @db.Uuid
+  title            String
+  body             String
+  status           PostStatus
+  isSpoiler        Boolean    @default(false)
+  spoilerChapterId String?    @db.Uuid
+  spoilerLabel     String?    @db.VarChar(120)
+  createdAt        DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt        DateTime?  @db.Timestamptz(3)
+
+  community        Community                @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  author           User                     @relation("PostAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+  spoilerChapter   Chapter?                 @relation("PostSpoilerChapter", fields: [spoilerChapterId], references: [id], onDelete: SetNull)
+  comments         PostComment[]
+  reports          Report[]
+  deletionRequests ContentDeletionRequest[]
+  notifications    Notification[]
+
+  @@index([communityId, createdAt])
+  @@index([authorUserId, createdAt])
+  @@index([status, createdAt])
+  @@index([spoilerChapterId])
+}
+
+model PostComment {
+  id              String            @id @default(uuid(7)) @db.Uuid
+  postId          String            @db.Uuid
+  authorUserId    String            @db.Uuid
+  parentCommentId String?           @db.Uuid
+  body            String
+  status          PostCommentStatus
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  deletedAt       DateTime?         @db.Timestamptz(3)
+
+  post             Post                     @relation(fields: [postId], references: [id], onDelete: Restrict)
+  author           User                     @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+  parent           PostComment?             @relation("PostCommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
+  replies          PostComment[]            @relation("PostCommentReplies")
+  reports          Report[]
+  deletionRequests ContentDeletionRequest[]
+  notifications    Notification[]
+
+  @@index([postId, createdAt])
+  @@index([authorUserId, createdAt])
+  @@index([parentCommentId, createdAt])
+  @@index([status, createdAt])
+}
+
+model MangaComment {
+  id              String             @id @default(uuid(7)) @db.Uuid
+  mangaId         String             @db.Uuid
+  authorUserId    String             @db.Uuid
+  parentCommentId String?            @db.Uuid
+  body            String
+  isSpoiler       Boolean            @default(false)
+  status          MangaCommentStatus
+  createdAt       DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime           @updatedAt @db.Timestamptz(3)
+  editedAt        DateTime?          @db.Timestamptz(3)
+  deletedAt       DateTime?          @db.Timestamptz(3)
+
+  manga   Manga          @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  author  User           @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+  parent  MangaComment?  @relation("MangaCommentReplies", fields: [parentCommentId, mangaId], references: [id, mangaId], onDelete: Restrict)
+  replies MangaComment[] @relation("MangaCommentReplies")
+
+  @@unique([id, mangaId])
+  @@index([mangaId, parentCommentId, createdAt, id])
+  @@index([parentCommentId, createdAt, id])
+  @@index([mangaId, status])
+  @@index([authorUserId])
+}
+
+model Review {
+  id               String       @id @default(uuid(7)) @db.Uuid
+  userId           String       @db.Uuid
+  mangaId          String       @db.Uuid
+  score            Int
+  title            String?
+  body             String
+  isSpoiler        Boolean      @default(false)
+  spoilerChapterId String?      @db.Uuid
+  spoilerLabel     String?      @db.VarChar(120)
+  status           ReviewStatus
+  createdAt        DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
+  deletedAt        DateTime?    @db.Timestamptz(3)
+
+  user             User                     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  manga            Manga                    @relation(fields: [mangaId], references: [id], onDelete: Restrict)
+  spoilerChapter   Chapter?                 @relation("ReviewSpoilerChapter", fields: [spoilerChapterId], references: [id], onDelete: SetNull)
+  votes            ReviewVote[]
+  reports          Report[]
+  deletionRequests ContentDeletionRequest[]
+  notifications    Notification[]
+
+  @@unique([userId, mangaId])
+  @@index([mangaId, createdAt])
+  @@index([status, createdAt])
+  @@index([mangaId, status, score])
+  @@index([spoilerChapterId])
+}
+
+model ReviewVote {
+  userId    String   @db.Uuid
+  reviewId  String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@id([userId, reviewId])
+  @@index([reviewId])
+}
+
+model Report {
+  id                String       @id @default(uuid(7)) @db.Uuid
+  reporterUserId    String?      @db.Uuid
+  reason            ReportReason
+  details           String?
+  status            ReportStatus @default(PENDING)
+  reportedUserId    String?      @db.Uuid
+  postId            String?      @db.Uuid
+  postCommentId     String?      @db.Uuid
+  reviewId          String?      @db.Uuid
+  scanlationGroupId String?      @db.Uuid
+  communityId       String?      @db.Uuid
+  reviewedAt        DateTime?    @db.Timestamptz(3)
+  reviewedByUserId  String?      @db.Uuid
+  resolutionNote    String?
+  createdAt         DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime     @updatedAt @db.Timestamptz(3)
+
+  reporter          User?              @relation("ReportReporter", fields: [reporterUserId], references: [id], onDelete: SetNull)
+  reportedUser      User?              @relation("ReportTargetUser", fields: [reportedUserId], references: [id], onDelete: Restrict)
+  post              Post?              @relation(fields: [postId], references: [id], onDelete: Restrict)
+  postComment       PostComment?       @relation(fields: [postCommentId], references: [id], onDelete: Restrict)
+  review            Review?            @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  scanlationGroup   ScanlationGroup?   @relation(fields: [scanlationGroupId], references: [id], onDelete: Restrict)
+  community         Community?         @relation(fields: [communityId], references: [id], onDelete: Restrict)
+  reviewedBy        User?              @relation("ReportReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  moderationActions ModerationAction[]
+  notifications     Notification[]
+
+  @@index([status, createdAt])
+  @@index([reporterUserId])
+  @@index([reviewedByUserId])
+  @@index([reportedUserId])
+  @@index([postId])
+  @@index([postCommentId])
+  @@index([reviewId])
+  @@index([scanlationGroupId])
+  @@index([communityId])
+}
+
+model ModerationAction {
+  id              String               @id @default(uuid(7)) @db.Uuid
+  moderatorUserId String?              @db.Uuid
+  reportId        String?              @db.Uuid
+  actionType      ModerationActionType
+  targetType      ModerationTargetType
+  targetId        String               @db.Uuid
+  reason          String
+  snapshot        Json?                @db.JsonB
+  createdAt       DateTime             @default(now()) @db.Timestamptz(3)
+
+  moderator User?   @relation("ModerationActionModerator", fields: [moderatorUserId], references: [id], onDelete: SetNull)
+  report    Report? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+
+  @@index([moderatorUserId, createdAt])
+  @@index([reportId])
+  @@index([targetType, targetId, createdAt])
+  @@index([createdAt])
+}
+
+model AdministrativeAuditEvent {
+  id           String                        @id @default(uuid(7)) @db.Uuid
+  actorUserId  String                        @db.Uuid
+  targetUserId String                        @db.Uuid
+  actionType   AdministrativeAuditActionType
+  reason       String
+  metadata     Json                          @db.JsonB
+  createdAt    DateTime                      @default(now()) @db.Timestamptz(3)
+
+  actor  User @relation("AdministrativeAuditEventActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+  target User @relation("AdministrativeAuditEventTarget", fields: [targetUserId], references: [id], onDelete: Restrict)
+
+  @@index([actorUserId, createdAt, id])
+  @@index([targetUserId, createdAt, id])
+  @@index([actionType, createdAt, id])
+}
+
+model UserSanction {
+  id              String           @id @default(uuid(7)) @db.Uuid
+  userId          String           @db.Uuid
+  type            UserSanctionType
+  reason          String
+  issuedByUserId  String?          @db.Uuid
+  startsAt        DateTime         @default(now()) @db.Timestamptz(3)
+  endsAt          DateTime?        @db.Timestamptz(3)
+  revokedAt       DateTime?        @db.Timestamptz(3)
+  revokedByUserId String?          @db.Uuid
+  createdAt       DateTime         @default(now()) @db.Timestamptz(3)
+
+  user          User           @relation("UserSanctionSubject", fields: [userId], references: [id], onDelete: Restrict)
+  issuedBy      User?          @relation("UserSanctionIssuer", fields: [issuedByUserId], references: [id], onDelete: SetNull)
+  revokedBy     User?          @relation("UserSanctionRevoker", fields: [revokedByUserId], references: [id], onDelete: SetNull)
+  appeals       Appeal[]
+  notifications Notification[]
+
+  @@unique([userId, id])
+  @@index([userId, createdAt])
+  @@index([userId, type])
+  @@index([userId, revokedAt, endsAt])
+  @@index([issuedByUserId])
+  @@index([revokedByUserId])
+}
+
+model Appeal {
+  id             String       @id @default(uuid(7)) @db.Uuid
+  userId         String       @db.Uuid
+  userSanctionId String       @db.Uuid
+  reason         String
+  status         AppealStatus @default(PENDING)
+  reviewerUserId String?      @db.Uuid
+  decisionReason String?
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  reviewedAt     DateTime?    @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+
+  user         User         @relation("AppealUser", fields: [userId], references: [id], onDelete: Restrict)
+  userSanction UserSanction @relation(fields: [userId, userSanctionId], references: [userId, id], onDelete: Restrict)
+  reviewer     User?        @relation("AppealReviewer", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([userSanctionId, createdAt])
+  @@index([status, createdAt])
+  @@index([reviewerUserId])
+}
+
+model AccountDeletionRequest {
+  id           String                       @id @default(uuid(7)) @db.Uuid
+  userId       String                       @db.Uuid
+  status       AccountDeletionRequestStatus @default(PENDING)
+  requestedAt  DateTime                     @default(now()) @db.Timestamptz(3)
+  scheduledFor DateTime                     @db.Timestamptz(3)
+  cancelledAt  DateTime?                    @db.Timestamptz(3)
+  processedAt  DateTime?                    @db.Timestamptz(3)
+  createdAt    DateTime                     @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime                     @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, createdAt])
+  @@index([status, scheduledFor])
+}
+
+model ContentDeletionRequest {
+  id              String                       @id @default(uuid(7)) @db.Uuid
+  requesterUserId String                       @db.Uuid
+  reason          String
+  details         String?
+  status          ContentDeletionRequestStatus @default(PENDING)
+  postId          String?                      @db.Uuid
+  postCommentId   String?                      @db.Uuid
+  reviewId        String?                      @db.Uuid
+  reviewerUserId  String?                      @db.Uuid
+  decisionReason  String?
+  createdAt       DateTime                     @default(now()) @db.Timestamptz(3)
+  reviewedAt      DateTime?                    @db.Timestamptz(3)
+  updatedAt       DateTime                     @updatedAt @db.Timestamptz(3)
+
+  requester   User         @relation("ContentDeletionRequester", fields: [requesterUserId], references: [id], onDelete: Restrict)
+  reviewer    User?        @relation("ContentDeletionReviewer", fields: [reviewerUserId], references: [id], onDelete: SetNull)
+  post        Post?        @relation(fields: [postId], references: [id], onDelete: Restrict)
+  postComment PostComment? @relation(fields: [postCommentId], references: [id], onDelete: Restrict)
+  review      Review?      @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+
+  @@index([requesterUserId, createdAt])
+  @@index([status, createdAt])
+  @@index([reviewerUserId])
+  @@index([postId])
+  @@index([postCommentId])
+  @@index([reviewId])
+}
+
+model Notification {
+  id                  String               @id @default(uuid(7)) @db.Uuid
+  userId              String               @db.Uuid
+  actorUserId         String?              @db.Uuid
+  type                String               @db.VarChar(120)
+  category            NotificationCategory
+  payloadVersion      Int                  @default(1) @db.SmallInt
+  payload             Json?                @db.JsonB
+  mangaId             String?              @db.Uuid
+  postId              String?              @db.Uuid
+  postCommentId       String?              @db.Uuid
+  reviewId            String?              @db.Uuid
+  communityId         String?              @db.Uuid
+  scanlationGroupId   String?              @db.Uuid
+  scanlationProjectId String?              @db.Uuid
+  chapterReleaseId    String?              @db.Uuid
+  reportId            String?              @db.Uuid
+  userSanctionId      String?              @db.Uuid
+  readAt              DateTime?            @db.Timestamptz(3)
+  createdAt           DateTime             @default(now()) @db.Timestamptz(3)
+
+  user              User               @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor             User?              @relation("NotificationActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  manga             Manga?             @relation(fields: [mangaId], references: [id], onDelete: SetNull)
+  post              Post?              @relation(fields: [postId], references: [id], onDelete: SetNull)
+  postComment       PostComment?       @relation(fields: [postCommentId], references: [id], onDelete: SetNull)
+  review            Review?            @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+  community         Community?         @relation(fields: [communityId], references: [id], onDelete: SetNull)
+  scanlationGroup   ScanlationGroup?   @relation(fields: [scanlationGroupId], references: [id], onDelete: SetNull)
+  scanlationProject ScanlationProject? @relation(fields: [scanlationProjectId], references: [id], onDelete: SetNull)
+  chapterRelease    ChapterRelease?    @relation(fields: [chapterReleaseId], references: [id], onDelete: SetNull)
+  report            Report?            @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  userSanction      UserSanction?      @relation(fields: [userSanctionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt, createdAt])
+  @@index([userId, category, createdAt])
+}
+
+model Role {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  key         String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+}
+
+model Permission {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  key         String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  rolePermissions RolePermission[]
+  userGrants      UserPermissionGrant[]
+}
+
+model UserRole {
+  userId           String   @db.Uuid
+  roleId           String   @db.Uuid
+  assignedAt       DateTime @default(now()) @db.Timestamptz(3)
+  assignedByUserId String?  @db.Uuid
+
+  user       User  @relation("UserRoleSubject", fields: [userId], references: [id], onDelete: Cascade)
+  role       Role  @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  assignedBy User? @relation("UserRoleAssigner", fields: [assignedByUserId], references: [id], onDelete: SetNull)
+
+  @@id([userId, roleId])
+  @@index([roleId])
+  @@index([assignedByUserId])
+}
+
+model RolePermission {
+  roleId       String @db.Uuid
+  permissionId String @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model UserPermissionGrant {
+  userId          String   @db.Uuid
+  permissionId    String   @db.Uuid
+  grantedAt       DateTime @default(now()) @db.Timestamptz(3)
+  grantedByUserId String?  @db.Uuid
+
+  user       User       @relation("UserPermissionGrantSubject", fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  grantedBy  User?      @relation("UserPermissionGrantGranter", fields: [grantedByUserId], references: [id], onDelete: SetNull)
+
+  @@id([userId, permissionId])
+  @@index([permissionId])
+  @@index([grantedByUserId])
+}
+
+model Conversation {
+  id              String           @id @default(uuid(7)) @db.Uuid
+  type            ConversationType
+  createdByUserId String?          @db.Uuid
+  createdAt       DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(3)
+
+  createdBy                  User?                       @relation("ConversationCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  members                    ConversationMember[]
+  messages                   Message[]
+  directConversationIdentity DirectConversationIdentity?
+
+  @@index([type])
+  @@index([createdAt])
+  @@index([createdByUserId])
+}
+
+model ConversationMember {
+  conversationId String    @db.Uuid
+  userId         String    @db.Uuid
+  joinedAt       DateTime  @default(now()) @db.Timestamptz(3)
+  leftAt         DateTime? @db.Timestamptz(3)
+  mutedUntil     DateTime? @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@id([conversationId, userId])
+  @@index([userId])
+}
+
+model DirectConversationIdentity {
+  conversationId String   @unique @db.Uuid
+  userLowId      String   @db.Uuid
+  userHighId     String   @db.Uuid
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userLow      User         @relation("DirectConversationUserLow", fields: [userLowId], references: [id], onDelete: Restrict)
+  userHigh     User         @relation("DirectConversationUserHigh", fields: [userHighId], references: [id], onDelete: Restrict)
+
+  @@unique([userLowId, userHighId])
+}
+
+model Message {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  conversationId   String    @db.Uuid
+  senderUserId     String    @db.Uuid
+  replyToMessageId String?   @db.Uuid
+  body             String?
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @db.Timestamptz(3)
+  editedAt         DateTime? @db.Timestamptz(3)
+  deletedAt        DateTime? @db.Timestamptz(3)
+
+  conversation   Conversation        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User                @relation("MessageSender", fields: [senderUserId], references: [id], onDelete: Restrict)
+  replyToMessage Message?            @relation("MessageReplies", fields: [replyToMessageId], references: [id], onDelete: SetNull)
+  replies        Message[]           @relation("MessageReplies")
+  attachments    MessageAttachment[]
+
+  @@index([conversationId, createdAt])
+  @@index([senderUserId])
+  @@index([replyToMessageId])
+}
+
+model MessageAttachment {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  messageId String   @db.Uuid
+  assetId   String   @db.Uuid
+  position  Int      @db.SmallInt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  asset   Asset   @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@unique([messageId, position])
+  @@index([assetId])
+}
+
+// ──────────────────────────────────────────────
+// Migration 014 — Auth Infrastructure
+// ──────────────────────────────────────────────
+
+model Session {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @db.Uuid
+  tokenHash        String    @unique @db.VarChar(64)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+  lastUsedAt       DateTime  @default(now()) @db.Timestamptz(3)
+  expiresAt        DateTime  @db.Timestamptz(3)
+  revokedAt        DateTime? @db.Timestamptz(3)
+  userAgentSummary String?   @db.VarChar(256)
+  ipAddress        String?   @db.VarChar(45)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  userId        String    @db.Uuid
+  tokenHash     String    @unique @db.VarChar(64)
+  expiresAt     DateTime  @db.Timestamptz(3)
+  consumedAt    DateTime? @db.Timestamptz(3)
+  invalidatedAt DateTime? @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  userId        String    @db.Uuid
+  tokenHash     String    @unique @db.VarChar(64)
+  expiresAt     DateTime  @db.Timestamptz(3)
+  consumedAt    DateTime? @db.Timestamptz(3)
+  invalidatedAt DateTime? @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestJob PasswordResetRequestJob?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetRequestJob {
+  id                       String                        @id @default(uuid(7)) @db.Uuid
+  requestedEmail           String?                       @db.VarChar(254)
+  ipAddress                String?                       @db.VarChar(45)
+  userAgentSummary         String?                       @db.VarChar(256)
+  status                   PasswordResetRequestJobStatus @default(PENDING)
+  attempts                 Int                           @default(0) @db.SmallInt
+  availableAt              DateTime                      @default(now()) @db.Timestamptz(3)
+  lockedAt                 DateTime?                     @db.Timestamptz(3)
+  lockExpiresAt            DateTime?                     @db.Timestamptz(3)
+  lockToken                String?                       @db.Uuid
+  passwordResetTokenId     String?                       @unique @db.Uuid
+  deliveryTokenCiphertext  String?
+  deliveryExpiresAt        DateTime?                     @db.Timestamptz(3)
+  lastErrorCode            String?                       @db.VarChar(64)
+  processedAt              DateTime?                     @db.Timestamptz(3)
+  createdAt                DateTime                      @default(now()) @db.Timestamptz(3)
+  updatedAt                DateTime                      @updatedAt @db.Timestamptz(3)
+
+  passwordResetToken PasswordResetToken? @relation(fields: [passwordResetTokenId], references: [id], onDelete: Cascade)
+
+  @@index([status, availableAt, createdAt])
+  @@index([lockExpiresAt])
+  @@index([processedAt])
+}
+
+model SecurityAuditEvent {
+  id               String   @id @default(uuid(7)) @db.Uuid
+  userId           String?  @db.Uuid
+  eventType        String
+  ipAddress        String?  @db.VarChar(45)
+  userAgentSummary String?  @db.VarChar(256)
+  metadata         Json?
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([createdAt])
+}

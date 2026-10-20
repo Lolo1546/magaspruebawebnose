@@ -1,0 +1,24 @@
+.page {
+  min-width: 0;
+  min-height: calc(100svh - var(--mz-header-height));
+  overflow: clip;
+  background:
+    radial-gradient(circle at 82% 22%, rgb(232 25 44 / 4%), transparent 26%),
+    var(--mz-bg);
+}
+
+.content {
+  padding-block: var(--mz-space-7) var(--mz-space-8);
+}
+
+@media (max-width: 760px) {
+  .content {
+    padding-block: var(--mz-space-6) var(--mz-space-7);
+  }
+}
+
+@media (max-width: 540px) {
+  .content {
+    padding-top: var(--mz-space-5);
+  }
+}

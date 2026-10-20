@@ -1,0 +1,24 @@
+.card { height: 100%; overflow: hidden; border: 1px solid var(--mz-border); border-radius: var(--mz-radius-lg); background: var(--mz-card); box-shadow: var(--mz-shadow-sm); }
+.coverPreview { display: grid; grid-template-columns: repeat(4, 1fr); aspect-ratio: 16 / 7; overflow: hidden; background: var(--mz-surface-secondary); }
+.coverPreview > span { position: relative; min-width: 0; overflow: hidden; border-right: 1px solid var(--mz-border-soft); }
+.coverPreview img { object-fit: cover; }
+.body { display: grid; gap: var(--mz-space-3); padding: var(--mz-space-4); }
+.topline, .footer { display: flex; align-items: center; justify-content: space-between; gap: var(--mz-space-3); }
+.topline > span { color: var(--mz-text-muted); font-size: var(--mz-text-xs); }
+.body h2 { font-size: var(--mz-text-lg); }
+.body h2 a { color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; }
+.body h2 a:hover { text-decoration-color: var(--mz-red); }
+.body > p { min-height: 3em; color: var(--mz-text-secondary); font-size: var(--mz-text-sm); line-height: 1.55; }
+.footer > span { color: var(--mz-text-primary); font-size: var(--mz-text-xs); font-weight: 750; }
+.manageLink { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; gap: var(--mz-space-2); padding: 0 var(--mz-space-3); border: 1px solid var(--mz-border); border-radius: var(--mz-radius-md); background: var(--mz-surface-secondary); color: var(--mz-text-primary); font-size: var(--mz-text-sm); font-weight: 750; }
+.mangaLinks { display: flex; flex-wrap: wrap; gap: 6px; padding-top: var(--mz-space-2); border-top: 1px solid var(--mz-border-soft); }
+.mangaLinks a { color: var(--mz-text-muted); font-size: var(--mz-text-xs); text-decoration: underline; text-decoration-color: var(--mz-border-strong); text-underline-offset: 3px; }
+.card[data-view="list"] { display: grid; grid-template-columns: minmax(220px, 32%) minmax(0, 1fr); }
+.card[data-view="list"] .coverPreview { height: 100%; aspect-ratio: auto; }
+.card[data-view="list"] .body > p { min-height: 0; }
+@media (max-width: 760px) { .card[data-view="list"] { grid-template-columns: 150px minmax(0, 1fr); } }
+@media (max-width: 540px) {
+  .card[data-view="list"] { display: block; }
+  .card[data-view="list"] .coverPreview { height: auto; aspect-ratio: 16 / 7; }
+  .topline, .footer { align-items: flex-start; flex-direction: column; }
+}

@@ -1,0 +1,55 @@
+.page { display: grid; gap: var(--mz-space-5); padding-block: var(--mz-space-5) var(--mz-space-8); }
+.backLink { width: fit-content; color: var(--mz-text-secondary); font-size: var(--mz-text-sm); font-weight: 700; text-decoration: none; }
+.hero { position: relative; min-height: 320px; overflow: hidden; border: 1px solid var(--mz-border-soft); border-radius: var(--mz-radius-xl); background: var(--mz-bg-secondary); box-shadow: var(--mz-shadow-sm); }
+.banner { position: absolute; inset: 0; background: radial-gradient(circle at 78% 25%, var(--mz-red-soft), transparent 28%), linear-gradient(135deg, var(--mz-surface), var(--mz-bg-secondary)); background-position: center; background-size: cover; opacity: 0.58; }
+.banner[data-has-media="true"]::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(8 8 11 / 15%), var(--mz-bg) 100%); content: ""; }
+.heroContent { position: relative; z-index: 1; display: flex; min-height: 320px; max-width: 1000px; align-items: flex-end; gap: var(--mz-space-4); padding: clamp(var(--mz-space-4), 5vw, var(--mz-space-7)); }
+.heroCopy { min-width: 0; flex: 1; }
+.membershipAction { flex: 0 0 auto; align-self: flex-end; margin-left: auto; }
+.avatar, .authorAvatar { display: grid; flex: 0 0 auto; place-items: center; border: 1px solid var(--mz-border-strong); background-color: var(--mz-surface); background-position: center; background-size: cover; font-weight: 850; }
+.avatar { width: clamp(72px, 10vw, 104px); aspect-ratio: 1; border-radius: 50%; font-size: var(--mz-text-xl); }
+.avatar[data-has-media="true"], .authorAvatar[data-has-media="true"] { color: transparent; }
+.eyebrow, .sectionHeading p { color: var(--mz-info); font-size: var(--mz-text-xs); font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+.hero h1 { margin-top: var(--mz-space-2); font-family: var(--mz-font-display); font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 400; line-height: 0.95; overflow-wrap: anywhere; text-transform: uppercase; }
+.heroCopy > p:last-child { max-width: 720px; margin-top: var(--mz-space-3); color: var(--mz-text-secondary); line-height: 1.6; overflow-wrap: anywhere; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.35fr); gap: var(--mz-space-5); }
+.mainContent, .sidebar, .post { min-width: 0; }
+.panel { padding: var(--mz-space-5); border: 1px solid var(--mz-border); border-radius: var(--mz-radius-lg); background: var(--mz-card); }
+.panel h2 { font-size: var(--mz-text-xl); }
+.sectionHeading { display: flex; align-items: end; justify-content: space-between; gap: var(--mz-space-3); }
+.sectionHeading > span { color: var(--mz-text-muted); font-size: var(--mz-text-xs); }
+.postList { display: grid; gap: var(--mz-space-4); margin-top: var(--mz-space-4); }
+.post { padding: var(--mz-space-4); border: 1px solid var(--mz-border-soft); border-radius: var(--mz-radius-md); background: var(--mz-bg-secondary); }
+.postHeader { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--mz-space-3); }
+.authorAvatar { width: 40px; aspect-ratio: 1; border-radius: 50%; font-size: var(--mz-text-xs); }
+.postHeader p { color: var(--mz-text-primary); font-size: var(--mz-text-sm); font-weight: 750; overflow-wrap: anywhere; }
+.postHeader span, .postHeader time { color: var(--mz-text-muted); font-size: var(--mz-text-xs); }
+.postTitle { display: flex; flex-wrap: wrap; align-items: center; gap: var(--mz-space-2); margin-top: var(--mz-space-4); }
+.postTitle h3 { min-width: 0; font-size: var(--mz-text-md); overflow-wrap: anywhere; }
+.postBody { margin-top: var(--mz-space-3); color: var(--mz-text-secondary); line-height: 1.7; overflow-wrap: anywhere; white-space: pre-wrap; }
+.postFooter { display: flex; align-items: center; gap: 6px; margin-top: var(--mz-space-4); color: var(--mz-text-muted); font-size: var(--mz-text-xs); }
+.noPosts { margin-top: var(--mz-space-4); color: var(--mz-text-secondary); }
+.pagination { display: flex; align-items: center; justify-content: center; gap: var(--mz-space-3); margin-top: var(--mz-space-5); }
+.pagination a, .pagination > span { display: inline-flex; min-height: 40px; align-items: center; padding-inline: var(--mz-space-4); border: 1px solid var(--mz-border); border-radius: var(--mz-radius-md); }
+.pagination a { color: var(--mz-text-primary); font-weight: 700; text-decoration: none; }
+.pagination > span[aria-disabled="true"] { color: var(--mz-text-muted); opacity: 0.55; }
+.stats, .dates { display: grid; gap: var(--mz-space-3); margin-top: var(--mz-space-4); }
+.stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.stats > div { display: flex; min-width: 0; flex-direction: column; padding: var(--mz-space-3); border: 1px solid var(--mz-border-soft); border-radius: var(--mz-radius-md); background: var(--mz-bg-secondary); }
+.stats dd { order: -1; font-size: var(--mz-text-xl); font-weight: 800; }
+.stats dt, .dates dt { display: flex; align-items: center; gap: 6px; color: var(--mz-text-muted); font-size: var(--mz-text-xs); }
+.related { margin-top: var(--mz-space-4); color: var(--mz-text-secondary); font-size: var(--mz-text-sm); overflow-wrap: anywhere; }
+.related a { display: block; margin-top: 4px; color: var(--mz-info); font-weight: 750; }
+.dates > div { padding-bottom: var(--mz-space-3); border-bottom: 1px solid var(--mz-border-soft); }
+.dates dd { margin-top: 4px; font-size: var(--mz-text-sm); }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+@media (max-width: 540px) {
+  .hero { display: grid; min-height: 0; border-radius: var(--mz-radius-lg); }
+  .heroContent { position: relative; right: auto; bottom: auto; left: auto; min-height: 390px; padding: var(--mz-space-4); align-items: flex-start; flex-direction: column; justify-content: flex-end; }
+  .membershipAction { width: 100%; align-self: stretch; margin-left: 0; }
+  .postHeader { grid-template-columns: auto minmax(0, 1fr); }
+  .postHeader time { grid-column: 2; }
+  .sectionHeading, .pagination { align-items: flex-start; flex-direction: column; }
+  .pagination a, .pagination > span { width: 100%; justify-content: center; }
+  .panel { padding: var(--mz-space-4); }
+}

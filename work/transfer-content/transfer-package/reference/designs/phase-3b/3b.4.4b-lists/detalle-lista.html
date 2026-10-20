@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09090d">
+<title>MangaZone — Detalle de lista</title>
+<meta name="description" content="Prototipo visual del detalle de una lista en MangaZone.">
+<style>
+:root{
+  --bg:#08080b;--surface:#121219;--surface2:#181820;--surface3:#20202a;--border:#292933;--border2:#1d1d25;
+  --text:#f5f5f7;--text2:#b9b9c5;--muted:#7f7f90;--red:#e63946;--red2:#ff4e5b;--redSoft:rgba(230,57,70,.15);
+  --green:#46c97c;--blue:#5ea8ff;--gold:#f1c75b;--shadow:0 26px 80px rgba(0,0,0,.42);
+  --header:64px;--side:72px;--font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--display:"Arial Narrow",Impact,Haettenschweiler,sans-serif
+}
+*{box-sizing:border-box;scrollbar-color:#7f1f2d #0b0b0f;scrollbar-width:thin}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(230,57,70,.08),transparent 25%),linear-gradient(180deg,#09090d,#08080b);color:var(--text);font-family:var(--font)}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#0b0b0f;border-radius:999px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#7f1f2d,#e63946);border:2px solid #0b0b0f;border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#a52a3a,#ff4e5b)}::-webkit-scrollbar-corner{background:#0b0b0f}
+:focus-visible{outline:2px solid var(--red2);outline-offset:3px}
+
+.topbar{position:fixed;inset:0 0 auto;height:var(--header);z-index:60;display:flex;align-items:center;gap:18px;padding:0 22px;background:rgba(9,9,13,.82);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content}.mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--red),#861d2b);font-weight:900;box-shadow:0 0 26px rgba(230,57,70,.3)}
+.brandtxt{font:26px/1 var(--display)}.brandtxt span{color:var(--red)}.nav{display:flex;gap:6px}.nav a{padding:10px 12px;border-radius:10px;color:var(--text2);font-size:14px}.nav a:hover,.nav a.active{background:#ffffff0d;color:#fff}
+.search{flex:1;max-width:520px;margin-left:auto;position:relative}.search input{width:100%;height:42px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:0 14px 0 40px;outline:none}.search span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.hactions{display:flex;gap:8px}.hbtn{height:40px;min-width:40px;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:0 12px;font-weight:800}
+
+.sidebar{position:fixed;left:0;top:var(--header);bottom:0;width:var(--side);z-index:50;background:rgba(10,10,14,.9);border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:8px}
+.slink{width:50px;height:48px;border-radius:13px;display:grid;place-items:center;color:var(--muted);position:relative}.slink:hover,.slink.active{background:var(--redSoft);color:#fff}.slink.active:before{content:"";position:absolute;left:-10px;width:3px;height:24px;border-radius:3px;background:var(--red)}.spacer{flex:1}
+
+.app{margin-left:var(--side);padding:calc(var(--header) + 24px) 26px 110px}
+.breadcrumb{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:11px;margin-bottom:14px}.breadcrumb span:last-child{color:var(--text2)}
+.hero{position:relative;overflow:hidden;border:1px solid var(--border2);border-radius:24px;background:linear-gradient(90deg,rgba(8,8,11,.96),rgba(8,8,11,.74) 57%,rgba(8,8,11,.26)),radial-gradient(circle at 84% 38%,rgba(230,57,70,.28),transparent 23%),linear-gradient(135deg,#180e13,#11121a 56%,#251118);box-shadow:var(--shadow)}
+.heroInner{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;padding:28px}
+.collage{height:240px;border-radius:18px;overflow:hidden;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);box-shadow:0 18px 48px rgba(0,0,0,.36);border:1px solid rgba(255,255,255,.08)}
+.collage i:nth-child(1){background:linear-gradient(145deg,#a91f35,#23141b)}.collage i:nth-child(2){background:linear-gradient(145deg,#6d3d87,#1b1723)}.collage i:nth-child(3){background:linear-gradient(145deg,#1f6657,#151b19)}.collage i:nth-child(4){background:linear-gradient(145deg,#2f5c78,#15191e)}
+.heroCopy{align-self:center;min-width:0}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#ff858f;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.eyebrow:before{content:"";width:22px;height:2px;background:var(--red)}
+h1{margin:9px 0 6px;font:clamp(36px,4.5vw,58px)/.98 var(--display);text-transform:uppercase}.owner{display:flex;gap:10px;align-items:center;color:var(--text2);font-size:12px}.avatar{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#7b315d,#22222b);display:grid;place-items:center;font-size:11px;font-weight:900}
+.desc{max-width:760px;color:var(--text2);font-size:13px;line-height:1.6;margin-top:14px}.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.pill{padding:7px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);font-size:10px;color:var(--text2)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.primary,.secondary,.iconAction{height:42px;border-radius:11px;font-weight:850}.primary{padding:0 14px;border:0;background:linear-gradient(135deg,var(--red),#b72435)}.secondary{padding:0 14px;border:1px solid var(--border);background:var(--surface)}.iconAction{width:42px;border:1px solid var(--border);background:var(--surface)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border2);background:rgba(10,10,14,.7)}.stat{text-align:center;padding:15px}.stat strong{display:block;font-size:18px}.stat span{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+
+.content{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;margin-top:22px}.maincol{min-width:0}.sidecol{display:grid;gap:14px;align-content:start}
+.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:10px;margin-bottom:14px}.search2{position:relative}.search2 input{width:100%;height:42px;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:0 12px 0 38px;outline:none}.search2 span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}.select{height:42px;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:0 12px}
+.viewToggle{display:flex;padding:4px;height:42px;border:1px solid var(--border);border-radius:11px;background:var(--surface)}.viewToggle button{width:36px;border:0;border-radius:8px;background:transparent;color:var(--muted)}.viewToggle button.active{background:var(--redSoft);color:#fff}
+
+.list{display:grid;gap:10px}.item{display:grid;grid-template-columns:42px 72px minmax(0,1fr) 120px 110px;gap:14px;align-items:center;padding:12px;border:1px solid var(--border);border-radius:16px;background:rgba(18,18,24,.84);transition:.18s}.item:hover{transform:translateY(-2px);border-color:#3d3d49}.num{font:22px var(--display);text-align:center;color:var(--muted)}
+.cover{width:72px;aspect-ratio:2/3;border-radius:10px;background:linear-gradient(135deg,var(--accent),#181820);display:grid;place-items:center;font-weight:950}.ititle{font-size:14px;font-weight:900}.imeta{display:flex;gap:7px;flex-wrap:wrap;color:var(--muted);font-size:10px;margin-top:5px}.progress{height:5px;background:#292933;border-radius:999px;overflow:hidden;margin-top:9px}.bar{height:100%;background:linear-gradient(90deg,var(--red),#ff7b86)}
+.score{text-align:center}.score strong{display:block;color:var(--gold)}.score span{display:block;color:var(--muted);font-size:9px;margin-top:3px}.itemAction{display:grid;gap:7px}.itemAction button{height:34px;border:1px solid var(--border);border-radius:9px;background:var(--surface2);font-size:10px;font-weight:800}.itemAction .read{background:var(--redSoft);border-color:rgba(230,57,70,.4)}
+
+.gridView{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.gridView .item{display:block;padding:0;overflow:hidden}.gridView .num{position:absolute;z-index:2;margin:10px;width:34px;height:34px;border-radius:10px;background:#08080bcc;display:grid;place-items:center;font-size:16px}.gridView .cover{width:100%;aspect-ratio:2/3;border-radius:0}.gridView .itemMain{padding:12px}.gridView .score{display:none}.gridView .itemAction{padding:0 12px 12px;grid-template-columns:1fr 1fr}
+
+.pagination{display:flex;justify-content:center;gap:7px;margin-top:20px}.pagebtn{min-width:38px;height:38px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text2)}.pagebtn.active{background:var(--redSoft);border-color:rgba(230,57,70,.45);color:#fff}.pagebtn:disabled{opacity:.35;cursor:not-allowed}
+
+.card{border:1px solid var(--border);border-radius:17px;background:rgba(18,18,24,.84);padding:15px}.card h3{margin:0 0 12px;font-size:14px}.srow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--border2);font-size:11px}.srow:first-of-type{border-top:0}.srow span:first-child{color:var(--muted)}.tags{display:flex;gap:7px;flex-wrap:wrap}.tag{padding:6px 8px;border:1px solid var(--border);border-radius:999px;background:#101016;font-size:10px;color:var(--text2)}
+.ownerCard{display:flex;gap:11px;align-items:center}.ownerAvatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#7b315d,#22222b);display:grid;place-items:center;font-weight:900}.ownerName{font-size:12px;font-weight:900}.ownerMeta{font-size:10px;color:var(--muted);margin-top:3px}.follow{margin-left:auto;height:34px;padding:0 10px;border:1px solid rgba(230,57,70,.4);border-radius:9px;background:var(--redSoft);font-size:10px;font-weight:850}.notice{padding:12px;border:1px solid rgba(94,168,255,.28);border-radius:13px;background:rgba(94,168,255,.07);font-size:10px;line-height:1.55;color:#bfdcff}
+.empty{padding:50px 20px;text-align:center;border:1px dashed #363642;border-radius:16px;color:var(--muted)}.empty strong{display:block;color:#fff;font-size:17px;margin-bottom:7px}
+
+.menu{position:fixed;z-index:120;display:none;min-width:210px;padding:7px;border:1px solid var(--border);border-radius:12px;background:#14141c;box-shadow:var(--shadow)}.menu.show{display:block}.menu button{width:100%;height:38px;border:0;border-radius:8px;background:none;text-align:left;padding:0 10px;color:var(--text2)}.menu button:hover{background:#ffffff0d;color:#fff}.menu .dangerTxt{color:#ff858f}
+.toast{position:fixed;left:50%;bottom:26px;z-index:140;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.22s;background:#15151e;border:1px solid var(--border);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow);font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
+.mobile{display:none}
+
+@media(max-width:1160px){.nav{display:none}.content{grid-template-columns:1fr}.sidecol{grid-template-columns:repeat(3,1fr)}.gridView{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:860px){:root{--side:0}.sidebar{display:none}.app{margin-left:0}.search{display:none}.heroInner{grid-template-columns:160px 1fr}.collage{height:190px}.sidecol{grid-template-columns:1fr}.item{grid-template-columns:38px 62px minmax(0,1fr) 100px}.item .score{display:none}}
+@media(max-width:640px){:root{--header:58px}.topbar{padding:0 12px}.brandtxt{font-size:22px}.hactions .hbtn:first-child{display:none}.app{padding:calc(var(--header) + 16px) 14px 90px}.heroInner{display:block;padding:20px}.collage{width:150px;height:150px;margin-bottom:16px}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}.item{grid-template-columns:32px 54px minmax(0,1fr);padding:10px;gap:10px}.cover{width:54px}.itemAction{grid-column:2/-1;grid-template-columns:1fr 1fr}.gridView{grid-template-columns:repeat(2,1fr)}.gridView .itemAction{grid-column:auto}.mobile{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:70;left:0;right:0;bottom:0;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:rgba(10,10,14,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)}.mobile a{display:grid;place-items:center;gap:3px;color:var(--muted);font-size:10px;min-height:48px}.mobile a.active{color:#fff}}
+@media(max-width:390px){.gridView{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#"><span class="mark">MZ</span><span class="brandtxt">Manga<span>Zone</span></span></a>
+  <nav class="nav"><a href="#">Inicio</a><a href="#">Explorar</a><a href="#">Biblioteca</a><a class="active" href="#">Listas</a><a href="#">Comunidad</a></nav>
+  <div class="search"><span>⌕</span><input placeholder="Buscar manga…"></div>
+  <div class="hactions"><button class="hbtn">♢</button><button class="hbtn">LunaV</button></div>
+</header>
+
+<aside class="sidebar">
+  <a class="slink" href="#">⌂</a><a class="slink" href="#">⌕</a><a class="slink" href="#">▤</a><a class="slink active" href="#">☆</a>
+  <div class="spacer"></div><a class="slink" href="#">⚙</a>
+</aside>
+
+<main class="app">
+  <div class="breadcrumb"><span>Listas</span><span>›</span><span>Fantasía oscura imprescindible</span></div>
+
+  <section class="hero">
+    <div class="heroInner">
+      <div class="collage"><i></i><i></i><i></i><i></i></div>
+      <div class="heroCopy">
+        <span class="eyebrow">Lista pública</span>
+        <h1>Fantasía oscura imprescindible</h1>
+        <div class="owner"><div class="avatar">LV</div><span>Creada por <strong>LunaV</strong></span><span>·</span><span>Actualizada hace 2 días</span></div>
+        <p class="desc">Obras con mundos crueles, magia peligrosa y protagonistas marcados por decisiones difíciles. Una selección personal de historias que combinan fantasía, tensión y consecuencias reales.</p>
+        <div class="meta"><span class="pill">Fantasía</span><span class="pill">Seinen</span><span class="pill">Acción</span><span class="pill">Pública</span></div>
+        <div class="actions">
+          <button id="followListBtn" class="primary">＋ Seguir lista</button>
+          <button id="shareBtn" class="secondary">↗ Compartir</button>
+          <button id="saveAllBtn" class="secondary">＋ Guardar todas</button>
+          <button id="moreBtn" class="iconAction">⋯</button>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>24</strong><span>Obras</span></div>
+      <div class="stat"><strong>128</strong><span>Seguidores</span></div>
+      <div class="stat"><strong>9.0</strong><span>Score promedio</span></div>
+      <div class="stat"><strong>68%</strong><span>Progreso medio</span></div>
+    </div>
+  </section>
+
+  <div class="content">
+    <section class="maincol">
+      <div class="toolbar">
+        <div class="search2"><span>⌕</span><input id="listSearch" placeholder="Buscar dentro de esta lista…"></div>
+        <select id="sortSelect" class="select">
+          <option value="position">Orden de la lista</option>
+          <option value="title">Título A–Z</option>
+          <option value="score">Mejor puntuación</option>
+          <option value="progress">Mayor progreso</option>
+        </select>
+        <div class="viewToggle"><button id="listBtn" class="active">☷</button><button id="gridBtn">▦</button></div>
+      </div>
+
+      <div id="mangaList" class="list"></div>
+      <div id="emptyState" class="empty" hidden><strong>No encontramos obras</strong>Prueba con otro término de búsqueda.</div>
+      <nav id="pagination" class="pagination"></nav>
+    </section>
+
+    <aside class="sidecol">
+      <article class="card">
+        <h3>Sobre esta lista</h3>
+        <div class="srow"><span>Creada</span><span>12 jul 2026</span></div>
+        <div class="srow"><span>Última edición</span><span>21 ago 2026</span></div>
+        <div class="srow"><span>Visibilidad</span><span>Pública</span></div>
+        <div class="srow"><span>Orden</span><span>Curado manualmente</span></div>
+      </article>
+
+      <article class="card">
+        <h3>Etiquetas</h3>
+        <div class="tags"><span class="tag">Fantasía oscura</span><span class="tag">Seinen</span><span class="tag">Acción</span><span class="tag">Drama</span><span class="tag">Magia</span></div>
+      </article>
+
+      <article class="card">
+        <h3>Creadora</h3>
+        <div class="ownerCard">
+          <div class="ownerAvatar">LV</div>
+          <div><div class="ownerName">LunaV</div><div class="ownerMeta">@lunaviolet · 1 284 seguidores</div></div>
+          <button id="followOwnerBtn" class="follow">Seguir</button>
+        </div>
+      </article>
+
+      <div class="notice">Las listas reflejan la selección y orden de su creador. MangaZone no modifica automáticamente el contenido de una lista pública.</div>
+    </aside>
+  </div>
+</main>
+
+<div id="menu" class="menu">
+  <button data-action="copy">Copiar enlace</button>
+  <button data-action="duplicate">Duplicar en mis listas</button>
+  <button data-action="report" class="dangerTxt">Reportar lista</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<nav class="mobile">
+  <a href="#">⌂<span>Inicio</span></a><a href="#">⌕<span>Explorar</span></a><a href="#">▤<span>Biblioteca</span></a><a class="active" href="#">☆<span>Listas</span></a><a href="#">○<span>Perfil</span></a>
+</nav>
+
+<script>
+const works=[
+{id:1,title:"Ashes of the Crown",type:"Manga",score:9.3,progress:82,chapter:"41 / 48",accent:"#a91f35"},
+{id:2,title:"Paper Samurai",type:"Manga",score:9.4,progress:100,chapter:"14 / 14",accent:"#9a2632"},
+{id:3,title:"Moonlit Contract",type:"Manhwa",score:8.9,progress:58,chapter:"42 / 73",accent:"#6d3d87"},
+{id:4,title:"The Last Cultivator",type:"Manhua",score:9.1,progress:74,chapter:"81 / 109",accent:"#1e6667"},
+{id:5,title:"Neon Exorcist",type:"Manga",score:8.8,progress:50,chapter:"9 / 18",accent:"#8b2030"},
+{id:6,title:"The Jade Archivist",type:"Manhua",score:8.9,progress:59,chapter:"13 / 22",accent:"#1f6a55"},
+{id:7,title:"Beneath the Camellias",type:"Manhwa",score:9.2,progress:100,chapter:"84 / 84",accent:"#7b315d"},
+{id:8,title:"Blue Noise",type:"Manga",score:8.6,progress:42,chapter:"13 / 31",accent:"#28527a"},
+{id:9,title:"Tower of Glass",type:"Manhua",score:8.5,progress:51,chapter:"44 / 87",accent:"#266a72"},
+{id:10,title:"Red Thread Protocol",type:"Manhwa",score:8.7,progress:67,chapter:"38 / 57",accent:"#8e2440"},
+{id:11,title:"Nocturne Academy",type:"Manga",score:8.7,progress:100,chapter:"96 / 96",accent:"#303451"},
+{id:12,title:"Grim Summer",type:"Manga",score:8.2,progress:100,chapter:"35 / 35",accent:"#62312d"},
+{id:13,title:"Heaven Breaker",type:"Manhua",score:8.8,progress:36,chapter:"18 / 50",accent:"#2f5c78"},
+{id:14,title:"The Duchess's Alibi",type:"Manhwa",score:8.9,progress:71,chapter:"49 / 69",accent:"#7d3557"},
+{id:15,title:"Violet Apartment",type:"Manhwa",score:8.5,progress:45,chapter:"20 / 44",accent:"#4f3f7f"},
+{id:16,title:"Dragon's Debt",type:"Manga",score:8.6,progress:30,chapter:"12 / 40",accent:"#734c21"},
+{id:17,title:"Winter Letters",type:"Manhwa",score:8.4,progress:64,chapter:"32 / 50",accent:"#40587d"},
+{id:18,title:"Silent Classroom",type:"Manga",score:8.7,progress:90,chapter:"27 / 30",accent:"#3e485c"},
+{id:19,title:"Immortal Chef",type:"Manhua",score:8.3,progress:55,chapter:"44 / 80",accent:"#6c5a25"},
+{id:20,title:"Sword Saint Online",type:"Manhua",score:8.6,progress:61,chapter:"52 / 85",accent:"#684a8a"},
+{id:21,title:"The Hollow Pact",type:"Manga",score:8.8,progress:47,chapter:"17 / 36",accent:"#5b2e38"},
+{id:22,title:"Crimson Library",type:"Manga",score:8.9,progress:75,chapter:"30 / 40",accent:"#7b2433"},
+{id:23,title:"Night Market Spirits",type:"Manhwa",score:8.5,progress:33,chapter:"11 / 33",accent:"#4c3763"},
+{id:24,title:"Glass Cathedral",type:"Manga",score:9.0,progress:80,chapter:"24 / 30",accent:"#36526f"}
+];
+const state={search:"",sort:"position",view:"list",page:1,perPage:8};
+const list=document.getElementById("mangaList"),pagination=document.getElementById("pagination"),toast=document.getElementById("toast"),menu=document.getElementById("menu");
+
+function initials(t){return t.split(" ").slice(0,2).map(w=>w[0]).join("")}
+function data(){
+ let d=works.map((w,i)=>({...w,pos:i+1}));
+ const q=state.search.trim().toLowerCase();
+ if(q)d=d.filter(w=>`${w.title} ${w.type}`.toLowerCase().includes(q));
+ if(state.sort==="title")d.sort((a,b)=>a.title.localeCompare(b.title));
+ if(state.sort==="score")d.sort((a,b)=>b.score-a.score);
+ if(state.sort==="progress")d.sort((a,b)=>b.progress-a.progress);
+ return d;
+}
+function render(){
+ const d=data(),pages=Math.max(1,Math.ceil(d.length/state.perPage));
+ if(state.page>pages)state.page=pages;
+ const start=(state.page-1)*state.perPage,shown=d.slice(start,start+state.perPage);
+ list.className=state.view==="grid"?"list gridView":"list";
+ list.innerHTML=shown.map((w,i)=>`<article class="item">
+   <div class="num">${start+i+1}</div>
+   <div class="cover" style="--accent:${w.accent}">${initials(w.title)}</div>
+   <div class="itemMain"><div class="ititle">${w.title}</div><div class="imeta"><span>${w.type}</span><span>·</span><span>Cap. ${w.chapter}</span></div><div class="progress"><div class="bar" style="width:${w.progress}%"></div></div></div>
+   <div class="score"><strong>★ ${w.score.toFixed(1)}</strong><span>Puntuación</span></div>
+   <div class="itemAction"><button class="read" data-read="${w.id}">${w.progress? "Continuar":"Leer"}</button><button data-save="${w.id}">＋ Biblioteca</button></div>
+ </article>`).join("");
+ document.getElementById("emptyState").hidden=shown.length>0;
+ renderPagination(pages);
+ bindItems();
+}
+function renderPagination(pages){
+ let html=`<button class="pagebtn" data-page="${state.page-1}" ${state.page===1?"disabled":""}>‹</button>`;
+ for(let p=1;p<=pages;p++)html+=`<button class="pagebtn ${p===state.page?"active":""}" data-page="${p}">${p}</button>`;
+ html+=`<button class="pagebtn" data-page="${state.page+1}" ${state.page===pages?"disabled":""}>›</button>`;
+ pagination.innerHTML=html;
+ pagination.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>{if(b.disabled)return;state.page=+b.dataset.page;render();window.scrollTo({top:document.querySelector(".content").offsetTop-80,behavior:"smooth"})});
+}
+function bindItems(){
+ document.querySelectorAll("[data-read]").forEach(b=>b.onclick=()=>show("Abrir lectura de "+works.find(w=>w.id===+b.dataset.read).title));
+ document.querySelectorAll("[data-save]").forEach(b=>b.onclick=()=>{b.textContent="✓ Guardado";show("Añadido a tu biblioteca")});
+}
+function show(msg){toast.textContent=msg;toast.classList.add("show");clearTimeout(show.t);show.t=setTimeout(()=>toast.classList.remove("show"),1700)}
+
+document.getElementById("listSearch").oninput=e=>{state.search=e.target.value;state.page=1;render()};
+document.getElementById("sortSelect").onchange=e=>{state.sort=e.target.value;state.page=1;render()};
+document.getElementById("listBtn").onclick=()=>{state.view="list";listBtn.classList.add("active");gridBtn.classList.remove("active");render()};
+document.getElementById("gridBtn").onclick=()=>{state.view="grid";gridBtn.classList.add("active");listBtn.classList.remove("active");render()};
+
+document.getElementById("followListBtn").onclick=function(){const f=this.dataset.following==="1";this.dataset.following=f?"0":"1";this.textContent=f?"＋ Seguir lista":"✓ Siguiendo";show(f?"Dejaste de seguir la lista":"Ahora sigues esta lista")};
+document.getElementById("followOwnerBtn").onclick=function(){const f=this.dataset.following==="1";this.dataset.following=f?"0":"1";this.textContent=f?"Seguir":"Siguiendo";show(f?"Dejaste de seguir a LunaV":"Ahora sigues a LunaV")};
+document.getElementById("shareBtn").onclick=()=>show("Enlace de la lista preparado");
+document.getElementById("saveAllBtn").onclick=()=>show("24 obras añadidas a tu biblioteca");
+document.getElementById("moreBtn").onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();menu.style.left=Math.min(innerWidth-225,r.left)+"px";menu.style.top=Math.min(innerHeight-135,r.bottom+6)+"px";menu.classList.add("show")};
+menu.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(b.dataset.action==="copy")show("Enlace copiado");if(b.dataset.action==="duplicate")show("Lista duplicada en tus listas");if(b.dataset.action==="report")show("Abrir formulario de reporte");menu.classList.remove("show")});
+document.addEventListener("click",()=>menu.classList.remove("show"));document.addEventListener("keydown",e=>{if(e.key==="Escape")menu.classList.remove("show")});
+render();
+</script>
+</body>
+</html>

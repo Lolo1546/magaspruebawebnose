@@ -1,0 +1,16 @@
+{
+  "name": "mangazone",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.12.1",
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @mangazone/web --filter @mangazone/api dev",
+    "build": "pnpm --recursive --if-present build",
+    "lint": "pnpm --recursive --if-present lint",
+    "typecheck": "pnpm --recursive --if-present typecheck"
+  }
+}

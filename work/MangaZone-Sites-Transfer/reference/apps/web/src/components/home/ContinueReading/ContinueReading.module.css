@@ -1,0 +1,231 @@
+.section {
+  min-width: 0;
+  scroll-margin-top: calc(var(--mz-header-height) + var(--mz-space-4));
+}
+
+.scroller {
+  display: flex;
+  gap: var(--mz-space-4);
+  min-width: 0;
+  margin-top: var(--mz-space-4);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-block: var(--mz-space-1) var(--mz-space-2);
+  scroll-padding-inline: var(--mz-space-1);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  width: 310px;
+  flex: 0 0 310px;
+  scroll-snap-align: start;
+}
+
+.card {
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--mz-border);
+  border-radius: var(--mz-radius-lg);
+  background: var(--mz-card);
+  box-shadow: var(--mz-shadow-sm);
+  transition:
+    border-color var(--mz-transition-normal),
+    background-color var(--mz-transition-normal),
+    box-shadow var(--mz-transition-normal),
+    transform var(--mz-transition-normal);
+}
+
+.cardLink {
+  display: flex;
+  min-height: 126px;
+  gap: var(--mz-space-3);
+  padding: var(--mz-space-3);
+}
+
+.cardLink:focus-visible {
+  outline-offset: -3px;
+}
+
+.cover {
+  position: relative;
+  width: 68px;
+  flex: 0 0 68px;
+  aspect-ratio: 2 / 3;
+  align-self: center;
+  overflow: hidden;
+  border-radius: var(--mz-radius-md);
+  background: var(--mz-surface-secondary);
+}
+
+.coverImage {
+  object-fit: cover;
+}
+
+.coverTone {
+  --cover-tone: 232 25 44;
+
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgb(var(--cover-tone) / 8%), rgb(var(--cover-tone) / 34%));
+  mix-blend-mode: color;
+  pointer-events: none;
+}
+
+.crimson {
+  --cover-tone: 232 25 44;
+}
+
+.blue {
+  --cover-tone: 59 130 246;
+}
+
+.gold {
+  --cover-tone: 245 158 11;
+}
+
+.green {
+  --cover-tone: 34 197 94;
+}
+
+.violet {
+  --cover-tone: 139 92 246;
+}
+
+.content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.title {
+  overflow: hidden;
+  color: var(--mz-text-primary);
+  font-size: var(--mz-text-sm);
+  font-weight: 750;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--mz-transition-fast);
+}
+
+.position {
+  margin-top: 2px;
+  color: var(--mz-red-hover);
+  font-size: var(--mz-text-xs);
+  font-weight: 650;
+}
+
+.progressMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--mz-space-3);
+  color: var(--mz-text-muted);
+  font-size: 0.625rem;
+}
+
+.progressTrack {
+  display: block;
+  height: 4px;
+  margin-top: var(--mz-space-1);
+  overflow: hidden;
+  border-radius: var(--mz-radius-full);
+  background: rgb(255 255 255 / 8%);
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mz-red);
+  box-shadow: 0 0 8px var(--mz-red-glow);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mz-space-2);
+  margin-top: auto;
+  padding-top: var(--mz-space-2);
+}
+
+.lastRead {
+  overflow: hidden;
+  color: var(--mz-text-muted);
+  font-size: 0.625rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.continueAction {
+  display: inline-flex;
+  min-height: 32px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding-inline: var(--mz-space-3);
+  border-radius: var(--mz-radius-sm);
+  background: var(--mz-red-soft);
+  color: var(--mz-red-hover);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  transition:
+    color var(--mz-transition-fast),
+    background-color var(--mz-transition-fast);
+}
+
+@media (hover: hover) {
+  .card:hover {
+    border-color: rgb(232 25 44 / 30%);
+    background: var(--mz-card-hover);
+    box-shadow: var(--mz-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .card:hover .title {
+    color: var(--mz-red-hover);
+  }
+
+  .card:hover .continueAction {
+    background: var(--mz-red);
+    color: var(--mz-text-on-accent);
+  }
+}
+
+@media (max-width: 540px) {
+  .scroller {
+    gap: var(--mz-space-3);
+  }
+
+  .item {
+    width: min(82vw, 300px);
+    flex-basis: min(82vw, 300px);
+  }
+
+  .cardLink {
+    min-height: 124px;
+    padding: 10px;
+  }
+
+  .continueAction {
+    min-height: 36px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .cardLink:active {
+    background: var(--mz-red-soft);
+  }
+
+  .continueAction {
+    min-height: 40px;
+  }
+}

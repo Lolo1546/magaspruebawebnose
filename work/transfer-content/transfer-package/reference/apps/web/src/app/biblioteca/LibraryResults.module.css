@@ -1,0 +1,25 @@
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--mz-space-4); }
+.gridItem { min-width: 0; }
+.collectionDetail { display: grid; gap: var(--mz-space-3); margin-top: var(--mz-space-2); padding: var(--mz-space-3); border: 1px solid var(--mz-border); border-radius: var(--mz-radius-md); background: var(--mz-surface); }
+.statusRow { display: flex; align-items: center; justify-content: space-between; gap: var(--mz-space-2); }
+.continueLink { display: inline-flex; min-height: 32px; align-items: center; gap: 5px; color: var(--mz-red-hover); font-size: var(--mz-text-xs); font-weight: 750; }
+.clearLink { display: inline-flex; min-height: 40px; align-items: center; padding-inline: var(--mz-space-4); border-radius: var(--mz-radius-md); background: var(--mz-red); color: var(--mz-text-on-accent); font-size: var(--mz-text-sm); font-weight: 700; }
+.list { display: grid; gap: var(--mz-space-3); }
+.listItem { position: relative; display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: var(--mz-space-4); align-items: center; min-width: 0; padding: var(--mz-space-3); border: 1px solid var(--mz-border); border-radius: var(--mz-radius-lg); background: var(--mz-card); }
+.coverLink { position: relative; display: block; width: 72px; aspect-ratio: 2 / 3; overflow: hidden; border-radius: var(--mz-radius-md); background: var(--mz-surface-secondary); }
+.coverLink img { object-fit: cover; }
+.listCopy { min-width: 0; }
+.listCopy h2 { margin-top: 3px; color: var(--mz-text-primary); font-size: var(--mz-text-md); }
+.listCopy .collectionDetail { max-width: 520px; padding: var(--mz-space-2) 0 0; border: 0; background: transparent; }
+.meta { color: var(--mz-text-muted); font-size: var(--mz-text-xs); }
+.rowIcon { color: var(--mz-border-strong); }
+
+@media (max-width: 1180px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mz-space-3); } }
+@media (max-width: 540px) {
+  .listItem { grid-template-columns: 64px minmax(0, 1fr); gap: var(--mz-space-3); }
+  .coverLink { width: 64px; }
+  .rowIcon { display: none; }
+  .statusRow { align-items: flex-start; flex-direction: column; }
+}
+@media (pointer: coarse) { .continueLink, .clearLink { min-height: 44px; } }
